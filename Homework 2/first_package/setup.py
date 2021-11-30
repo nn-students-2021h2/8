@@ -6,13 +6,12 @@ setup(
     description='Library for work with time',
     author='Korostast',
 
-    packages=['namespace'],
-    namespace_packages=['namespace'],
+    packages=find_namespace_packages(include=['namespace.*']),
 
     install_requires=['requests==2.26.0'],
     entry_points={
         'console_scripts': [
-            'get_time=namespace.get_time_module:main',
+            'get_time=namespace.first_sub_package.get_time_module:main',
         ]
     }
 )

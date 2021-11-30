@@ -6,11 +6,12 @@ def get_time():
     resp = requests.get(url)
     unixtime = resp.json()['unixtime']
     try:
-        from namespace import pretty_print_module
+        from namespace.second_sub_package import pretty_print_module
 
         return pretty_print_module.pretty_print(unixtime)
 
     except ImportError as e:
+        print("Sorry")
         return unixtime
 
 
