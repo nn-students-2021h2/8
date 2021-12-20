@@ -1,3 +1,8 @@
+graph.png
 token.txt
-/.idea
-/__pycache__
+__pycache__
+*.pyc
+tmp
+.idea
+.vscode
+venv
