@@ -38,6 +38,11 @@ def error(update: Update, context: CallbackContext):
     logger.warning(f'Update {update} caused error {context.error}')
 
 
+def graph(update: Update, context: CallbackContext):
+    """Draw graph, save it as image and send to the user."""
+    send_graph(update, context)
+    
+
 def main():
     # bot = Bot(
     #     token=TOKEN,
@@ -56,6 +61,14 @@ def main():
         #     'password': 'passwd',
         # }
     }
+
+    TOKEN = ''
+    try:
+        with open('token.txt') as token_file:
+            TOKEN = read()
+    except IOError:
+        logger.warning('File token.txt is not found. Shutting down...')
+        return
 
     updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS, use_context=True)
 
