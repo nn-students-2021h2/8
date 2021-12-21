@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import sympy
 
-from telegram import Bot, Update
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
+from telegram import Update
+from telegram.ext import CallbackContext
+
+from graph import Graph, DrawException
 
 filename = 'graph.png'
 
@@ -19,7 +20,7 @@ def work(text):
 
 def send_graph(update: Update, context: CallbackContext):
     user = update.message.from_user
-    gr = Graph(context.args)
+    gr = Graph(context.args, filename)
     try:
         gr.draw()
     except DrawException:
