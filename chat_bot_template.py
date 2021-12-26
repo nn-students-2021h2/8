@@ -4,7 +4,6 @@
 import logging
 import handling_msg as hmsg
 
-from setup import PROXY, TOKEN
 from telegram import Bot, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
@@ -38,6 +37,11 @@ def error(update: Update, context: CallbackContext):
     logger.warning(f'Update {update} caused error {context.error}')
 
 
+def graph(update: Update, context: CallbackContext):
+    """Draw graph, save it as image and send to the user."""
+    hmsg.send_graph(update, context)
+    
+
 def main():
     # bot = Bot(
     #     token=TOKEN,
@@ -57,11 +61,20 @@ def main():
         # }
     }
 
+    TOKEN = ''
+    try:
+        with open('token.txt') as token_file:
+            TOKEN = token_file.readline()
+    except IOError:
+        logger.warning('File token.txt is not found. Shutting down...')
+        return
+
     updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS, use_context=True)
 
     # on different commands - answer in Telegram
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('help', chat_help))
+    updater.dispatcher.add_handler(CommandHandler('graph', graph))
 
     # on noncommand i.e message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, echo))
