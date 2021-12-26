@@ -19,7 +19,7 @@ def work(text):
 
 def send_graph(update: Update, context: CallbackContext):
     user = update.message.from_user
-    expr = "".join(context.args)
+    expr = " ".join(context.args)
 
     parser = Parser()
     try:
@@ -33,5 +33,5 @@ def send_graph(update: Update, context: CallbackContext):
         context.bot.sendPhoto(
             chat_id=user['id'],
             photo=graph_file,
-            caption='Here a graph of requested functions:'
+            caption='Here a graph of requested functions'
         )

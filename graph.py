@@ -29,7 +29,7 @@ class Graph:
     @staticmethod
     def draw(tokens, file_path):
         x, y = sy.symbols('x y')
-        p = sy.plot()
+        p = sy.plot(show=False)
         left, right = -10, 10
         func_count = 0
 
@@ -39,27 +39,32 @@ class Graph:
             left, right = rng[0], rng[1]
 
         # Extract all implicit functions
-        for impl_func in tokens['implicit']:
-            if len(impl_func.symbols) == 0:
-                p.extend(sy.plot(impl_func.simplified_expr,
+        for expl_func in tokens['explicit']:
+            if len(expl_func.symbols) == 0:
+                p.extend(sy.plot(expl_func.simplified_expr,
                                  (x, left, right),
                                  show=False))
             else:
-                p.extend(sy.plot(impl_func.simplified_expr,
-                                 (impl_func.symbols[0], left, right),
+                p.extend(sy.plot(expl_func.simplified_expr,
+                                 (expl_func.symbols[0], left, right),
                                  show=False))
 
-            p[func_count].label = '$%s$' % sy.latex(impl_func.simplified_expr)
+            p[func_count].label = '$%s$' % sy.latex(expl_func.simplified_expr)
             func_count += 1
 
         # Extract all explicit functions
-        for expl_func in tokens['explicit']:
-            p.extend(sy.plot_implicit(expl_func.simplified_expr,
-                                      (expl_func.symbols[0], left, right),
-                                      (expl_func.symbols[1], left, right),
+        for impl_func in tokens['implicit']:
+            p.extend(sy.plot_implicit(impl_func.simplified_expr,
+                                      (impl_func.symbols[0], left, right),
+                                      (impl_func.symbols[1], left, right),
                                       adaptive=False,
                                       show=False,
                                       line_color=list(np.random.rand(3))))
+            p.extend(sy.plot(0,
+                             (x, 0, 1),
+                             label='$%s$' % sy.latex(impl_func.simplified_expr),
+                             line_color='none',
+                             show=False))
 
         # Config plot style
         p.title = 'Plot'
@@ -78,5 +83,17 @@ class Graph:
         plt.rcParams['axes.labelweight'] = 'bold'
         plt.rcParams['axes.labelpad'] = -2
 
-        # p.show()
-        p.save(file_path)
+        backend = p.backend(p)
+        backend.process_series()
+
+        # Set colors on implicit functions in legend
+        impl_func_count = len(tokens['implicit'])
+        expl_func_count = len(tokens['explicit'])
+        ax = backend.ax[0]
+        legend = ax.get_legend()
+        temp_impl_count = 0
+        for i in range(expl_func_count, expl_func_count + 2 * impl_func_count, 2):
+            legend.legendHandles[expl_func_count + temp_impl_count].set_color(p[i].line_color)
+            temp_impl_count += 1
+
+        backend.fig.savefig(file_path, dpi=300, bbox_inches='tight')
