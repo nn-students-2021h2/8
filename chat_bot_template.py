@@ -1,6 +1,3 @@
-#!/usr/local/bin/python3
-# -*- coding: utf-8 -*-
-
 import logging
 import handling_msg as hmsg
 
