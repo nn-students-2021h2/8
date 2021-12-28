@@ -1,30 +1,31 @@
-import matplotlib.pyplot as plt
-import numpy as np
+"""
+In this module we process events related to bot (such as messages, requests)
+"""
+
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from math_function import MathFunction
+from graph import Graph
 from parser import Parser, ParseError
 
 FILE_NAME = 'graph.png'
 
-def work(text):
-    y = lambda x: np.sqrt(x)
-    fig = plt.subplots()
-    x = np.linspace(0, 100, 20)
-    plt.plot(x, y(x))
-    plt.savefig(FILE_NAME)
-    return FILE_NAME
+
+def echo(text: str):
+    """On simple messages bot replies with echo"""
+    return text + '!'
 
 
 def send_graph(update: Update, context: CallbackContext):
+    """User requested to draw a plot"""
     user = update.message.from_user
     expr = " ".join(context.args)
 
     parser = Parser()
     try:
         tokens = parser.parse(expr)
-        MathFunction.draw(tokens, FILE_NAME)
+        graph = Graph(FILE_NAME)
+        graph.draw(tokens)
     except ParseError as err:
         update.message.reply_text(str(err))
         return

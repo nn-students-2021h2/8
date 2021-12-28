@@ -1,14 +1,20 @@
-import logging
-import handling_msg as hmsg
+"""
+Main core module with bot and logger functionality
+"""
 
-from telegram import Bot, Update
+import logging
+
+from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
+
+import handling_msg as hmsg
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
@@ -26,57 +32,43 @@ def chat_help(update: Update, context: CallbackContext):
 
 def echo(update: Update, context: CallbackContext):
     """Echo the user message."""
-    update.message.reply_text(hmsg.work(update.message.text))
+    update.message.reply_text(hmsg.echo(update.message.text))
 
 
 def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
-    logger.warning(f'Update {update} caused error {context.error}')
+    logger.warning('Update %s caused error %s', update, context.error)
 
 
 def graph(update: Update, context: CallbackContext):
     """Draw graph, save it as image and send to the user."""
     hmsg.send_graph(update, context)
-    
+
 
 def main():
-    # bot = Bot(
-    #     token=TOKEN,
-    #     base_url=PROXY,  # delete it if connection via VPN
-    # )
-    # updater = Updater(bot=bot, use_context=True)
+    """
+    Launch bot and
+    """
 
-    # Connect via socks proxy
-    REQUEST_KWARGS = {
-        #'proxy_url': PROXY,  # Uncomment this line if you encounter network issues/timeouts when starting the bot
-                              # Fill in the PROXY variable in setup.py with a proper proxy URL for this to work.
-
-        # Optional, if you need authentication:
-        # 'urllib3_proxy_kwargs': {
-        #     'username': 'name',
-        #     'password': 'passwd',
-        # }
-    }
-
-    TOKEN = ''
+    token = ''
     try:
-        with open('token.txt') as token_file:
-            TOKEN = token_file.readline()
+        with open('token.txt', encoding='utf8') as token_file:
+            token = token_file.readline()
     except IOError:
-        logger.warning('File token.txt is not found. Shutting down...')
+        logger.error('File token.txt is not found. Shutting down...')
         return
 
-    updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS, use_context=True)
+    updater = Updater(token, use_context=True)
 
-    # on different commands - answer in Telegram
+    # On different commands - answer in Telegram
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('help', chat_help))
     updater.dispatcher.add_handler(CommandHandler('graph', graph))
 
-    # on noncommand i.e message - echo the message on Telegram
+    # On non-command i.e. message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, echo))
 
-    # log all errors
+    # Log all errors
     updater.dispatcher.add_error_handler(error)
 
     # Start the Bot
@@ -89,5 +81,5 @@ def main():
 
 
 if __name__ == '__main__':
-    logger.info('Start Bot')
+    logger.info('Bot is started')
     main()
