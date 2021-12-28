@@ -1,8 +1,10 @@
 import sympy as sy
-# This exception raise when sympy cannot draw a function plot
 from sympy import SympifyError
 
-from graph import Graph
+from math_function import MathFunction
+
+
+# This exception raise when sympy cannot draw a function plot
 
 
 class ParseError(Exception):
@@ -37,25 +39,27 @@ class Parser:
 
     @staticmethod
     def _check_function(token):
+        expr_parts = token.split('=')
+        parts_count = len(expr_parts)
+        x, y = sy.symbols("x y")
         try:
-            foo = sy.simplify(token)
-        except ValueError:
-            expr_parts = token.split('=')
-            parts_count = len(expr_parts)
+            if parts_count == 1:
+                foo = sy.simplify(expr_parts[0])
+            elif parts_count == 2:
+                foo = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+            else:
+                raise ValueError("Mistake in implicit function: Found more than 2 equals.\n"
+                                 f"Your input: {token.strip()}\n"
+                                 "Please, check your math formula")
 
-            try:
-                if parts_count == 1:
-                    foo = sy.Eq(sy.simplify(expr_parts[0]))
-                elif parts_count == 2:
-                    foo = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
-                else:
-                    raise ValueError("Mistake in implicit function: Found more than 2 equals.\n"
-                                     f"Your input: {token.strip()}\n"
-                                     "Please, check your math formula")
-            except SympifyError:
-                raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
-                                 "Please, check your math formula.")
-        return foo
+            solutions = sy.solve(foo, y)
+            if len(solutions) == 1:
+                foo = solutions[0]
+
+            return foo
+        except SympifyError:
+            raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
+                             "Please, check your math formula.")
 
     def parse(self, expr):
         x, y = sy.symbols('x y')
@@ -77,13 +81,14 @@ class Parser:
 
             # Update tokens list
             variables_count = len(foo.free_symbols)
+
             if variables_count <= 1:
                 # If it is an explicit function
-                graph = Graph(token.strip(), foo, 'explicit', list(foo.free_symbols))
+                graph = MathFunction(token.strip(), foo, 'explicit', list(foo.free_symbols))
                 self.tokens['explicit'].append(graph)
             elif variables_count == 2:
                 # If it is an implicit function
-                graph = Graph(token.strip(), foo, 'implicit', list(foo.free_symbols))
+                graph = MathFunction(token.strip(), foo, 'implicit', list(foo.free_symbols))
                 self.tokens['implicit'].append(graph)
             elif variables_count > 2:
                 # If it is an unknown expression

@@ -3,7 +3,7 @@ import numpy as np
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from graph import Graph
+from math_function import MathFunction
 from parser import Parser, ParseError
 
 FILE_NAME = 'graph.png'
@@ -24,7 +24,7 @@ def send_graph(update: Update, context: CallbackContext):
     parser = Parser()
     try:
         tokens = parser.parse(expr)
-        Graph.draw(tokens, FILE_NAME)
+        MathFunction.draw(tokens, FILE_NAME)
     except ParseError as err:
         update.message.reply_text(str(err))
         return

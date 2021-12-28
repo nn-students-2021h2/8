@@ -1,6 +1,6 @@
 import numpy as np
 import sympy as sy
-from matplotlib import pyplot as plt, style
+from matplotlib import pyplot as plt, style, ticker
 
 
 # This exception raise when sympy cannot draw a function plot
@@ -13,7 +13,7 @@ class DrawException(Exception):
 # 'simplified_expr' - sympy math expression
 # 'func_type' - "explicit" or "implicit" function type
 # 'symbols' - list of math expression variables
-class Graph:
+class MathFunction:
     def __init__(self, expression, simplified_expr, func_type, symbols=None):
         if symbols is None:
             symbols = []
@@ -35,29 +35,24 @@ class Graph:
 
         # Extract function range
         if len(rng := tokens['range']):
-            p.xlim, p.ylim = rng, rng
             left, right = rng[0], rng[1]
 
-        # Extract all implicit functions
+        # Extract all explicit functions
         for expl_func in tokens['explicit']:
-            if len(expl_func.symbols) == 0:
-                p.extend(sy.plot(expl_func.simplified_expr,
-                                 (x, left, right),
-                                 show=False))
-            else:
-                p.extend(sy.plot(expl_func.simplified_expr,
-                                 (expl_func.symbols[0], left, right),
-                                 show=False))
+            p.extend(sy.plot(expl_func.simplified_expr,
+                             (x, left, right),
+                             show=False))
 
             p[func_count].label = '$%s$' % sy.latex(expl_func.simplified_expr)
             func_count += 1
 
-        # Extract all explicit functions
+        # Extract all implicit functions
         for impl_func in tokens['implicit']:
             p.extend(sy.plot_implicit(impl_func.simplified_expr,
-                                      (impl_func.symbols[0], left, right),
-                                      (impl_func.symbols[1], left, right),
+                                      (x, left, right),
+                                      (y, left, right),
                                       adaptive=False,
+                                      points=1000,
                                       show=False,
                                       line_color=list(np.random.rand(3))))
             p.extend(sy.plot(0,
@@ -69,7 +64,6 @@ class Graph:
         # Config plot style
         p.title = 'Plot'
         p.legend = True
-        p.aspect_ratio = (1, 1)
 
         style.use('seaborn-whitegrid')
         plt.rcParams['legend.loc'] = "upper right"
@@ -81,7 +75,7 @@ class Graph:
         plt.rcParams['axes.titlepad'] = 20
         plt.rcParams['axes.labelsize'] = 14
         plt.rcParams['axes.labelweight'] = 'bold'
-        plt.rcParams['axes.labelpad'] = -2
+        plt.rcParams['axes.labelpad'] = 0
 
         backend = p.backend(p)
         backend.process_series()
