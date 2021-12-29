@@ -1,6 +1,7 @@
 """
 User input parser module
 """
+import re
 
 import sympy as sy
 from sympy import SympifyError
@@ -20,7 +21,11 @@ class Parser:
     This class represents parser for user input. Now, it parses expressions like:
     x**2 + y^2, x, y = a, x = 1, from -12 to -2
 
-    If parse input into dictionary 'tokens'
+    User input is parsed in 'tokens' dictionary by several groups:
+    - range : function domain
+    - explicit : explicit functions
+    - implicit : implicit functions (or not functions) that can't be converted into explicit
+    - unknown : expressions that parser processed but not assign to any group
     """
 
     def __init__(self):
@@ -94,43 +99,63 @@ class Parser:
     def _process_function(self, token: str):
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
-        x, y = sy.symbols("x y")
+        y = sy.Symbol('y')
         try:
             if parts_count == 1:
                 function = sy.simplify(expr_parts[0])
                 function = self._process_variables(token, function)
             elif parts_count == 2:
+                # If parsed result always true or false (e.g. it is not a function at all)
+                result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+                if result is sy.true or result is sy.false:
+                    raise ParseError(f"Result of expression '{token}' is always {result}")
+
                 modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
                 function = sy.simplify(modified_expr)
                 function = self._process_variables(token, function)
             else:
-                raise ValueError("Mistake in implicit function: Found more than 2 equals.\n"
+                raise ParseError("Mistake in implicit function: Found more than 2 equals.\n"
                                  f"Your input: {token.strip()}\n"
                                  "Please, check your math formula")
 
+            # Trying to convert implicit function into explicit (in order to optimize job)
+            # We can't be sure if function can be converted in case several solutions for 'y'
             solutions = sy.solve(function, y)
             if len(solutions) == 1:
                 function = solutions[0]
-
-            # If parsed result always true or false (e.g. it is not a function at all)
-            if function is sy.true or function is sy.false:
-                raise ParseError(f"Result of expression '{token}' is always {function}")
 
             return function
         except SympifyError as err:
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                              "Please, check your math formula.") from err
 
+    @staticmethod
+    def is_x_equal_num_expression(token: str) -> bool:
+        """
+        The function checks if expression is like "x = 1"
+        :param token: string expression
+        :return: true of false
+        """
+        y = sy.Symbol('y')
+        result = False
+        parts = token.split('=')
+        if len(parts) == 2:
+            first_part = sy.simplify(parts[0])
+            second_part = sy.simplify(parts[1])
+            symbols = first_part.free_symbols | second_part.free_symbols
+            result = len(symbols) == 1 and symbols != {y}
+
+        return result
+
     def parse(self, expr: str):
         """
         This method get string and tries to parse it in several groups (see 'tokens' variable)
 
         Parameters:
-        :param expr:
+        :param expr: user input string to parse
         :return: parsed user input in the form of dictionary 'tokens'
         """
-        x = sy.symbols('x')
-        parts = expr.split(',')
+        parts = re.split("[,;\n]", expr)
 
         for token in parts:
             # If it is a function range
@@ -146,12 +171,14 @@ class Parser:
             except ParseError as err:
                 raise err
 
+            # Next complex checking finds expressions like "x = 1".
+            # They should be implicit because of sympy specifics
+            is_x_equal_num = self.is_x_equal_num_expression(token)
+
             # Update tokens list
             variables_count = len(function.free_symbols)
-            if variables_count == 2 or \
-                    ('=' in token
-                     and
-                     sy.simplify(token.split('=')[0]).free_symbols | function.free_symbols == {x}):
+
+            if variables_count == 2 or is_x_equal_num:
                 # If it is an implicit function
                 graph = MathFunction(token.strip(), function, 'implicit', list(function.free_symbols))
                 self.tokens['implicit'].append(graph)

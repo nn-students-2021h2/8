@@ -6,6 +6,8 @@ import numpy as np
 import sympy as sy
 from matplotlib import pyplot as plt, style
 
+from parser import Parser
+
 
 class DrawException(Exception):
     """This exception is raised when sympy cannot draw a function plot"""
@@ -91,9 +93,17 @@ class Graph:
                                               points=IMPLICIT_FUNCTION_POINTS,
                                               show=False,
                                               line_color=list(np.random.rand(3))))
+
+            # Set label 'x = number' if it is expression like 'x = 1'
+            label = impl_func.simplified_expr
+            is_x_equal_num = Parser.is_x_equal_num_expression(impl_func.expression)
+            if is_x_equal_num:
+                parts = impl_func.expression.split('=')
+                label = sy.Eq(sy.simplify(parts[0]), sy.simplify(parts[1]))
+
             self.plot.extend(sy.plot(0,
                                      (x, left, right),
-                                     label=f'${sy.latex(impl_func.simplified_expr)}$',
+                                     label=f'${sy.latex(label)}$',
                                      line_color='none',
                                      show=False))
 
@@ -109,7 +119,8 @@ class Graph:
             raise DrawException("Unexpected error, check your expression.") from err
 
         # Set colors on implicit functions in legend. I had to do it because Sympy don't want to
-        # add these functions in legend by itself. Print self.plot variable to understand this for
+        # add these functions in legend by itself.
+        # Print self.plot variable to understand why it is needed
         legend = backend.ax[0].get_legend()
         impl_func_count = len(tokens['implicit'])
         expl_func_count = len(tokens['explicit'])
