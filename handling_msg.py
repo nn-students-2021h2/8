@@ -20,8 +20,8 @@ def send_graph(update: Update, context: CallbackContext):
     """User requested to draw a plot"""
     user = update.message.from_user
     expr = " ".join(context.args)
-
     parser = Parser()
+
     try:
         tokens = parser.parse(expr)
         graph = Graph(FILE_NAME)
@@ -31,8 +31,12 @@ def send_graph(update: Update, context: CallbackContext):
         return
 
     with open(FILE_NAME, 'rb') as graph_file:
+        output_message = "Here a graph of requested functions"
+        if warning := parser.pop_last_warning():
+            output_message += f"\n{warning}"
+
         context.bot.sendPhoto(
             chat_id=user['id'],
             photo=graph_file,
-            caption='Here a graph of requested functions'
+            caption=output_message
         )

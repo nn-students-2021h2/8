@@ -13,7 +13,7 @@ class DrawException(Exception):
 
 # This variable adjusts the accuracy of the implicit function drawing
 # Increase it to get more antialiasing result
-IMPLICIT_FUNCTION_POINTS = 2000
+IMPLICIT_FUNCTION_POINTS = 1000
 
 
 class Graph:
@@ -117,14 +117,6 @@ class Graph:
         for i in range(expl_func_count, expl_func_count + 2 * impl_func_count, 2):
             legend.legendHandles[expl_func_count + counter].set_color(self.plot[i].line_color)
             counter += 1
-
-        # Oh... I don't know why, but Sympy can't draw functions like x = 0.
-        # So I have to draw it like implicit function (e.g. draw by points) and then
-        # move it from 'implicit' part of dictionary to 'explicit'
-        for impl_func in tokens['implicit']:
-            if '=' in impl_func.expression and impl_func.symbols == [x]:
-                tokens['implicit'].remove(impl_func)
-                tokens['explicit'].append(impl_func)
 
         backend.fig.savefig(self.file_path, dpi=300, bbox_inches='tight')
         plt.close()
