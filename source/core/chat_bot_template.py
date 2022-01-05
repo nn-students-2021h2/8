@@ -52,7 +52,7 @@ def main():
 
     token = ''
     try:
-        with open('token.txt', encoding='utf8') as token_file:
+        with open('source/conf/token.txt', encoding='utf-8') as token_file:
             token = token_file.readline()
     except IOError:
         logger.error('File token.txt is not found. Shutting down...')

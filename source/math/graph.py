@@ -2,11 +2,13 @@
 Graph class module
 """
 
+from pathlib import Path
+
 import numpy as np
 import sympy as sy
 from matplotlib import pyplot as plt, style
 
-from parser import Parser
+from source.math.parser import Parser
 
 
 class DrawException(Exception):
@@ -24,7 +26,7 @@ class Graph:
     :param file_path: a file name / path which is used to keep plot
     """
 
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: Path):
         self.plot = sy.plot(show=False)
         self.file_path = file_path
 

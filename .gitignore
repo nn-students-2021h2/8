@@ -1,5 +1,6 @@
-graph.png
-token.txt
+resources/*
+!resources/meme.png
+source/conf/token.txt
 __pycache__
 *.pyc
 tmp
