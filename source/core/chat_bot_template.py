@@ -3,6 +3,7 @@ Main core module with bot and logger functionality
 """
 
 import logging
+import os
 
 from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
@@ -52,7 +53,9 @@ def main():
 
     token = ''
     try:
-        with open('source/conf/token.txt', encoding='utf-8') as token_file:
+        dirname = os.path.dirname(__file__)
+        file_path = os.path.join(dirname, "../conf/token.txt")
+        with open(file_path, encoding='utf-8') as token_file:
             token = token_file.readline()
     except IOError:
         logger.error('File token.txt is not found. Shutting down...')
