@@ -1,0 +1,19 @@
+[MASTER]
+disable = fixme,
+          import-error,
+          global-statement,
+          invalid-name,
+          no-self-use,
+          too-few-public-methods,
+          too-many-arguments,
+          too-many-instance-attributes,
+          too-many-locals,
+          ungrouped-imports,
+          unpacking-non-sequence,
+          unused-argument,
+          wrong-import-order,
+          attribute-defined-outside-init,
+
+max-line-length = 120
+ignore-docstrings = yes
+init-hook='import sys; sys.setrecursionlimit(8 * sys.getrecursionlimit())' # to avoid https://stackoverflow.com/questions/36496192/pylint-infinite-recursion-in-astriod-package
