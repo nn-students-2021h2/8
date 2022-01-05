@@ -6,7 +6,7 @@ import re
 import sympy as sy
 from sympy import SympifyError
 
-from math_function import MathFunction
+from source.math.math_function import MathFunction
 
 
 # This exception raise when sympy cannot draw a function plot
