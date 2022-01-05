@@ -3,3 +3,4 @@ pylint==2.12.2
 telegram==0.0.1
 python-telegram-bot==13.10
 sympy==1.9
+pytest==6.2.5
