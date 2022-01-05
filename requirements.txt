@@ -1,8 +1,5 @@
-python-telegram-bot
-python-telegram-bot[socks]
-socks
-pysocks
-telegram~=0.0.1
-sympy~=1.9
-matplotlib~=3.5.1
-numpy~=1.21.5
+matplotlib==3.5.1
+pylint==2.12.2
+telegram==0.0.1
+python-telegram-bot==13.10
+sympy==1.9
