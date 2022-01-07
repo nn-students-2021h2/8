@@ -24,6 +24,8 @@ graphs. This README.md will be added to as the project progresses.
 
 </div>
 
+<br>
+
 <a id="how-to-use"></a>
 
 ## How to use
@@ -36,7 +38,7 @@ Start a conversation with the bot to check if it is activated. If you want to us
 
 1) Clone this repository
 2) Create Telegram bot following official [Telegram instructions](https://core.telegram.org/bots#6-botfather)
-3) Put your token into `TOKEN` variable
+3) Put your token into `TOKEN` variable in `source/conf/default_config.json`
 
 About commands:
 
@@ -46,11 +48,15 @@ About commands:
   be applied to all th functions.<br>The limit on the number of arguments is 15. All variables except 'x' and 'y' will
   be replaced by 'x' and 'y' intuitively
 
+<br>
+
 <a id="what-is-implemented"></a>
 
 ## What is implemented
 
 - Plotting a graph and specifying the area of definition of a function
+
+<br>
 
 <a id="what-is-planned-to-be-implemented"></a>
 
@@ -59,6 +65,8 @@ About commands:
 - Function analysis. Function domain, function range, derivatives, critical points, etc.
 - Sample analysis. Drawing a graph from the data and subsequent analysis
 - New and more user-friendly commands for interaction
+
+<br>
 
 <a id="meme"></a>
 
