@@ -24,7 +24,7 @@ class Graph:
 
     # This variable adjusts the accuracy of the implicit function drawing
     # Increase it to get more antialiasing result
-    IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["implicit_function_points"]
+    IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["STYLE"]["implicit_function_points"]
 
     def __init__(self, file_path: Path):
         self.plot = sy.plot(show=False, title="Plot", legend=True)

@@ -8,10 +8,10 @@ from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import handling_msg as hmsg
-# Enable logging
 from source.conf.config import Config
 from source.math.graph import Graph
 
+# Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
