@@ -67,7 +67,6 @@ class Graph:
                for instance, x^2 + y^2 = 4;
                if it is possible, implicit functions are converted into explicit functions
                (for example, y + x = 0 -> y = -x)
-            - 'unknown' : expressions that we do not know how to process TODO process this
         """
 
         x = sy.symbols('x')

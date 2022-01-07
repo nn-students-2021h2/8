@@ -8,10 +8,10 @@ from sympy import SympifyError
 
 from source.math.math_function import MathFunction
 
+STATEMENTS_LIMIT = 15
+
 
 # This exception raise when sympy cannot draw a function plot
-
-
 class ParseError(Exception):
     """This exception will be thrown when something went wrong while parsing"""
 
@@ -25,7 +25,6 @@ class Parser:
     - range : function domain
     - explicit : explicit functions
     - implicit : implicit functions (or not functions) that can't be converted into explicit
-    - unknown : expressions that parser processed but not assign to any group
     """
 
     def __init__(self):
@@ -41,7 +40,7 @@ class Parser:
         return warning
 
     def _process_range(self, token: str) -> bool:
-        if re.search("^from[ ]+[-+]?\d+[.]?\d+[ ]+to[ ]+[-+]?\d+[.]?\d+$", token.strip()):
+        if re.search(r"^from[ ]+[-+]?\d+[.]?\d+[ ]+to[ ]+[-+]?\d+[.]?\d+$", token.strip()):
             definition_area = token.split()
             try:
                 left = float(definition_area[1])
@@ -157,8 +156,8 @@ class Parser:
         """
         parts = re.split("[,;\n]", expr)
 
-        if len(parts) >= 15:
-            raise ParseError("Too many arguments. The limit is 15 expressions.")
+        if len(parts) >= STATEMENTS_LIMIT:
+            raise ParseError("Too many arguments. The limit is 15 statements.")
 
         for token in parts:
             # If it is a function range
@@ -191,6 +190,6 @@ class Parser:
                 self.tokens['explicit'].append(graph)
             else:
                 # If it is an unknown expression
-                self.tokens['unknown'].append(token)
+                raise ParseError(f"Cannot resolve statement: {token}")
 
         return self.tokens
