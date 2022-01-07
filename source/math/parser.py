@@ -41,14 +41,8 @@ class Parser:
         return warning
 
     def _process_range(self, token: str) -> bool:
-        if (token.strip().find("from")) == 0:
+        if re.search("^from[ ]+[-+]?\d+[.]?\d+[ ]+to[ ]+[-+]?\d+[.]?\d+$", token.strip()):
             definition_area = token.split()
-            # if 'from _ to _' construction doesn't contain four words, that it is syntax error
-            if len(definition_area) != 4:
-                raise ParseError(f"Mistake in function range parameters.\n"
-                                 f"Your input: {token.strip()}\n"
-                                 f"Please, check your \"from _ to _\" statement.")
-
             try:
                 left = float(definition_area[1])
                 right = float(definition_area[3])
@@ -56,6 +50,12 @@ class Parser:
                 raise ParseError(f"Mistake in function range parameters.\n"
                                  f"Your input: {token.strip()}\n"
                                  f"Please, check your \"from _ to _\" statement.") from err
+
+            if left >= right:
+                raise ParseError(f"Mistake in function range parameters.\n"
+                                 f"Your input: {token.strip()}\n"
+                                 f"Left argument cannot be more or equal than right one: {left} >= {right}.")
+
             self.tokens['range'] = [left, right]
             return True
 
@@ -156,6 +156,9 @@ class Parser:
         :return: parsed user input in the form of dictionary 'tokens'
         """
         parts = re.split("[,;\n]", expr)
+
+        if len(parts) >= 15:
+            raise ParseError("Too many arguments. The limit is 15 expressions.")
 
         for token in parts:
             # If it is a function range
