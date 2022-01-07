@@ -3,14 +3,15 @@ Main core module with bot and logger functionality
 """
 
 import logging
-import os
 
 from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import handling_msg as hmsg
-
 # Enable logging
+from source.conf.config import Config
+from source.math.graph import Graph
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -38,7 +39,7 @@ def echo(update: Update, context: CallbackContext):
 
 def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
-    logger.warning('Update %s caused error %s', update, context.error)
+    logger.warning('Update %s\nCaused error %s', update, context.error)
 
 
 def graph(update: Update, context: CallbackContext):
@@ -48,20 +49,16 @@ def graph(update: Update, context: CallbackContext):
 
 def main():
     """
-    Launch bot and
+    Set configuration and launch bot
     """
 
-    token = ''
-    try:
-        dirname = os.path.dirname(__file__)
-        file_path = os.path.join(dirname, "../conf/token.txt")
-        with open(file_path, encoding='utf-8') as token_file:
-            token = token_file.readline()
-    except IOError:
-        logger.error('File token.txt is not found. Shutting down...')
-        return
+    conf = Config()
+    token = conf.properties["APP"]["TOKEN"]
 
     updater = Updater(token, use_context=True)
+
+    # Config plot style and save settings
+    Graph.setup_plot_style()
 
     # On different commands - answer in Telegram
     updater.dispatcher.add_handler(CommandHandler('start', start))

@@ -1,7 +1,6 @@
 """
 In this module we process events related to bot (such as messages, requests)
 """
-import os
 from pathlib import Path
 
 from telegram import Update
@@ -19,7 +18,7 @@ def echo(text: str):
 def send_graph(update: Update, context: CallbackContext):
     """User requested to draw a plot"""
     user = update.message.from_user
-    resources_path = Path(os.path.dirname(__file__)) / "../../resources"
+    resources_path = Path(__file__).resolve().parent.parent.parent / "resources"
     file_path = resources_path / f"{user['id']}.png"
     expr = " ".join(context.args)
     parser = Parser()

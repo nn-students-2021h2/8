@@ -8,16 +8,12 @@ import numpy as np
 import sympy as sy
 from matplotlib import pyplot as plt, style
 
+from source.conf.config import Config
 from source.math.parser import Parser
 
 
 class DrawException(Exception):
     """This exception is raised when sympy cannot draw a function plot"""
-
-
-# This variable adjusts the accuracy of the implicit function drawing
-# Increase it to get more antialiasing result
-IMPLICIT_FUNCTION_POINTS = 1000
 
 
 class Graph:
@@ -26,32 +22,25 @@ class Graph:
     :param file_path: a file name / path which is used to keep plot
     """
 
+    # This variable adjusts the accuracy of the implicit function drawing
+    # Increase it to get more antialiasing result
+    IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["implicit_function_points"]
+
     def __init__(self, file_path: Path):
-        self.plot = sy.plot(show=False)
+        self.plot = sy.plot(show=False, title="Plot", legend=True)
         self.file_path = file_path
 
-    def setup_plot_style(self):
+    @staticmethod
+    def setup_plot_style():
         """
         Change plot appearance
-        # TODO something like json config file in order to set preferred styles
         """
 
-        self.plot.title = "Plot"
-        self.plot.legend = True
+        parameters = Config().properties["PLOT_APPEARANCE"]
+        style.use(parameters["STYLE"]["style"])
 
-        style.use('seaborn-whitegrid')
-
-        plt.rcParams['legend.loc'] = "upper right"
-        plt.rcParams['legend.frameon'] = True
-        plt.rcParams['legend.framealpha'] = 0.6
-        plt.rcParams['axes.edgecolor'] = '#1b5756'  # dark green color
-        plt.rcParams['xaxis.labellocation'] = 'right'
-        plt.rcParams['yaxis.labellocation'] = 'top'
-        plt.rcParams['axes.titleweight'] = 'bold'
-        plt.rcParams['axes.titlepad'] = 20
-        plt.rcParams['axes.labelweight'] = 'bold'
-        plt.rcParams['axes.labelpad'] = 0
-        plt.rcParams['figure.constrained_layout.use'] = True
+        for param in parameters["RC_PARAMS"]:
+            plt.rcParams[param] = parameters["RC_PARAMS"][param]
 
     def draw(self, tokens: dict):
         """
@@ -92,7 +81,7 @@ class Graph:
             self.plot.extend(sy.plot_implicit(impl_func.simplified_expr,
                                               (x, left, right),
                                               adaptive=False,
-                                              points=IMPLICIT_FUNCTION_POINTS,
+                                              points=self.IMPLICIT_FUNCTION_POINTS,
                                               show=False,
                                               line_color=list(np.random.rand(3))))
 
@@ -108,9 +97,6 @@ class Graph:
                                      label=f'${sy.latex(label)}$',
                                      line_color='none',
                                      show=False))
-
-        # Config plot style and save it
-        self.setup_plot_style()
 
         # Matplotlib does not see plots which were added by 'extend' method.
         # Process_series force mpl process new graphs
