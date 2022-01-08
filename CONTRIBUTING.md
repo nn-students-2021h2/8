@@ -115,6 +115,9 @@ attributes can be found for a particular function. The functionality can be impl
 2) **Configuration** _[IN PROGRESS]_ <br>
    I really need a class implemented as a singleton that can parse a json file with settings and apply the changes. In
    case of an error opening or reading the file, exception should be thrown.
+   
+3) **Logging** <br>
+   Every user action should be logged in terminal or file.
 
 <a id="3.4-repository"></a>
 
@@ -129,11 +132,11 @@ attributes can be found for a particular function. The functionality can be impl
 - What is planned to be implemented (TBD) (?)
 - Some meme
 
-2) **Requirements** _[IN PROGRESS]_ <br>
+2) **Requirements** _[DONE]_ <br>
    We need to generate an adequate fact. PyCharm knows how to generate it itself (click on the project, create a new
    file - requirements.txt).
 
-3) **Contributing information file** _[IN PROGRESS]_ <br>
+3) **Contributing information file** _[DONE]_ <br>
    I assume the rules are prescribed in CONTRIBUTING.md. It's worth writing naming rules for anything and everything,
    how to commit and push.
 
