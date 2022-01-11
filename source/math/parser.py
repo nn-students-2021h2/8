@@ -158,7 +158,7 @@ class Parser:
         parts = re.split("[,;\n]", expr)
 
         if len(parts) >= STATEMENTS_LIMIT:
-            raise ParseError("Too many arguments. The limit is 15 statements.")
+            raise ParseError("Too many arguments. The limit is {STATEMENTS_LIMIT} statements.")
 
         for token in parts:
             # If it is a function range
