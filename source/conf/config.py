@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 if sys.hexversion < 0x3080000:
-    raise Exception("Python version must be >= 3.8")
+    raise Exception("Python version must be 3.8 or later")
 
 
 class ConfigException(Exception):
