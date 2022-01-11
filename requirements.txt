@@ -1,5 +1,6 @@
-matplotlib==3.5.1
-sympy==1.9
-python-telegram-bot==13.10
-pylint==2.12.2
-pytest==6.2.5
+matplotlib~=3.5.1
+sympy~=1.9
+telegram~=0.0.1
+python-telegram-bot~=13.10
+pytest~=6.2.5
+numpy~=1.21.5

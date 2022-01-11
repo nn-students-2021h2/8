@@ -1,0 +1,24 @@
+{
+  "APP": {
+    "TOKEN": "<Put your token here>"
+  },
+  "PLOT_APPEARANCE": {
+    "STYLE": {
+      "style": "seaborn-whitegrid",
+      "implicit_function_points": 1000
+    },
+    "RC_PARAMS": {
+      "legend.loc": "upper right",
+      "legend.frameon": true,
+      "legend.framealpha": 0.6,
+      "xaxis.labellocation": "right",
+      "yaxis.labellocation": "top",
+      "axes.edgecolor": "#1b5756",
+      "axes.titleweight": "bold",
+      "axes.titlepad": 20,
+      "axes.labelweight": "bold",
+      "axes.labelpad": 0,
+      "figure.constrained_layout.use": true
+    }
+  }
+}

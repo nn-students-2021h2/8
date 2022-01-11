@@ -1,6 +1,7 @@
 resources/*
 !resources/meme.png
 source/conf/token.txt
+source/conf/default_config.json
 __pycache__
 *.pyc
 tmp
