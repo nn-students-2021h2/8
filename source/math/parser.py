@@ -8,6 +8,7 @@ from sympy import SympifyError
 
 from source.math.math_function import MathFunction
 
+# How many statements (functions, domain, etc.) the Bot can handle
 STATEMENTS_LIMIT = 15
 
 
