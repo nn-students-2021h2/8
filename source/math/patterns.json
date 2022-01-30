@@ -1,0 +1,57 @@
+{
+  "derivative": {
+    "^(differentiate|diff|derivative)([ ]+of)?[ ]+(.+)[ ]+(by[ ]+(.+))$": [
+      "3",
+      "5"
+    ],
+    "^(differentiate|diff|derivative)([ ]+of)?([ ]+(?!by))(.+)$": [
+      "4"
+    ]
+  },
+  "domain": {
+    "^(domain|definition[ ]+(area|range))([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ]
+  },
+  "range": {
+    "^(range)([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  },
+  "zeros": {
+    "^(zeros|zeroes)([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  },
+  "axes_intersection": {
+    "^intersect(ion)?([ ]+with)?[ ]+axes([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ],
+    "^axes[ ]+intersect(ion)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ],
+    "^axes[ ]+(.+)$": [
+      "1"
+    ]
+  },
+  "periodicity": {
+    "^period(icity)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  },
+  "convexity": {
+    "^convex(ity)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  },
+  "concavity": {
+    "^concav((e)|(ity))([ ]+of)?[ ]+(.+)$": [
+      "5"
+    ]
+  },
+  "continuity": {
+    "^continu(ity|ous)([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  }
+}
