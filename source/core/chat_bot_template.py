@@ -4,7 +4,7 @@ Main core module with bot and logger functionality
 
 import logging
 
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import handling_msg as hmsg
@@ -17,14 +17,31 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
+MAIN, GRAPH = range(2)
 
+chats_status_dict = {}
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 
 
+def go_main(update: Update):
+    """Change status of user and send main menu to user."""
+    chats_status_dict[update.message.chat_id] = MAIN
+    reply_markup = ReplyKeyboardMarkup([['Draw graph']], resize_keyboard=True)
+    update.message.reply_text('Choose action', reply_markup=reply_markup)
+
+
+def go_graph(update: Update):
+    """Change status of user and send draw graph menu to user."""
+    chats_status_dict[update.message.chat_id] = GRAPH
+    reply_markup = ReplyKeyboardMarkup([['Main menu']], resize_keyboard=True)
+    update.message.reply_text("Enter function to draw or go to main menu", reply_markup=reply_markup)
+
+
 def start(update: Update, context: CallbackContext):
     """Send a message when the command /start is issued."""
-    update.message.reply_text(f'Привет, {update.effective_user.first_name}!')
+    update.message.reply_text(f'Hello, {update.effective_user.first_name} {update.effective_user.last_name}!')
+    go_main(update)
 
 
 def chat_help(update: Update, context: CallbackContext):
@@ -34,7 +51,16 @@ def chat_help(update: Update, context: CallbackContext):
 
 def echo(update: Update, context: CallbackContext):
     """Echo the user message."""
-    update.message.reply_text(hmsg.echo(update.message.text))
+    if chats_status_dict[update.message.chat_id] == MAIN:
+        if update.message.text == 'Draw graph':
+            go_graph(update)
+        else:
+            update.message.reply_text(hmsg.echo(update.message.text))
+    elif chats_status_dict[update.message.chat_id] == GRAPH:
+        if update.message.text == 'Main menu':
+            go_main(update)
+        else:
+            hmsg.send_graph(update, context)
 
 
 def error(update: Update, context: CallbackContext):
@@ -44,7 +70,10 @@ def error(update: Update, context: CallbackContext):
 
 def graph(update: Update, context: CallbackContext):
     """Draw graph, save it as image and send to the user."""
-    hmsg.send_graph(update, context)
+    if update.message.text == '/graph':
+        go_graph(update)
+    else:
+        hmsg.send_graph(update, context)
 
 
 def main():
