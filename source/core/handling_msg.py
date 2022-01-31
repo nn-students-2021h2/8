@@ -50,6 +50,7 @@ def send_graph(update: Update, context: CallbackContext):
 
 
 def send_analyse(update: Update, context: CallbackContext):
+    """User requested some function analysis"""
     user = update.message.from_user
     expr = " ".join(context.args).lower()
     parser = CalculusParser()

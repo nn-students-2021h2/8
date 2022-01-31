@@ -1,5 +1,5 @@
 """
-User input parser module
+Parser for graph requests
 """
 import re
 
@@ -85,7 +85,6 @@ class GraphParser(Parser):
     def _process_function(self, token: str):
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
-        y = sy.Symbol('y')
         try:
             if parts_count == 1:
                 function = sy.simplify(expr_parts[0])

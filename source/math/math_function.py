@@ -15,7 +15,7 @@ class MathFunction:
     :param expression: input string from user
     :param simplified_expr: sympy parsed math expression. It is used in sympy calculations
     :param func_type: "explicit" or "implicit" function type. It is used in plotting in mainly
-    :param symbols: list of math expression variables
+    :param symbols: a list of math expression variables
     """
 
     def __init__(self, expression: str, simplified_expr: sy.Function, func_type="explicit", symbols=None):
@@ -30,6 +30,11 @@ class MathFunction:
         return self.expression
 
     def derivative(self, *symbols: sy.S) -> sy.Function:
+        """
+        Calculates the derivative by given variables
+        :param symbols: the variables to be differentiated by
+        :return: a derivative of the function (it is also function)
+        """
         diff_function = self.simplified_expr
 
         try:
@@ -40,25 +45,48 @@ class MathFunction:
                     diff_function = sy.diff(diff_function, symbol)
         except ValueError as err:
             raise ValueError(f"Since there is more than one variable in the expression, "
-                             f"the variable(s) of differentiation must be supplied to differentiate\n{self.expression}")
+                             f"the variable(s) of differentiation must be supplied to "
+                             f"differentiate:\n{self.expression}") from err
 
         return diff_function
 
     def domain(self, symbol: sy.S) -> sy.Interval:
+        """
+        Finds the definition area
+        :param symbol: the symbol to find the definition (it is 'x' by default)
+        :return: an interval the interval over which the function is defined
+        """
         return calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
 
     def frange(self, symbol: sy.Symbol) -> sy.Interval:
+        """
+        Finds value range of the function
+        :param symbol: the symbol to find the area (it is 'y' by default)
+        :return: a value range (interval) of the function
+        """
         return calculus.function_range(self.simplified_expr, symbol, sy.S.Reals)
 
     def zeros(self) -> sy.Set:
+        """
+        Calculates where the function turns to zero
+        :return: a set of the 'x' values
+        """
         function = self.simplified_expr
+
+        # if it is expression like 'y + x', then replace 'y' with zero
         if len(self.symbols) > 1:
             function = function.subs(self.symbols[1], 0)
         return sy.solveset(sy.Eq(function, 0), self.symbols[0])
 
     def axis_intersection(self, target_symbol: sy.Symbol, zero_symbol: sy.Symbol) -> sy.Set:
+        """
+        Calculates the value of the variable 'target_symbol' at which the function crosses the axis 'target_symbol'
+        For example, y = x + 1 -> the function intersect x-axis at x = -1 and intersect y-axis at y = 1
+        :param target_symbol: the axis about which the intersection is defined
+        :param zero_symbol: another axis that should be zeroed
+        :return: a set of answers
+        """
         solutions = set()
-        zeros = self.zeros()
         partly_solved = self.simplified_expr.subs(zero_symbol, 0)
         if target_symbol not in partly_solved.free_symbols:
             solutions.add(partly_solved)
@@ -67,32 +95,56 @@ class MathFunction:
         return solutions
 
     def periodicity(self, symbol: sy.Symbol):
+        """
+        Finds interval of periodicity
+        :param symbol: see 'periodicity' arguments
+        :return: see return of the 'periodicity' function
+        """
         return calculus.periodicity(self.simplified_expr, symbol)
 
     def convexity(self) -> bool:
+        """
+        Determine if the function is convex
+        :return: true if it is convex, false otherwise
+        """
         return calculus.is_convex(self.simplified_expr)
 
     def concavity(self) -> bool:
+        """
+        Determine if the function is concave
+        :return: true if it is concave, false otherwise
+        """
         return not calculus.is_convex(self.simplified_expr)
 
     def continuity(self, symbol: sy.Symbol) -> sy.Interval:
+        """
+        Finds interval of continuity
+        :param symbol: see 'continuous_domain' arguments
+        :return: an interval of continuity
+        """
         return calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
 
     def is_even(self, *symbols) -> bool:
+        """
+        Determine if the function is even
+        :param symbols: all function variables (just 'x').
+        :return: true if the function is even, false otherwise
+        """
         function = sy.simplify(self.simplified_expr)
-        test = function.free_symbols
         if len(function.free_symbols) == 0:
             return True
 
         x = symbols[0]
         even_func = function.subs(x, -x)
 
-        if even_func == function:
-            return True
-        else:
-            return False
+        return even_func == function
 
     def is_odd(self, *symbols) -> bool:
+        """
+        Determine if the function is odd
+        :param symbols: all function variables
+        :return: true if the function is odd, false otherwise
+        """
         function = sy.simplify(self.simplified_expr)
 
         x = symbols[0]
@@ -101,18 +153,17 @@ class MathFunction:
         even_func = function.subs(x, -x)
 
         if y is not None:
-            odd_func = function.subs(y, -y)
-            if even_func == odd_func or even_func == -odd_func:
-                return True
-            else:
-                return False
-        else:
-            if even_func == sy.simplify(function * (-1)):
-                return True
-            else:
-                return False
+            odd_func = function.subs(y, (-1) * y)
+            return even_func in (odd_func, -odd_func)
+
+        return even_func == sy.simplify(function * (-1))
 
     def vertical_asymptotes(self, symbol: sy.Symbol) -> set:
+        """
+        Try to find vertical asymptotes of the function
+        :param symbol: the variable in relation to which the limits will be considered (x by default)
+        :return: a set of answers (functions)
+        """
         exist = calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
         not_exist = sy.S.Reals - exist
 
@@ -141,6 +192,11 @@ class MathFunction:
         return ans
 
     def horizontal_asymptotes(self, symbol: sy.Symbol) -> set:
+        """
+        Try to find horizontal asymptotes of the function
+        :param symbol: the variable in relation to which the limits will be considered (x by default)
+        :return: a set of answers (functions)
+        """
         pos_limit = sy.limit(self.simplified_expr, symbol, sy.oo)
         neg_limit = sy.limit(self.simplified_expr, symbol, -sy.oo)
         ans = set()
@@ -153,6 +209,11 @@ class MathFunction:
         return ans
 
     def slant_asymptotes(self, symbol: sy.Symbol) -> set:
+        """
+        Try to find slant (in particular, horizontal) asymptotes of the function
+        :param symbol: the variable in relation to which the limits will be considered (x by default)
+        :return: a set of answers (functions)
+        """
         k = None
         b = None
         ans = set()
@@ -175,17 +236,32 @@ class MathFunction:
         ans.remove(self.simplified_expr)
         return ans
 
-    def maximum(self, symbol: sy.Symbol):
+    def maximum(self, symbol: sy.Symbol) -> sy.Number:
+        """
+        Tries to find maximum value (not local maximums!) of the function
+        :param symbol: see 'maximum' function args
+        :return: a maximum value or empty set
+        """
         maximum = calculus.maximum(self.simplified_expr, symbol)
         if not maximum.is_infinite and not maximum.is_number:
             return sy.EmptySet
         return maximum
 
-    def minimum(self, symbol: sy.Symbol):
+    def minimum(self, symbol: sy.Symbol) -> sy.Number:
+        """
+        Tries to find minimum value (not local minimums!) of the function
+        :param symbol: see 'minimum' function args
+        :return: a minimum value or empty set
+        """
         minimum = calculus.minimum(self.simplified_expr, symbol)
         if not minimum.is_infinite and not minimum.is_number:
             return sy.EmptySet
         return minimum
 
-    def stationary_points(self, symbol: sy.Symbol):
+    def stationary_points(self, symbol: sy.Symbol) -> sy.Set:
+        """
+        Tries to find points of the function where derivative is zero
+        :param symbol: see 'stationary_points' function args
+        :return: a set of answers
+        """
         return calculus.stationary_points(self.simplified_expr, symbol)

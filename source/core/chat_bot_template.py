@@ -48,6 +48,7 @@ def graph(update: Update, context: CallbackContext):
 
 
 def analyse(update: Update, context: CallbackContext):
+    """Calculate requested function and send result to the user in LaTeX format (or not LaTeX - check config file)"""
     hmsg.send_analyse(update, context)
 
 

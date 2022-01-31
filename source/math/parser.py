@@ -1,3 +1,6 @@
+"""
+An abstract class represents parser for user input
+"""
 from abc import ABC, abstractmethod
 
 import sympy as sy
@@ -11,12 +14,16 @@ class ParseError(Exception):
 
 
 class Parser(ABC):
+    """
+    Contains common methods that can be used in GraphParser and CalculusParser (and other in the future)
+    """
+
     def __init__(self):
         self._warnings = []
 
     @abstractmethod
     def parse(self, expression: str):
-        pass
+        """Function that parses user input. Should be redefined in children classes"""
 
     @staticmethod
     def is_x_equal_num_expression(token: str) -> bool:
@@ -46,4 +53,8 @@ class Parser(ABC):
         return warning_list
 
     def push_warning(self, warning: str):
+        """
+        Push new string in warnings list
+        :param warning: what we warn about
+        """
         self._warnings.append(warning)
