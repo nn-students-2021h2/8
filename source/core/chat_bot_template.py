@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 MAIN, GRAPH = range(2)
 
 chats_status_dict = {}
-# Define a few command handlers. These usually take the two arguments update and
-# context. Error handlers also receive the raised TelegramError object in error.
 
 
 def go_main(update: Update):
