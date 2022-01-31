@@ -8,9 +8,12 @@ import sympy as sy
 from telegram import Update
 from telegram.ext import CallbackContext
 
+from source.conf import Config
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph
 from source.math.graph_parser import GraphParser, ParseError
+
+SETTINGS = Config()
 
 
 def echo(text: str):
@@ -23,7 +26,7 @@ def send_graph(update: Update, context: CallbackContext):
     user = update.message.from_user
     resources_path = Path(__file__).resolve().parents[2] / "resources"
     file_path = resources_path / f"{user['id']}.png"
-    expr = " ".join(context.args)
+    expr = " ".join(context.args).lower()
     parser = GraphParser()
 
     try:
@@ -48,19 +51,34 @@ def send_graph(update: Update, context: CallbackContext):
 
 def send_analyse(update: Update, context: CallbackContext):
     user = update.message.from_user
-    expr = " ".join(context.args)
+    expr = " ".join(context.args).lower()
     parser = CalculusParser()
 
     try:
-        res = parser.parse(expr)
-        with BytesIO() as latex_picture:
-            sy.preview(fr'${res}$', output='png', viewer='BytesIO', outputbuffer=latex_picture,
-                       dvioptions=['-D', '600'])
-            latex_picture.seek(0)
+        # Parse request and check if some template was found
+        # If parser can't understand what user mean, it returns False
+        is_pattern_found = parser.parse(expr)
+        if not is_pattern_found:
+            update.message.reply_text("Couldn't find a suitable template. Check the input.")
+            return
+        result = parser.process_query()
 
-            context.bot.sendPhoto(
+        # If USE_LATEX set in True, then send picture to the user. Else, send basic text
+        if SETTINGS.properties["APP"]["USE_LATEX"]:
+            latex = parser.make_latex(result)
+            with BytesIO() as latex_picture:
+                sy.preview(fr'${latex}$', output='png', viewer='BytesIO', outputbuffer=latex_picture,
+                           dvioptions=['-D', '600'])
+                latex_picture.seek(0)
+
+                context.bot.sendPhoto(
+                    chat_id=user['id'],
+                    photo=latex_picture
+                )
+        else:
+            context.bot.sendMessage(
                 chat_id=user['id'],
-                photo=latex_picture
+                text=str(result)
             )
     except (ParseError, ValueError, NotImplementedError) as err:
         update.message.reply_text(str(err))

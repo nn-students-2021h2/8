@@ -53,5 +53,62 @@
     "^continu(ity|ous)([ ]+of)?[ ]+(.+)$": [
       "3"
     ]
+  },
+  "vertical asymptotes": {
+    "^(vertical|v)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ]
+  },
+  "horizontal asymptotes": {
+    "^(horizontal|h)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ]
+  },
+  "slant asymptotes": {
+    "^(slant|s)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ]
+  },
+  "asymptotes": {
+    "^asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  },
+  "evenness": {
+    "^even(ness)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ],
+    "^is[ ]+(.+)[ ]+even([ ]*[?])?$": [
+      "1"
+    ]
+  },
+  "oddness": {
+    "^odd(ness)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ],
+    "^is[ ]+(.+)[ ]+odd([ ]*[?])?$": [
+      "1"
+    ]
+  },
+  "maximum": {
+    "^max(imum)?([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ],
+    "^highest([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+      "3"
+    ]
+  },
+  "minimum": {
+    "^min(imum)?([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ],
+    "^(lowest|smallest)([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+      "4"
+    ]
+  },
+  "stationary points": {
+    "^(crit(ical)?|stationary)([ ]+points)?([ ]+of)?[ ]+(.+)$": [
+      "5"
+    ]
   }
 }

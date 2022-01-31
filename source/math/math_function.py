@@ -50,13 +50,21 @@ class MathFunction:
     def frange(self, symbol: sy.Symbol) -> sy.Interval:
         return calculus.function_range(self.simplified_expr, symbol, sy.S.Reals)
 
-    # TODO solveset ?
     def zeros(self) -> sy.Set:
-        return sy.solveset(sy.Eq(self.simplified_expr, 0))
+        function = self.simplified_expr
+        if len(self.symbols) > 1:
+            function = function.subs(self.symbols[1], 0)
+        return sy.solveset(sy.Eq(function, 0), self.symbols[0])
 
     def axis_intersection(self, target_symbol: sy.Symbol, zero_symbol: sy.Symbol) -> sy.Set:
+        solutions = set()
+        zeros = self.zeros()
         partly_solved = self.simplified_expr.subs(zero_symbol, 0)
-        return sy.solveset(partly_solved, target_symbol)
+        if target_symbol not in partly_solved.free_symbols:
+            solutions.add(partly_solved)
+        else:
+            solutions = sy.solveset(partly_solved, target_symbol)
+        return solutions
 
     def periodicity(self, symbol: sy.Symbol):
         return calculus.periodicity(self.simplified_expr, symbol)
@@ -70,7 +78,7 @@ class MathFunction:
     def continuity(self, symbol: sy.Symbol) -> sy.Interval:
         return calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
 
-    def is_even(self, *symbols):
+    def is_even(self, *symbols) -> bool:
         function = sy.simplify(self.simplified_expr)
         test = function.free_symbols
         if len(function.free_symbols) == 0:
@@ -82,9 +90,9 @@ class MathFunction:
         if even_func == function:
             return True
         else:
-            return None
+            return False
 
-    def is_odd(self, *symbols):
+    def is_odd(self, *symbols) -> bool:
         function = sy.simplify(self.simplified_expr)
 
         x = symbols[0]
@@ -97,12 +105,12 @@ class MathFunction:
             if even_func == odd_func or even_func == -odd_func:
                 return True
             else:
-                return None
+                return False
         else:
             if even_func == sy.simplify(function * (-1)):
                 return True
             else:
-                return None
+                return False
 
     def vertical_asymptotes(self, symbol: sy.Symbol) -> set:
         exist = calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
@@ -127,7 +135,7 @@ class MathFunction:
                     right_limit = sy.limit(self.simplified_expr, symbol, cur, '-')
                     if left_limit.is_infinite or right_limit.is_infinite:
                         ans.add(cur)
-            else:
+            elif isinstance(values, sy.sets.sets.EmptySet):
                 ans.add(values)
 
         return ans
@@ -163,4 +171,21 @@ class MathFunction:
             if b.is_finite:
                 ans.add(k * symbol + b)
 
+        # If given function is line, then it is its own asymptote, so we should remove it from set
+        ans.remove(self.simplified_expr)
         return ans
+
+    def maximum(self, symbol: sy.Symbol):
+        maximum = calculus.maximum(self.simplified_expr, symbol)
+        if not maximum.is_infinite and not maximum.is_number:
+            return sy.EmptySet
+        return maximum
+
+    def minimum(self, symbol: sy.Symbol):
+        minimum = calculus.minimum(self.simplified_expr, symbol)
+        if not minimum.is_infinite and not minimum.is_number:
+            return sy.EmptySet
+        return minimum
+
+    def stationary_points(self, symbol: sy.Symbol):
+        return calculus.stationary_points(self.simplified_expr, symbol)

@@ -38,15 +38,97 @@ def process_function(token: str):
 class CalculusParser(Parser):
     def __init__(self):
         super().__init__()
+        self.action = ""
+        self.function = None
+        self.additional_params = []
 
-    def _process_query(self, m_func, match, pattern_params, pattern_set, result, symbols):
+    def make_latex(self, expression: list) -> str:
+        result = ""
+        pattern_set = self.action
+        function = sy.latex(self.function.simplified_expr)
+        symbols = list(map(sy.latex, self.function.symbols))
+        first_result = sy.latex(expression[0])
+        second_result = sy.latex(expression[1]) if len(expression) > 1 else None
+        third_result = sy.latex(expression[2]) if len(expression) > 2 else None
+
+        if pattern_set == "derivative":
+            if len(self.additional_params):
+                variables = self.additional_params[0].strip()
+                variables = re.sub(" +", " ", variables)
+                result = fr"Derivative\ of\ {function} by\ {variables}:\\{first_result}"
+            else:
+                result = fr"Derivative\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "domain":
+            result = fr"Domain\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "range":
+            result = fr"Range\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "zeros":
+            result = fr"Zeros\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "axes_intersection":
+            result = fr"Intersection\ with\ {symbols[0]}-axis:\\{symbols[1]} = {first_result}\\" \
+                     fr"Intersection\ with\ {symbols[1]}-axis:\\{symbols[0]} = {second_result}"
+
+        elif pattern_set == "periodicity":
+            result = fr"Periodicity\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "convexity":
+            result = fr"Is\ {function} convex?\\{first_result}"
+
+        elif pattern_set == "concavity":
+            result = fr"Is\ {function} concave?\\{first_result}"
+
+        elif pattern_set == "continuity":
+            result = fr"Continuity interval of\ {function}:\\{first_result}"
+
+        elif pattern_set == "vertical asymptotes":
+            result = fr"Vertical\ asymptotes\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "horizontal asymptotes":
+            result = fr"Horizontal\ asymptotes\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "slant asymptotes":
+            result = fr"Slant\ asymptotes\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "asymptotes":
+            result = fr"Vertical\ asymptotes\ of\ {function}:\\{first_result}\\\\" \
+                     fr"Horizontal\ asymptotes\ of\ {function}:\\{second_result}\\\\" \
+                     fr"Slant\ asymptotes\ of\ {function}:\\{third_result}"
+
+        elif pattern_set == "evenness":
+            result = fr"Is\ {function}\ even?\\{first_result}"
+
+        elif pattern_set == "oddness":
+            result = fr"Is\ {function}\ odd?\\{first_result}"
+
+        elif pattern_set == "maximum":
+            result = fr"Max\ value\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "minimum":
+            result = fr"Min\ value\ of\ {function}:\\{first_result}"
+
+        elif pattern_set == "stationary points":
+            result = fr"Stationary\ points\ of\ {function}:\\{first_result}"
+
+        return result
+
+    def process_query(self) -> list:
+        pattern_set = self.action
+        m_func = self.function
+        symbols = m_func.symbols
+
+        result = []
+
         if pattern_set == "derivative":
             symbols = []
 
             # If it is a pattern with additional parameters (symbols, for example: diff x + y by x),
             # than extract variables to differentiate, else sympy will try to predict the variable
-            if len(pattern_params) > 1:
-                variables = match.group(pattern_params[1]).strip().replace(',', ' ')
+            if len(self.additional_params) > 0:
+                variables = self.additional_params[0].strip().replace(',', ' ')
                 symbols = sy.symbols([*re.split("[ ]+", variables)])
 
                 # Check if listed variables are correct
@@ -54,16 +136,16 @@ class CalculusParser(Parser):
                     if not str(var).isalpha():
                         raise ParseError(f"Variables can only contain letters\nIncorrect variable: '{var}'")
 
-            result = fr"Derivative\ of {sy.latex(m_func.simplified_expr)}:\\{m_func.derivative(*symbols)}"
+            result.append(m_func.derivative(*symbols))
 
         elif pattern_set == "domain":
-            result = fr"Domain\ of {sy.latex(m_func.simplified_expr)}:\\{sy.latex(m_func.domain(symbols[0]))}"
+            result.append(m_func.domain(symbols[0]))
 
         elif pattern_set == "range":
-            result = fr"Range\ of {sy.latex(m_func.simplified_expr)}:\\{sy.latex(m_func.frange(symbols[0]))}"
+            result.append(m_func.frange(symbols[0]))
 
         elif pattern_set == "zeros":
-            result = fr"Zeros\ of {sy.latex(m_func.simplified_expr)}:\\{sy.latex(m_func.zeros())}"
+            result.append(m_func.zeros())
 
         elif pattern_set == "axes_intersection":
             # If there is only one variable, then we should predict another one
@@ -74,34 +156,57 @@ class CalculusParser(Parser):
                 else:
                     symbols.append(sy.Symbol("y"))
 
-            first_intersection = sy.latex((m_func.axis_intersection(symbols[0], symbols[1])))
-            result = fr"Intersection\ with {sy.latex(symbols[0])}-axis:\\" \
-                     fr"{sy.latex(symbols[1])} = {first_intersection}\\"
-            second_intersection = sy.latex((m_func.axis_intersection(symbols[1], symbols[0])))
-            result += fr"Intersection\ with {sy.latex(symbols[1])}-axis:\\" \
-                      fr"{sy.latex(symbols[0])} = {second_intersection}"
+            result.append(m_func.axis_intersection(symbols[0], symbols[1]))
+            result.append(m_func.axis_intersection(symbols[1], symbols[0]))
 
         elif pattern_set == "periodicity":
-            result = fr"Periodicity\ of {m_func.simplified_expr}:\\" \
-                     fr"{sy.latex(m_func.periodicity(symbols[0]))}"
+            result.append(m_func.periodicity(symbols[0]))
 
         elif pattern_set == "convexity":
-            result = fr"Is {sy.latex(m_func.simplified_expr)} convex?\\{sy.latex(m_func.convexity())}"
+            result.append(m_func.convexity())
 
         elif pattern_set == "concavity":
-            result = fr"Is {sy.latex(m_func.simplified_expr)} concave?\\{sy.latex(m_func.concavity())}"
+            result.append(m_func.concavity())
 
         elif pattern_set == "continuity":
-            result = fr"Continuity interval of {m_func.simplified_expr}:\\" \
-                     fr"{sy.latex(m_func.continuity(symbols[0]))}"
+            result.append(m_func.continuity(symbols[0]))
+
+        elif pattern_set == "vertical asymptotes":
+            result.append(m_func.vertical_asymptotes(symbols[0]))
+
+        elif pattern_set == "horizontal asymptotes":
+            result.append(m_func.horizontal_asymptotes(symbols[0]))
+
+        elif pattern_set == "slant asymptotes":
+            result.append(m_func.slant_asymptotes(symbols[0]))
+
+        elif pattern_set == "asymptotes":
+            result.append(m_func.vertical_asymptotes(symbols[0]))
+            result.append(m_func.horizontal_asymptotes(symbols[0]))
+            result.append(m_func.slant_asymptotes(symbols[0]))
+
+        elif pattern_set == "evenness":
+            result.append(m_func.is_even(*symbols))
+
+        elif pattern_set == "oddness":
+            result.append(m_func.is_odd(*symbols))
+
+        elif pattern_set == "maximum":
+            result.append(m_func.maximum(symbols[0]))
+
+        elif pattern_set == "minimum":
+            result.append(m_func.minimum(symbols[0]))
+
+        elif pattern_set == "stationary points":
+            result.append(m_func.stationary_points(symbols[0]))
+
         return result
 
-    def parse(self, query: str) -> str:
+    def parse(self, query: str) -> bool:
         path = pathlib.Path(__file__).parent.resolve() / "patterns.json"
         file = open(path, "r")
         pattern_dict = json.load(file)
-
-        result = ""
+        re.match("^is[ ]+(.+)[ ]+odd[?]?$", "asdf")
 
         for pattern_set in pattern_dict:
             for pattern in pattern_dict[pattern_set]:
@@ -131,9 +236,15 @@ class CalculusParser(Parser):
                     # we can append fictitious variable 'x'
                     if len(symbols) == 0:
                         symbols.append(sy.Symbol("x"))
+                    m_func.symbols = symbols
+
+                    # Set the parser variables
+                    self.action = pattern_set
+                    self.function = m_func
+                    self.additional_params = [match.group(param) for param in pattern_params[1:]]
 
                     # Find the right pattern and get the result
-                    return self._process_query(m_func, match, pattern_params, pattern_set, result, symbols)
+                    return True
 
         file.close()
-        return result
+        return False
