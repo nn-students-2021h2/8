@@ -50,7 +50,7 @@ def chat_help(update: Update, context: CallbackContext):
 
 
 def echo(update: Update, context: CallbackContext):
-    """Echo the user message."""
+    """Check user status and directs his message to suitable function."""
     if chats_status_dict[update.message.chat_id] == MAIN:
         if update.message.text == 'Draw graph':
             go_graph(update)
