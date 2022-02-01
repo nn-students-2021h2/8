@@ -27,7 +27,7 @@ def send_graph(update: Update, context: CallbackContext):
     resources_path = Path(__file__).resolve().parents[2] / "resources"
     file_path = resources_path / f"{user['id']}.png"
     if context.args:
-        expr = " ".join(context.args)
+        expr = " ".join(context.args).lower()
     else:
         expr = update.message.text.lower()
     parser = GraphParser()
