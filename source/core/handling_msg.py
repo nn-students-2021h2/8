@@ -13,7 +13,11 @@ from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph
 from source.math.graph_parser import GraphParser, ParseError
 
+# We get "USE_LATEX" parameter from settings
 SETTINGS = Config()
+
+# A number of pixels on inch for TeX pictures
+PPI = '600'
 
 
 def echo(text: str):
@@ -72,7 +76,7 @@ def send_analyse(update: Update, context: CallbackContext):
             latex = parser.make_latex(result)
             with BytesIO() as latex_picture:
                 sy.preview(fr'${latex}$', output='png', viewer='BytesIO', outputbuffer=latex_picture,
-                           dvioptions=['-D', '600'])
+                           dvioptions=['-D', PPI])
                 latex_picture.seek(0)
 
                 context.bot.sendPhoto(
