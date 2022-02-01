@@ -18,7 +18,7 @@ class MathFunction:
     :param symbols: a list of math expression variables
     """
 
-    def __init__(self, expression: str, simplified_expr: sy.Function, func_type="explicit", symbols=None):
+    def __init__(self, expression: str, simplified_expr, func_type="explicit", symbols=None):
         if symbols is None:
             symbols = []
         self.expression = expression

@@ -47,35 +47,29 @@ class GraphParser(Parser):
 
         return False
 
-    def _process_variables(self, token: str, function):
+    def _process_variables(self, function: sy.Function):
         x, y = sy.symbols("x y")
 
-        # First check: expression contains more than three variables (a, b, c)
         symbols = function.free_symbols
-        if len(symbols) >= 3:
-            raise ParseError(f"Incorrect expression: {token}\n"
-                             f"There are {len(symbols)} variables: "
-                             f"{', '.join(str(var) for var in symbols)}\n"
-                             f"You can use a maximum of 2 variables.")
 
-        # Second check: expression contains x, a (replace a = y)
+        # First check: expression contains x, a (replace a = y)
         if (x in symbols) and (y not in symbols) and len(var := list(symbols - {x})) == 1:
             self.push_warning(f"Variable '{var[0]}' is replaced by 'y'")
             return function.replace(var[0], y)
 
-        # Third check: expression contains y, a (replace a = x)
+        # Second check: expression contains y, a (replace a = x)
         if (y in symbols) and (x not in symbols) and len(var := list(symbols - {y})) == 1:
             self.push_warning(f"Variable '{var[0]}' is replaced by 'x'")
             return function.replace(var[0], x)
 
-        # Fourth check: expression contains a, b (replace a = x, b = y)
+        # Third check: expression contains a, b (replace a = x, b = y)
         if (x not in symbols) and (y not in symbols) and len(symbols) == 2:
             variables = list(symbols)
             self.push_warning(f"Variable '{variables[0]}' is replaced by 'y',\n"
                               f"variable '{variables[1]}' is replaced by 'x'")
             return function.replace(variables[0], y).replace(variables[1], x)
 
-        # Fifth check: expression contains a (replace a = x)
+        # Fourth check: expression contains a (replace a = x)
         if (x not in symbols) and (y not in symbols) and len(var := list(symbols)) == 1:
             self.push_warning(f"Variable '{var[0]}' is replaced by 'x'")
             return function.replace(var[0], x)
@@ -91,23 +85,35 @@ class GraphParser(Parser):
             elif parts_count == 2:
                 # If parsed result always true or false (e.g. it is not a function at all)
                 result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+
+                # Check if number of variables is less than 2
+                if len(result.free_symbols) > 2:
+                    raise ParseError(f"Incorrect expression: {token}\n"
+                                     f"There are {len(result.free_symbols)} variables: "
+                                     f"{', '.join(str(var) for var in result.free_symbols)}\n"
+                                     f"You can use a maximum of 2 variables.")
+
+                # If it is expressions like 1 = 1 or 1 = 0
                 if result is sy.true or result is sy.false:
                     raise ParseError(f"Result of expression '{token}' is always {result}")
 
                 # If expression like 'y = x', then discard left part, else construct expression "y - x = 0"
-                if re.match("^y$", expr_parts[0].strip()) is not None:
+                # or if expression is not like 'y = y ** 2' (same variables at the both sides)
+                vars_intersection = result.lhs.free_symbols & result.rhs.free_symbols
+                if re.match("^y$", expr_parts[0].strip()) is not None and len(vars_intersection) == 0:
                     modified_expr = expr_parts[1]
+                    function = sy.simplify(modified_expr)
                 else:
                     modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
+                    function = sy.Eq(sy.simplify(modified_expr), 0)
 
-                function = sy.simplify(modified_expr)
             else:
                 raise ParseError("Mistake in implicit function: Found more than 2 equals.\n"
                                  f"Your input: {token.strip()}\n"
                                  "Please, check your math formula")
 
             # Change variables
-            function = self._process_variables(token, function)
+            function = self._process_variables(function)
 
             # Trying to convert implicit function into explicit (in order to optimize job)
             # We can't be sure if function can be converted in case several solutions for 'y'
@@ -154,7 +160,8 @@ class GraphParser(Parser):
             # Update tokens list
             variables_count = len(function.free_symbols)
 
-            if variables_count == 2 or is_x_equal_num:
+            # If there are two variables or expression like 'x = 1' or equation 'something = 0'
+            if variables_count == 2 or is_x_equal_num or isinstance(function, sy.Equality):
                 # If it is an implicit function
                 graph = MathFunction(token.strip(), function, 'implicit', list(function.free_symbols))
                 self.tokens['implicit'].append(graph)
