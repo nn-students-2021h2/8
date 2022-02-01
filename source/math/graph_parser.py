@@ -95,7 +95,7 @@ class GraphParser(Parser):
                     raise ParseError(f"Result of expression '{token}' is always {result}")
 
                 # If expression like 'y = x', then discard left part, else construct expression "y - x = 0"
-                if re.match("^[a-zA-Z]+$", expr_parts[0].strip()) is not None:
+                if re.match("^y$", expr_parts[0].strip()) is not None:
                     modified_expr = expr_parts[1]
                 else:
                     modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
