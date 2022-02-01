@@ -6,8 +6,8 @@ import json
 import sys
 from pathlib import Path
 
-if sys.hexversion < 0x3080000:
-    raise Exception("Python version must be 3.8 or later")
+if sys.hexversion < 0x30A0000:
+    raise Exception("Python version must be 3.10 or later")
 
 
 class ConfigException(Exception):

@@ -1,5 +1,6 @@
 resources/*
 !resources/meme.png
+!resources/analysis_patterns.md
 source/conf/token.txt
 source/conf/default_config.json
 __pycache__

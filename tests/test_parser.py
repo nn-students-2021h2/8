@@ -1,6 +1,6 @@
 import pytest
-import source.math.parser as parser
-from source.math.parser import ParseError
+import source.math.graph_parser as parser
+from source.math.graph_parser import ParseError
 
 
 @pytest.mark.parametrize("token, result", [(' x= 1', True),
@@ -23,4 +23,4 @@ def test_is_x_equal_num_expression(token, result):
                                                 ("x^2, from ", ParseError)])
 def test_parse(expression, result):
     with pytest.raises(result):
-        x = parser.Parser.parse(parser.Parser(), expression)
+        x = parser.GraphParser.parse(parser.GraphParser(), expression)

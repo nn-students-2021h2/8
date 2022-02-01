@@ -74,6 +74,11 @@ def graph(update: Update, context: CallbackContext):
         hmsg.send_graph(update, context)
 
 
+def analyse(update: Update, context: CallbackContext):
+    """Calculate requested function and send result to the user in LaTeX format (or not LaTeX - check config file)"""
+    hmsg.send_analyse(update, context)
+
+
 def main():
     """
     Set configuration and launch bot
@@ -91,6 +96,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('help', chat_help))
     updater.dispatcher.add_handler(CommandHandler('graph', graph))
+    updater.dispatcher.add_handler(CommandHandler('analyse', analyse))
 
     # On non-command i.e. message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, echo))

@@ -9,7 +9,7 @@ import sympy as sy
 from matplotlib import pyplot as plt, style
 
 from source.conf.config import Config
-from source.math.parser import Parser
+from source.math.graph_parser import GraphParser
 
 
 class DrawException(Exception):
@@ -48,7 +48,7 @@ class Graph:
 
         Parameters
         ==========
-        :param tokens: dict of parsed user input (see parse function in parser.py to get more info)
+        :param tokens: dict of parsed user input (see parse function in graph_parser.py to get more info)
             Keys:
             - 'range' : list of two elements - range of the functions (left and right borders)
             - 'explicit' : explicit functions like y = x
@@ -86,7 +86,7 @@ class Graph:
 
             # Set label 'x = number' if it is expression like 'x = 1'
             label = impl_func.simplified_expr
-            is_x_equal_num = Parser.is_x_equal_num_expression(impl_func.expression)
+            is_x_equal_num = GraphParser.is_x_equal_num_expression(impl_func.expression)
             if is_x_equal_num:
                 parts = impl_func.expression.split('=')
                 label = sy.Eq(sy.simplify(parts[0]), sy.simplify(parts[1]))

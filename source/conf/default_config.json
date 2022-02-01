@@ -1,6 +1,7 @@
 {
   "APP": {
-    "TOKEN": "<Put your token here>"
+    "TOKEN": "<Put your token here>",
+    "USE_LATEX": true
   },
   "PLOT_APPEARANCE": {
     "STYLE": {
