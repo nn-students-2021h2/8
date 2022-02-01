@@ -116,7 +116,7 @@ class GraphParser(Parser):
             #     function = solutions[0]
 
             return function
-        except SympifyError as err:
+        except (SympifyError, TypeError) as err:
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                              "Please, check your math formula.") from err
 

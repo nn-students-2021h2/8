@@ -30,7 +30,7 @@ def send_graph(update: Update, context: CallbackContext):
         expr = " ".join(context.args)
     else:
         expr = update.message.text.lower()
-    parser = Parser()
+    parser = GraphParser()
 
     try:
         tokens = parser.parse(expr)
