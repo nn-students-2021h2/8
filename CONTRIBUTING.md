@@ -20,7 +20,8 @@
 
 ## 1 Requirements
 
-* `Python 3.8` or greater
+* `Python 3.10` or greater
+* `MiKTeX` as a TeX distribution to display text in TeX format, [download](https://miktex.org/download)
 * `Pylint` as a static code analysis tool. It is necessary to fix all Pylint warnings. Specific rules for linter are
   prescribed in `.pylintrc`. To install Pylint, type in the terminal:
 
@@ -34,7 +35,8 @@ pip install pylint
 
 We use feature branch workflow to make working with the repository easier. It means that you should push your changes to
 the topic branches and then a make pull request to commit the changes to the main branch. The request must include
-description of what was done. The request must be reviewed by code reviewer or team leader and then merged into main.
+description of what was done. The request must be reviewed by code reviewer or team leader, approved and then merged
+into main.
 
 <a id="3-project-goals"></a>
 
@@ -71,22 +73,24 @@ _with `Sympy` and `Matplotlib` as backend_<br>
    We need to create a functional for the study of mathematical functions and organize a convenient interface for
    interaction with it. Information about the study function can be taken from the Internet, for example respected
    source: [Mathprofi](https://vk.com/away.php?to=http%3A%2F%2Fmathprofi.ru%2Fpolnoe_issledovanie_funkcii_i_postroenie_grafika.html&cc_key=) <br><br>
+
    The main functions are as follows:
 
-- Function domain
-- Function range (or at least the smallest and the largest values of the function)
-- The zeros of the function
-- Coordinates of intersection points with the coordinate axes
-- First derivative
-- Second derivative
-- Continuity
-- Even / odd
-- Periodicity
-- Asymptotes
+- Derivative _[DONE]_
+- Domain _[DONE]_
+- Range _[DONE]_
+- Zeros _[DONE]_
+- Axes intersection _[DONE]_
+- Periodicity _[DONE]_
+- Convexity _[DONE]_
+- Concavity _[DONE]_
+- Continuity _[DONE]_
+- Asymptotes (vertical, horizontal and slant) _[DONE]_
+- Evenness and oddness _[DONE]_
+- Maximum value _[DONE]_
+- Minimum value _[DONE]_
+- Stationary points _[DONE]_
 - Constant sign intervals
-- Critical points
-- Convexity
-- Concavity
 
 Not all the listed functions are mandatory, some of them may be too complex to implement. In addition, not all
 attributes can be found for a particular function. The functionality can be implemented with `Sympy`.
@@ -97,7 +101,7 @@ attributes can be found for a particular function. The functionality can be impl
 
 ### 3.3 Bot and core
 
-1) **Interface**<br>
+1) **Interface** _[IN PROGRESS]_ <br>
    The bot must have a clear system of interaction with the user. For example, through buttons and commands.<br><br>
    A rough set of commands is as follows:
 
@@ -115,7 +119,7 @@ attributes can be found for a particular function. The functionality can be impl
 2) **Configuration** _[IN PROGRESS]_ <br>
    I really need a class implemented as a singleton that can parse a json file with settings and apply the changes. In
    case of an error opening or reading the file, exception should be thrown.
-   
+
 3) **Logging** <br>
    Every user action should be logged in terminal or file.
 
