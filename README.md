@@ -45,7 +45,7 @@ If you want to use your bot token, then:
 4) Install TeX distribution [MiKTeX](https://miktex.org/download). It is required to display text in TeX view. After
    installing, open application 'MiKTeX Console', click 'Updates' - 'Check for updates' - 'Update now'. Install all
    packages. Then open your IDE, launch the Bot and type him next command: \
-   `/analyse domain x`
+   `/analyse domain x` \
    IDE may ask you to install some dependencies of TeX (in popup window). Accept it and wait until installation is
    complete After that you can use the Bot and TeX mode
 
