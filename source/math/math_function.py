@@ -102,19 +102,19 @@ class MathFunction:
         """
         return calculus.periodicity(self.simplified_expr, symbol)
 
-    def convexity(self) -> bool:
+    def convexity(self, symbol: sy.Symbol) -> bool:
         """
         Determine if the function is convex
         :return: true if it is convex, false otherwise
         """
-        return calculus.is_convex(self.simplified_expr)
+        return calculus.is_convex(self.simplified_expr, symbol)
 
-    def concavity(self) -> bool:
+    def concavity(self, symbol: sy.Symbol) -> bool:
         """
         Determine if the function is concave
         :return: true if it is concave, false otherwise
         """
-        return not calculus.is_convex(self.simplified_expr)
+        return not calculus.is_convex(self.simplified_expr, symbol)
 
     def continuity(self, symbol: sy.Symbol) -> sy.Interval:
         """
@@ -186,8 +186,9 @@ class MathFunction:
                     right_limit = sy.limit(self.simplified_expr, symbol, cur, '-')
                     if left_limit.is_infinite or right_limit.is_infinite:
                         ans.add(cur)
-            elif isinstance(values, sy.sets.sets.EmptySet):
-                ans.add(values)
+
+        if len(ans) == 0:
+            ans.add(sy.EmptySet)
 
         return ans
 
@@ -205,6 +206,9 @@ class MathFunction:
             ans.add(pos_limit)
         if neg_limit.is_finite:
             ans.add(neg_limit)
+
+        if len(ans) == 0:
+            ans.add(sy.EmptySet)
 
         return ans
 
@@ -233,7 +237,11 @@ class MathFunction:
                 ans.add(k * symbol + b)
 
         # If given function is line, then it is its own asymptote, so we should remove it from set
-        ans.remove(self.simplified_expr)
+        ans.discard(self.simplified_expr)
+
+        if len(ans) == 0:
+            ans.add(sy.EmptySet)
+
         return ans
 
     def maximum(self, symbol: sy.Symbol) -> sy.Number:
