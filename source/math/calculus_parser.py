@@ -53,6 +53,9 @@ class CalculusParser(Parser):
     :param additional_params: a list of additional information that can be used in calculating the result
     """
 
+    # The accuracy of the prediction system. The bigger the number, the more similar the words need to be to correct it
+    PREDICTION_ACCURACY = 0.7
+
     def __init__(self, action="", function=None, additional_params=None):
         super().__init__()
         if additional_params is None:
@@ -76,7 +79,7 @@ class CalculusParser(Parser):
 
         # Tries to find similar words and replace old ones with them in result
         for word in query_words:
-            matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=0.7)
+            matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=self.PREDICTION_ACCURACY)
             if len(matches) == 1:
                 result = result.replace(word, str(matches[0]))
                 self.push_warning(f"Interpreting '{word}' as '{matches[0]}'")

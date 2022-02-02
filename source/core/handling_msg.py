@@ -16,7 +16,7 @@ from source.math.graph_parser import GraphParser, ParseError
 # We get "USE_LATEX" parameter from settings
 SETTINGS = Config()
 
-# A number of pixels on inch for TeX pictures
+# A number of pixels per inch for TeX pictures
 PPI = '600'
 
 
@@ -50,7 +50,7 @@ def send_graph(update: Update, context: CallbackContext):
             output_message += f"\n{warning}"
             parser.clear_warnings()
 
-        context.bot.sendPhoto(
+        context.bot.send_photo(
             chat_id=user['id'],
             photo=graph_file,
             caption=output_message
@@ -80,13 +80,13 @@ def send_analyse(update: Update, context: CallbackContext):
                            dvioptions=['-D', PPI])
                 latex_picture.seek(0)
 
-                context.bot.sendPhoto(
+                context.bot.send_photo(
                     chat_id=user['id'],
                     photo=latex_picture,
                     caption="\n".join(parser.warnings)
                 )
         else:
-            context.bot.sendMessage(
+            context.bot.send_message(
                 chat_id=user['id'],
                 text=str(result)
             )

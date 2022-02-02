@@ -91,6 +91,7 @@ _with `Sympy` and `Matplotlib` as backend_<br>
 - Minimum value _[DONE]_
 - Stationary points _[DONE]_
 - Constant sign intervals
+- Monotonic intervals
 
 Not all the listed functions are mandatory, some of them may be too complex to implement. In addition, not all
 attributes can be found for a particular function. The functionality can be implemented with `Sympy`.

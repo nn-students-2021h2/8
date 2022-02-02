@@ -91,6 +91,8 @@ About commands:
 
 ## What is planned to be implemented
 
+- More function for analysis
+- Better function plotting. New features and functionality
 - Sample analysis. Drawing a graph from the data and subsequent analysis
 - New and more user-friendly commands for interaction
 
@@ -100,4 +102,5 @@ About commands:
 
 ## Meme
 
-![meme](https://i.ibb.co/tCp83JV/image.png)
+_**About C language**_
+![meme](https://i.ibb.co/GFwYyps/Meme.png)
