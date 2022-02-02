@@ -38,7 +38,7 @@ def process_function(token: str) -> sy.Function:
                              "Please, check your math formula")
 
         return function
-    except SympifyError as err:
+    except (SympifyError, TypeError, ValueError) as err:
         raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                          "Please, check your math formula.") from err
 
@@ -86,6 +86,59 @@ class CalculusParser(Parser):
 
         return result if result != query else ""
 
+    def _find_pattern(self, query: str, pattern_dict: dict, try_predict: bool) -> bool:
+        """
+        Tries to find pattern matching the given query
+        :param query: user input
+        :param pattern_dict: a dictionary of patterns
+        :param try_predict: if there is a need to correct the query and try to find pattern again
+        :return: true if pattern was found, otherwise false
+        """
+        for pattern_set in pattern_dict:
+            for pattern in pattern_dict[pattern_set]["patterns"]:
+                p = re.compile(pattern)
+
+                # Match pattern if we don't want to predict the correct pattern
+                match = None
+                if not try_predict:
+                    match = re.match(p, query)
+
+                # If we want to find correct pattern again, we need to fix wrong words in query
+                if try_predict and (fixed_query := self._predict_pattern(query, pattern_set, pattern_dict)):
+                    match = re.match(p, fixed_query)
+
+                if match:
+                    # Pattern parameters consist of last part of expression. Expression is a function to process
+                    pattern_params = list(map(int, pattern_dict[pattern_set]["patterns"][pattern]))
+                    expression = match.group(pattern_params[0])
+
+                    # Extract the function from query and construct MathFunction
+                    function = process_function(expression)
+                    m_func = MathFunction(expression, function)
+                    symbols = sorted(list(m_func.simplified_expr.free_symbols), key=lambda x: str(x))
+
+                    # Check if listed variables are correct
+                    for var in symbols:
+                        if not str(var).isalpha():
+                            raise ParseError(f"Variables can only contain letters\nIncorrect variable: '{var}'")
+
+                    # If there is no variables, then we can't get the answer. In order to not getting errors,
+                    # we can append fictitious variable 'x'
+                    if len(symbols) == 0:
+                        symbols.append(sy.Symbol("x"))
+                    m_func.symbols = symbols
+
+                    # Set the parser variables
+                    self.action = pattern_set
+                    self.function = m_func
+                    self.additional_params = [match.group(param) for param in pattern_params[1:]]
+
+                    return True
+
+                self.clear_warnings()
+
+        return False
+
     def make_latex(self, expression: list) -> str:
         """
         Converts the given argument into LaTeX format according to the parser's pattern set
@@ -127,13 +180,13 @@ class CalculusParser(Parser):
                 result = fr"Periodicity\ of\ {function}:\\{first_result}"
 
             case "convexity":
-                result = fr"Is\ {function} convex?\\{first_result}"
+                result = fr"Is\ {function}\ convex?\\{first_result}"
 
             case "concavity":
-                result = fr"Is\ {function} concave?\\{first_result}"
+                result = fr"Is\ {function}\ concave?\\{first_result}"
 
             case "continuity":
-                result = fr"Continuity interval of\ {function}:\\{first_result}"
+                result = fr"Continuity\ interval\ of\ {function}:\\{first_result}"
 
             case "vertical asymptotes":
                 result = fr"Vertical\ asymptotes\ of\ {function}:\\{first_result}"
@@ -218,10 +271,10 @@ class CalculusParser(Parser):
                 result.append(m_func.periodicity(symbols[0]))
 
             case "convexity":
-                result.append(m_func.convexity())
+                result.append(m_func.convexity(symbols[0]))
 
             case "concavity":
-                result.append(m_func.concavity())
+                result.append(m_func.concavity(symbols[0]))
 
             case "continuity":
                 result.append(m_func.continuity(symbols[0]))
@@ -269,43 +322,10 @@ class CalculusParser(Parser):
         with open(path, "r", encoding="utf-8") as file:
             pattern_dict = json.load(file)
 
-        for pattern_set in pattern_dict:
-            for pattern in pattern_dict[pattern_set]["patterns"]:
-                p = re.compile(pattern)
-                match = re.match(p, query)
+        # Check if input match any pattern
+        is_pattern_found = self._find_pattern(query, pattern_dict, False)
+        if is_pattern_found:
+            return True
 
-                # If query does not match regex, then we try to fix query
-                if (not match) and (fixed_query := self._predict_pattern(query, pattern_set, pattern_dict)):
-                    match = re.match(p, fixed_query)
-
-                if match:
-                    # Pattern parameters consist of last part of expression. Expression is a function to process
-                    pattern_params = list(map(int, pattern_dict[pattern_set]["patterns"][pattern]))
-                    expression = match.group(pattern_params[0])
-
-                    # Extract the function from query and construct MathFunction
-                    function = process_function(expression)
-                    m_func = MathFunction(expression, function)
-                    symbols = sorted(list(m_func.simplified_expr.free_symbols), key=lambda x: str(x))
-
-                    # Check if listed variables are correct
-                    for var in symbols:
-                        if not str(var).isalpha():
-                            raise ParseError(f"Variables can only contain letters\nIncorrect variable: '{var}'")
-
-                    # If there is no variables, then we can't get the answer. In order to not getting errors,
-                    # we can append fictitious variable 'x'
-                    if len(symbols) == 0:
-                        symbols.append(sy.Symbol("x"))
-                    m_func.symbols = symbols
-
-                    # Set the parser variables
-                    self.action = pattern_set
-                    self.function = m_func
-                    self.additional_params = [match.group(param) for param in pattern_params[1:]]
-
-                    return True
-
-                self.clear_warnings()
-
-        return False
+        # If none of patterns were satisfied, then we can try to correct input and match the patterns again
+        return self._find_pattern(query, pattern_dict, True)
