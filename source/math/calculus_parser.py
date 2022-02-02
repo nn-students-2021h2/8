@@ -9,7 +9,7 @@ import re
 import sympy as sy
 from sympy import SympifyError
 
-from source.math.math_function import MathFunction
+from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
 
 
@@ -19,6 +19,9 @@ def process_function(token: str) -> sy.Function:
     :param token: string to convert
     :return: sympy simplified function object
     """
+    # Fix all incorrect functions in string representation of function
+    token = replace_incorrect_functions(token)
+
     expr_parts = token.split('=')
     parts_count = len(expr_parts)
     try:
@@ -35,7 +38,7 @@ def process_function(token: str) -> sy.Function:
         else:
             raise ParseError("Mistake in implicit function: found more than 2 equals.\n"
                              f"Your input: {token.strip()}\n"
-                             "Please, check your math formula")
+                             "Please, check your math formula.")
 
         return function
     except (SympifyError, TypeError, ValueError) as err:
