@@ -21,8 +21,8 @@ PPI = '600'
 
 
 def echo(text: str):
-    """On simple messages bot replies with echo"""
-    return text + '!'
+    """On simple messages bot replies that didn't understand user"""
+    return f'I didn\'t understand what you want.\nYou wrote: {text}'
 
 
 def send_graph(update: Update, context: CallbackContext):
