@@ -1,114 +1,229 @@
 {
   "derivative": {
-    "^(differentiate|diff|derivative)([ ]+of)?[ ]+(.+)[ ]+(by[ ]+(.+))$": [
-      "3",
-      "5"
-    ],
-    "^(differentiate|diff|derivative)([ ]+of)?([ ]+(?!by))(.+)$": [
-      "4"
+    "patterns": {
+      "^(differentiate|diff|derivative)([ ]+of)?[ ]+(.+)[ ]+(by[ ]+(.+))$": [
+        "3",
+        "5"
+      ],
+      "^(differentiate|diff|derivative)([ ]+of)?([ ]+(?!by))(.+)$": [
+        "4"
+      ]
+    },
+    "keywords": [
+      "differentiate",
+      "diff",
+      "derivative"
     ]
   },
   "domain": {
-    "^(domain|definition[ ]+(area|range))([ ]+of)?[ ]+(.+)$": [
-      "4"
+    "patterns": {
+      "^(domain|definition[ ]+(area|range))([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ]
+    },
+    "keywords": [
+      "domain",
+      "definition",
+      "area",
+      "range"
     ]
   },
   "range": {
-    "^(range)([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^(range)([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "range"
     ]
   },
   "zeros": {
-    "^(zeros|zeroes)([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^(zeros|zeroes)([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "zeros",
+      "zeroes"
     ]
   },
   "axes_intersection": {
-    "^intersect(ion)?([ ]+with)?[ ]+axes([ ]+of)?[ ]+(.+)$": [
-      "4"
-    ],
-    "^axes[ ]+intersect(ion)?([ ]+of)?[ ]+(.+)$": [
-      "3"
-    ],
-    "^axes[ ]+(.+)$": [
-      "1"
+    "patterns": {
+      "^intersect(ion)?([ ]+with)?[ ]+axes([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ],
+      "^axes[ ]+intersect(ion)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ],
+      "^axes[ ]+(.+)$": [
+        "1"
+      ]
+    },
+    "keywords": [
+      "axes",
+      "intersect",
+      "intersection"
     ]
   },
   "periodicity": {
-    "^period(icity)?([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^period(icity)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "period",
+      "periodicity"
     ]
   },
   "convexity": {
-    "^convex(ity)?([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^convex(ity)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "convex",
+      "convexity"
     ]
   },
   "concavity": {
-    "^concav((e)|(ity))([ ]+of)?[ ]+(.+)$": [
-      "5"
+    "patterns": {
+      "^concav((e)|(ity))([ ]+of)?[ ]+(.+)$": [
+        "5"
+      ]
+    },
+    "keywords": [
+      "concave",
+      "concavity"
     ]
   },
   "continuity": {
-    "^continu(ity|ous)([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^continu(ity|ous)([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "continuity",
+      "continuous"
     ]
   },
   "vertical asymptotes": {
-    "^(vertical|v)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
-      "4"
+    "patterns": {
+      "^(vertical|v)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ]
+    },
+    "keywords": [
+      "vertical"
     ]
   },
   "horizontal asymptotes": {
-    "^(horizontal|h)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
-      "4"
+    "patterns": {
+      "^(horizontal|h)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ]
+    },
+    "keywords": [
+      "horizontal"
     ]
   },
   "slant asymptotes": {
-    "^(slant|s)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
-      "4"
+    "patterns": {
+      "^(slant|s)[ ]+asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ]
+    },
+    "keywords": [
+      "slant",
+      "asymptote",
+      "asymptotes"
     ]
   },
   "asymptotes": {
-    "^asymptote(s)?([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^asymptote(s)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "asymptote",
+      "asymptotes"
     ]
   },
   "evenness": {
-    "^even(ness)?([ ]+of)?[ ]+(.+)$": [
-      "3"
-    ],
-    "^is[ ]+(.+)[ ]+even([ ]*[?])?$": [
-      "1"
+    "patterns": {
+      "^even(ness)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ],
+      "^is[ ]+(.+)[ ]+even([ ]*[?])?$": [
+        "1"
+      ]
+    },
+    "keywords": [
+      "even",
+      "evenness"
     ]
   },
   "oddness": {
-    "^odd(ness)?([ ]+of)?[ ]+(.+)$": [
-      "3"
-    ],
-    "^is[ ]+(.+)[ ]+odd([ ]*[?])?$": [
-      "1"
+    "patterns": {
+      "^odd(ness)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ],
+      "^is[ ]+(.+)[ ]+odd([ ]*[?])?$": [
+        "1"
+      ]
+    },
+    "keywords": [
+      "odd",
+      "oddness"
     ]
   },
   "maximum": {
-    "^max(imum)?([ ]+value)?([ ]+of)?[ ]+(.+)$": [
-      "4"
-    ],
-    "^highest([ ]+value)?([ ]+of)?[ ]+(.+)$": [
-      "3"
+    "patterns": {
+      "^max(imum)?([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ],
+      "^highest([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+        "3"
+      ]
+    },
+    "keywords": [
+      "max",
+      "maximum",
+      "highest",
+      "value"
     ]
   },
   "minimum": {
-    "^min(imum)?([ ]+value)?([ ]+of)?[ ]+(.+)$": [
-      "4"
-    ],
-    "^(lowest|smallest)([ ]+value)?([ ]+of)?[ ]+(.+)$": [
-      "4"
+    "patterns": {
+      "^min(imum)?([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ],
+      "^(lowest|smallest)([ ]+value)?([ ]+of)?[ ]+(.+)$": [
+        "4"
+      ]
+    },
+    "keywords": [
+      "min",
+      "minimum",
+      "lowest",
+      "smallest"
     ]
   },
   "stationary points": {
-    "^(crit(ical)?|stationary)([ ]+points)?([ ]+of)?[ ]+(.+)$": [
-      "5"
+    "patterns": {
+      "^(crit(ical)?|stationary)([ ]+points)?([ ]+of)?[ ]+(.+)$": [
+        "5"
+      ]
+    },
+    "keywords": [
+      "crit",
+      "critical",
+      "stationary"
     ]
   }
 }

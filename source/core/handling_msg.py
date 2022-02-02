@@ -48,6 +48,7 @@ def send_graph(update: Update, context: CallbackContext):
         output_message = "Here a graph of requested functions"
         if warning := '\n'.join(parser.warnings):
             output_message += f"\n{warning}"
+            parser.clear_warnings()
 
         context.bot.sendPhoto(
             chat_id=user['id'],
@@ -81,13 +82,15 @@ def send_analyse(update: Update, context: CallbackContext):
 
                 context.bot.sendPhoto(
                     chat_id=user['id'],
-                    photo=latex_picture
+                    photo=latex_picture,
+                    caption="\n".join(parser.warnings)
                 )
         else:
             context.bot.sendMessage(
                 chat_id=user['id'],
                 text=str(result)
             )
+        parser.clear_warnings()
     except (ParseError, ValueError, NotImplementedError) as err:
         update.message.reply_text(str(err))
         return

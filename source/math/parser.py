@@ -49,8 +49,14 @@ class Parser(ABC):
         Delete warnings and return its values
         :return: warnings as a list
         """
-        warning_list, self._warnings = self._warnings, []
+        warning_list = self._warnings
         return warning_list
+
+    def clear_warnings(self):
+        """
+        Remove all strings from _warnings list
+        """
+        self._warnings = []
 
     def push_warning(self, warning: str):
         """

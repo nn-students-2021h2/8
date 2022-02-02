@@ -1,6 +1,7 @@
 """
 Parser for function analysis requests
 """
+import difflib
 import json
 import pathlib
 import re
@@ -32,7 +33,7 @@ def process_function(token: str) -> sy.Function:
 
             function = sy.simplify(modified_expr)
         else:
-            raise ParseError("Mistake in implicit function: Found more than 2 equals.\n"
+            raise ParseError("Mistake in implicit function: found more than 2 equals.\n"
                              f"Your input: {token.strip()}\n"
                              "Please, check your math formula")
 
@@ -59,6 +60,28 @@ class CalculusParser(Parser):
         self.action = action
         self.function = function
         self.additional_params = additional_params
+
+    def _predict_pattern(self, query: str, pattern_set: str, pattern_dict: dict) -> str:
+        """
+        Tries to correct words to fit the pattern based on keywords of pattern
+        :param query: query to fix
+        :param pattern_set: a class of query
+        :param pattern_dict: a dictionary where the keywords are
+        :return: if query was corrected, then function returns corrected string, else returns empty string
+        """
+        # Pick up words with length more than 2 chars
+        query_words = [word for word in query.split() if len(word) > 2]
+        pattern_words = pattern_dict[pattern_set]["keywords"]
+        result = query
+
+        # Tries to find similar words and replace old ones with them in result
+        for word in query_words:
+            matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=0.7)
+            if len(matches) == 1:
+                result = result.replace(word, str(matches[0]))
+                self.push_warning(f"Interpreting '{word}' as '{matches[0]}'")
+
+        return result if result != query else ""
 
     def make_latex(self, expression: list) -> str:
         """
@@ -244,21 +267,21 @@ class CalculusParser(Parser):
             pattern_dict = json.load(file)
 
         for pattern_set in pattern_dict:
-            for pattern in pattern_dict[pattern_set]:
+            for pattern in pattern_dict[pattern_set]["patterns"]:
                 p = re.compile(pattern)
                 match = re.match(p, query)
 
+                # If query does not match regex, then we try to fix query
+                if (not match) and (fixed_query := self._predict_pattern(query, pattern_set, pattern_dict)):
+                    match = re.match(p, fixed_query)
+
                 if match:
                     # Pattern parameters consist of last part of expression. Expression is a function to process
-                    pattern_params = list(map(int, pattern_dict[pattern_set][pattern]))
+                    pattern_params = list(map(int, pattern_dict[pattern_set]["patterns"][pattern]))
                     expression = match.group(pattern_params[0])
 
                     # Extract the function from query and construct MathFunction
-                    try:
-                        function = process_function(expression)
-                    except SympifyError as err:
-                        raise ParseError(f"Mistake in function.\nYour input: {expression.strip()}\n"
-                                         "Please, check your math formula.") from err
+                    function = process_function(expression)
                     m_func = MathFunction(expression, function)
                     symbols = sorted(list(m_func.simplified_expr.free_symbols), key=lambda x: str(x))
 
@@ -279,5 +302,7 @@ class CalculusParser(Parser):
                     self.additional_params = [match.group(param) for param in pattern_params[1:]]
 
                     return True
+
+                self.clear_warnings()
 
         return False
