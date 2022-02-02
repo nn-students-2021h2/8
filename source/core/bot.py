@@ -11,29 +11,129 @@ import handling_msg as hmsg
 from source.conf.config import Config
 from source.math.graph import Graph
 
+from enum import Enum
+from functools import total_ordering
+
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
-MAIN, GRAPH = range(2)
+
+@total_ordering
+class Status(Enum):
+    MAIN = 0
+    GRAPH = 1
+    ANALYSE = 2
+    DERIVATIVE = 3
+    DOMAIN = 4
+    RANGE = 5
+    ZEROS = 6
+    AXES_INTERSECTION = 7
+    PERIODICITY = 8
+    CONVEXITY = 9
+    CONCAVITY = 10
+    CONTINUITY = 11
+    V_ASYMPTOTES = 12
+    H_ASYMPTOTES = 13
+    S_ASYMPTOTES = 14
+    ASYMPTOTES = 15
+    EVENNESS = 16
+    ODDNESS = 17
+    MAXIMUM = 18
+    MINIMUM = 19
+    STATIONARY_POINTS = 20
+    ANALYSE_MENU = 21
+
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value < other.value
+        return NotImplemented
+
 
 chats_status_dict = {}
 
 
 def go_main(update: Update):
     """Change status of user and send main menu to user."""
-    chats_status_dict[update.message.chat_id] = MAIN
-    reply_markup = ReplyKeyboardMarkup([['Draw graph']], resize_keyboard=True)
+    chats_status_dict[update.message.chat_id] = Status.MAIN
+    reply_markup = ReplyKeyboardMarkup([['Draw graph'], ['Analyse function'], ['Get help']], resize_keyboard=True)
     update.message.reply_text('Choose action', reply_markup=reply_markup)
 
 
 def go_graph(update: Update):
     """Change status of user and send draw graph menu to user."""
-    chats_status_dict[update.message.chat_id] = GRAPH
+    chats_status_dict[update.message.chat_id] = Status.GRAPH
     reply_markup = ReplyKeyboardMarkup([['Main menu']], resize_keyboard=True)
     update.message.reply_text("Enter function to draw or go to main menu", reply_markup=reply_markup)
+
+
+def go_analyse(update: Update):
+    chats_status_dict[update.message.chat_id] = Status.ANALYSE
+    reply_markup = ReplyKeyboardMarkup([['Options'], ['Main menu']], resize_keyboard=True)
+    update.message.reply_text("Choose action or enter command or go to main menu", reply_markup=reply_markup)
+
+
+def go_analyse_menu(update: Update):
+    chats_status_dict[update.message.chat_id] = Status.ANALYSE_MENU
+    reply_markup = ReplyKeyboardMarkup([['Derivative', 'Domain', 'Range'],
+                                        ['Stationary points', 'Periodicity'],
+                                        ['Continuity', 'Convexity', 'Concavity'],
+                                        ['Horizontal asymptotes', 'Vertical asymptotes'],
+                                        ['Asymptotes', 'Evenness', 'Oddness'],
+                                        ['Axes intersection', 'Slant asymptotes'],
+                                        ['Maximum', 'Minimum', 'Zeros']], resize_keyboard=True)
+    update.message.reply_text("Choose option to analyze or go back", reply_markup=reply_markup)
+
+
+def go_analyse_option(update: Update, option: Status):
+    chats_status_dict[update.message.chat_id] = option
+    reply_markup = ReplyKeyboardMarkup([['Back']], resize_keyboard=True)
+    update.message.reply_text("Enter function to analyse or go back", reply_markup=reply_markup)
+
+
+def name_analyse_option(option: Status) -> str:
+    match option:
+        case Status.DERIVATIVE:
+            return 'derivative'
+        case Status.DOMAIN:
+            return 'domain'
+        case Status.RANGE:
+            return 'range'
+        case Status.ZEROS:
+            return 'zeros'
+        case Status.AXES_INTERSECTION:
+            return 'axes intersection'
+        case Status.PERIODICITY:
+            return 'periodicity'
+        case Status.CONVEXITY:
+            return 'convexity'
+        case Status.CONCAVITY:
+            return 'concavity'
+        case Status.CONTINUITY:
+            return 'continuity'
+        case Status.V_ASYMPTOTES:
+            return 'vertical asymptotes'
+        case Status.H_ASYMPTOTES:
+            return 'horizontal asymptotes'
+        case Status.S_ASYMPTOTES:
+            return 'slant asymptotes'
+        case Status.ASYMPTOTES:
+            return 'asymptotes'
+        case Status.EVENNESS:
+            return 'evenness'
+        case Status.ODDNESS:
+            return 'oddness'
+        case Status.MAXIMUM:
+            return 'maximum'
+        case Status.MINIMUM:
+            return 'minimum'
+        case Status.STATIONARY_POINTS:
+            return 'stationary points'
+        case _:
+            print("incorrect entry")
+            return ""
 
 
 def start(update: Update, context: CallbackContext):
@@ -44,17 +144,75 @@ def start(update: Update, context: CallbackContext):
 
 def chat_help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Введи команду /start для начала. ')
+    update.message.reply_text('Enter:\n/start to restart bot.\n/graph to draw graph.\n/analyse to go explore function.')
 
 
 def echo(update: Update, context: CallbackContext):
     """Check user status and directs his message to suitable function."""
-    if chats_status_dict[update.message.chat_id] == MAIN:
+    chat_status = chats_status_dict[update.message.chat_id]
+    if chat_status == Status.MAIN:
         if update.message.text == 'Draw graph':
             go_graph(update)
+        elif update.message.text == 'Analyse function':
+            go_analyse(update)
+        elif update.message.text == 'Get help':
+            chat_help(update, context)
         else:
             update.message.reply_text(hmsg.echo(update.message.text))
-    elif chats_status_dict[update.message.chat_id] == GRAPH:
+    elif chat_status == Status.ANALYSE:
+        if update.message.text == 'Main menu':
+            go_main(update)
+        elif update.message.text == 'Options':
+            go_analyse_menu(update)
+        else:
+            pass
+    elif chat_status == Status.ANALYSE_MENU:
+        match update.message.text:
+            case "Derivative":
+                go_analyse_option(update, Status.DERIVATIVE)
+            case "Domain":
+                go_analyse_option(update, Status.DOMAIN)
+            case "Range":
+                go_analyse_option(update, Status.RANGE)
+            case "Zeros":
+                go_analyse_option(update, Status.ZEROS)
+            case "Axes intersection":
+                go_analyse_option(update, Status.AXES_INTERSECTION)
+            case "Periodicity":
+                go_analyse_option(update, Status.PERIODICITY)
+            case "Convexity":
+                go_analyse_option(update, Status.CONVEXITY)
+            case "Concavity":
+                go_analyse_option(update, Status.CONCAVITY)
+            case "Continuity":
+                go_analyse_option(update, Status.CONTINUITY)
+            case "Vertical asymptotes":
+                go_analyse_option(update, Status.V_ASYMPTOTES)
+            case "Horizontal asymptotes":
+                go_analyse_option(update, Status.H_ASYMPTOTES)
+            case "Slant asymptotes":
+                go_analyse_option(update, Status.S_ASYMPTOTES)
+            case "Asymptotes":
+                go_analyse_option(update, Status.ASYMPTOTES)
+            case "Evenness":
+                go_analyse_option(update, Status.EVENNESS)
+            case "Oddness":
+                go_analyse_option(update, Status.ODDNESS)
+            case "Maximum":
+                go_analyse_option(update, Status.MAXIMUM)
+            case "Minimum":
+                go_analyse_option(update, Status.MINIMUM)
+            case "Stationary points":
+                go_analyse_option(update, Status.STATIONARY_POINTS)
+            case _:
+                pass
+    elif Status.DERIVATIVE <= chat_status <= Status.STATIONARY_POINTS:
+        if update.message.text == 'Back':
+            go_analyse_menu(update)
+        else:
+            update.message.text = f'{name_analyse_option(chat_status)} {update.message.text.lower()}'
+            hmsg.send_analyse(update, context)
+    elif chat_status == Status.GRAPH:
         if update.message.text == 'Main menu':
             go_main(update)
         else:
@@ -76,7 +234,10 @@ def graph(update: Update, context: CallbackContext):
 
 def analyse(update: Update, context: CallbackContext):
     """Calculate requested function and send result to the user in LaTeX format (or not LaTeX - check config file)"""
-    hmsg.send_analyse(update, context)
+    if update.message.text == '/analyse':
+        go_analyse(update)
+    else:
+        hmsg.send_analyse(update, context)
 
 
 def main():
