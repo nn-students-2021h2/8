@@ -57,19 +57,11 @@ class Graph:
                if it is possible, implicit functions are converted into explicit functions
                (for example, y + x = 0 -> y = -x)
         """
-
-        x = sy.symbols('x')
-        left, right = -10, 10
         expl_func_count = 0
-
-        # Extract function range
-        if len(rng := tokens['range']):
-            left, right = rng[0], rng[1]
 
         # Extract all explicit functions
         for expl_func in tokens['explicit']:
             self.plot.extend(sy.plot(expl_func.simplified_expr,
-                                     (x, left, right),
                                      show=False))
 
             self.plot[expl_func_count].label = f'${sy.latex(expl_func.simplified_expr)}$'
@@ -78,7 +70,6 @@ class Graph:
         # Extract all implicit functions
         for impl_func in tokens['implicit']:
             self.plot.extend(sy.plot_implicit(impl_func.simplified_expr,
-                                              (x, left, right),
                                               adaptive=False,
                                               points=self.IMPLICIT_FUNCTION_POINTS,
                                               show=False,
@@ -92,7 +83,6 @@ class Graph:
                 label = sy.Eq(sy.simplify(parts[0]), sy.simplify(parts[1]))
 
             self.plot.extend(sy.plot(0,
-                                     (x, left, right),
                                      label=f'${sy.latex(label)}$',
                                      line_color='none',
                                      show=False))
@@ -102,8 +92,22 @@ class Graph:
         backend = self.plot.backend(self.plot)
         try:
             backend.process_series()
-        except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError("Unexpected error, check your expression.") from err
+        except (ZeroDivisionError, OverflowError, TypeError):
+            raise DrawError("Unexpected error, check your expression.")
+
+        # Set function range
+        if len(rng := tokens["range"]) != 0:
+            plt.ylim(rng)
+
+        # Set function domain
+        if len(domain := tokens["domain"]) != 0:
+            plt.xlim(domain)
+        else:
+            plt.xlim([-10, 10])
+
+        # Set aspect ratio
+        if len(ratio := tokens["aspect ratio"]) != 0:
+            backend.ax[0].set_aspect(ratio[0])
 
         # Set colors on implicit functions in legend. I had to do it because Sympy don't want to
         # add these functions in legend by itself.
@@ -116,5 +120,5 @@ class Graph:
             legend.legendHandles[expl_func_count + counter].set_color(self.plot[i].line_color)
             counter += 1
 
-        backend.fig.savefig(self.file_path, dpi=300, bbox_inches='tight')
+        backend.fig.savefig(self.file_path, dpi=250, bbox_inches='tight')
         plt.close()

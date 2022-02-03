@@ -1,6 +1,8 @@
 """
 Parser for graph requests
 """
+import json
+import pathlib
 import re
 
 import sympy as sy
@@ -8,6 +10,33 @@ from sympy import SympifyError
 
 from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, STATEMENTS_LIMIT, ParseError
+
+
+def _split_query(expr: str) -> list:
+    # Replace some commas with '#' character to indicate parts to parse
+    bracket_sequence = 0
+    brackets = {
+        '(': ')',
+        '[': ']',
+        '{': '}'
+    }
+    expr_lst = list(expr)
+    for letter_index in range(len(expr_lst)):
+        letter = expr[letter_index]
+        if letter in brackets.keys():
+            bracket_sequence += 1
+        elif letter in brackets.values():
+            bracket_sequence -= 1
+
+        # We don't want to replace commas in complex functions like root(x, 3)
+        if bracket_sequence == 0 and letter in [',', ';', '\n']:
+            expr_lst[letter_index] = '#'
+
+        if (bracket_sequence < 0) or (bracket_sequence > 0 and letter_index == len(expr_lst) - 1):
+            raise ParseError("Incorrect bracket sequence. Check your expression.")
+    expr = "".join(expr_lst)
+    parts = re.split('#', expr)
+    return parts
 
 
 class GraphParser(Parser):
@@ -23,31 +52,88 @@ class GraphParser(Parser):
 
     def __init__(self):
         super().__init__()
-        self.tokens = {'range': [], 'explicit': [], 'implicit': []}
+        self.tokens = {'aspect ratio': [], 'domain': [], 'range': [], 'explicit': [], 'implicit': []}
 
-    def _process_range(self, token: str) -> bool:
-        # if re.match(r"^from[ ]+[-+]?(\d)+[.]?(\d)+[ ]+to[ ]+[-+]?\d+[.]?\d+$", token.strip()):
-        if re.match("^from[ ]+(.+)[ ]+to[ ]+(.+)$", token.strip()):
-            definition_area = token.split()
-            try:
-                left = float(definition_area[1])
-                right = float(definition_area[3])
-            except ValueError as err:
-                raise ParseError(f"Mistake in function range parameters.\n"
-                                 f"Your input: {token.strip()}\n"
-                                 f"Please, check your \"from _ to _\" statement.") from err
+    def _update_domain_range(self, match: re.Match, pattern_params: list, pattern_set: str, token: str):
+        """
+        Extract domain or range of the function and update tokens
+        :param match: pattern from which we can get numbers
+        :param pattern_params: list of groups of parameters in match
+        :param pattern_set: class of query ("domain" or "range")
+        :param token: considering part of query
+        """
+        try:
+            left = float(match.group(pattern_params[0]))
+            right = float(match.group(pattern_params[1]))
+        except ValueError:
+            raise ParseError(f"Mistake in function {pattern_set} parameters.\n"
+                             f"Your input: {token.strip()}\n"
+                             f"Please, check if numbers are correct.")
+        if left >= right:
+            raise ParseError(f"Mistake in function {pattern_set} parameters.\n"
+                             f"Your input: {token.strip()}\n"
+                             f"Left argument cannot be more or equal than right one: "
+                             f"{left} >= {right}.")
+        self.tokens[pattern_set] = [left, right]
 
-            if left >= right:
-                raise ParseError(f"Mistake in function range parameters.\n"
-                                 f"Your input: {token.strip()}\n"
-                                 f"Left argument cannot be more or equal than right one: {left} >= {right}.")
+    def _update_aspect_ratio(self, match: re.Match, pattern_params: list, pattern_set: str, token: str):
+        """Check function above"""
+        try:
+            ratio = float(match.group(pattern_params[0]))
+        except ValueError:
+            raise ParseError(f"Mistake in aspect ratio.\n"
+                             f"Your input: {token.strip()}\n"
+                             f"Please, check if number is correct.")
 
-            self.tokens['range'] = [left, right]
-            return True
+        if ratio <= 0:
+            raise ParseError(f"Mistake in aspect ratio.\n"
+                             f"Your input: {token.strip()}\n"
+                             f"Aspect ratio cannot be negative or equal to zero.")
+        self.tokens[pattern_set] = [ratio]
+
+    def _find_pattern(self, pattern_dict: dict, token: str, try_predict: bool) -> bool:
+        """
+        Tries to find suitable pattern for given token and apply it (change tokens)
+        :param pattern_dict: dictionary of patterns
+        :param token: part of user input
+        :param try_predict: if there is a need to fix query
+        :return: true if the pattern was found, false otherwise
+        """
+        for pattern_set in pattern_dict:
+            for pattern in pattern_dict[pattern_set]["patterns"]:
+                p = re.compile(pattern)
+
+                # Match pattern if we don't want to predict the correct pattern
+                match = None
+                if not try_predict:
+                    match = re.match(p, token)
+
+                # If we want to find correct pattern again, we need to fix wrong words in query
+                if try_predict and (fixed_query := self._fix_words(token, pattern_set, pattern_dict)):
+                    match = re.match(p, fixed_query)
+
+                if match:
+                    # Pattern parameters consist of last part of expression. Expression is a function to process
+                    pattern_params = list(map(int, pattern_dict[pattern_set]["patterns"][pattern]))
+
+                    match pattern_set:
+                        case "domain":
+                            self._update_domain_range(match, pattern_params, pattern_set, token)
+                        case "range":
+                            self._update_domain_range(match, pattern_params, pattern_set, token)
+                        case "aspect ratio":
+                            self._update_aspect_ratio(match, pattern_params, pattern_set, token)
+
+                    return True
 
         return False
 
-    def _process_variables(self, function: sy.Function):
+    def _process_variables(self, function: sy.Function) -> sy.Function:
+        """
+        Replace all incorrect variables with correct (on 'x' and 'y')
+        :param function: function to correct
+        :return: corrected function
+        """
         x, y = sy.symbols("x y")
 
         symbols = function.free_symbols
@@ -76,7 +162,12 @@ class GraphParser(Parser):
 
         return function
 
-    def _process_function(self, token: str):
+    def _process_function(self, token: str) -> sy.Function:
+        """
+        Converting a string into a sympy function
+        :param token: string to convert
+        :return: sympy simplified function object
+        """
         token = replace_incorrect_functions(token)
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
@@ -123,9 +214,9 @@ class GraphParser(Parser):
             #     function = solutions[0]
 
             return function
-        except (SympifyError, TypeError, ValueError) as err:
+        except (SympifyError, TypeError, ValueError):
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
-                             "Please, check your math formula.") from err
+                             "Please, check your math formula.")
 
     def parse(self, expr: str):
         """
@@ -133,22 +224,35 @@ class GraphParser(Parser):
 
         Parameters:
         :param expr: user input string to parse
-        :return: parsed user input in the form of dictionary 'tokens'
+        :return: true on successfully found patterns, false otherwise
         """
-        parts = re.split("[,;\n]", expr)
+        parts = _split_query(expr)
 
         if len(parts) >= STATEMENTS_LIMIT:
             raise ParseError(f"Too many arguments. The limit is {STATEMENTS_LIMIT} statements.")
 
+        path = pathlib.Path(__file__).parent.resolve() / "graph_patterns.json"
+        with open(path, "r", encoding="utf-8") as file:
+            pattern_dict = json.load(file)
+
         for token in parts:
-            # If it is a function range
-            if self._process_range(token):
+            token = token.strip()
+
+            # Check if expression matches any pattern
+            if self._find_pattern(pattern_dict, token, False):
                 continue
 
             # If it is a function
-            function = self._process_function(token)
+            try:
+                function = self._process_function(token)
+            except ParseError:
+                # If we don't found a pattern, and it is not a function, then try to fix words
+                if self._find_pattern(pattern_dict, token, True):
+                    continue
+                else:
+                    raise ParseError(f"I can't interpret the expression: {token}\nPlease check your input.")
 
-            # Next complex checking finds expressions like "x = 1".
+            # Next complex check finds expressions like "x = 1".
             # They should be implicit because of sympy specifics
             is_x_equal_num = self.is_x_equal_num_expression(token)
 
@@ -167,5 +271,3 @@ class GraphParser(Parser):
             else:
                 # If it is an unknown expression
                 raise ParseError(f"Cannot resolve statement: {token}")
-
-        return self.tokens

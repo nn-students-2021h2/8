@@ -37,24 +37,21 @@ def send_graph(update: Update, context: CallbackContext):
     parser = GraphParser()
 
     try:
-        tokens = parser.parse(expr)
+        parser.parse(expr)
         graph = Graph(file_path)
-        graph.draw(tokens)
+        graph.draw(parser.tokens)
     except (ParseError, DrawError) as err:
         update.message.reply_text(str(err))
         return
 
     with open(file_path, 'rb') as graph_file:
         output_message = "Here a graph of requested functions"
-        if warning := '\n'.join(parser.warnings):
-            output_message += f"\n{warning}"
-            parser.clear_warnings()
-
         context.bot.send_photo(
             chat_id=user['id'],
             photo=graph_file,
-            caption=output_message
+            caption=output_message + '\n' + "\n".join(parser.warnings)
         )
+    parser.clear_warnings()
 
 
 def send_analyse(update: Update, context: CallbackContext):

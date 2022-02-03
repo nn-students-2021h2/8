@@ -64,8 +64,8 @@ _with `Sympy` and `Matplotlib` as backend_<br>
 
 - Graph drawing _[DONE]_
 - Function domain _[DONE]_
-- Function range
-- Scale, aspect ratio
+- Function range _[IN PROGRESS]_
+- Scale, aspect ratio _[IN PROGRESS]_
 - Appearance, stylesheet
 - Performance and stability _[IN PROGRESS]_
 
