@@ -10,7 +10,7 @@ from telegram.ext import CallbackContext
 
 from source.conf import Config
 from source.math.calculus_parser import CalculusParser
-from source.math.graph import Graph
+from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 
 # We get "USE_LATEX" parameter from settings
@@ -40,7 +40,7 @@ def send_graph(update: Update, context: CallbackContext):
         tokens = parser.parse(expr)
         graph = Graph(file_path)
         graph.draw(tokens)
-    except ParseError as err:
+    except (ParseError, DrawError) as err:
         update.message.reply_text(str(err))
         return
 
@@ -91,6 +91,7 @@ def send_analyse(update: Update, context: CallbackContext):
                 text=str(result)
             )
         parser.clear_warnings()
+    except RecursionError:
+        update.message.reply_text("Incorrect input. Please check your function.")
     except (ParseError, ValueError, NotImplementedError) as err:
         update.message.reply_text(str(err))
-        return

@@ -6,6 +6,36 @@ import sympy as sy
 import sympy.calculus.util as calculus
 
 
+def replace_incorrect_functions(function: str) -> str:
+    """
+    Some functions in Sympy are named differently from what we are used to
+    Our interpretation -> Sympy view:
+    tg -> tan
+    ctg -> cot
+    arcsin -> asin
+    arccos -> acos
+    arctg -> atan
+    arcctg -> acot
+    :param function: a string representation of a function
+    :return: function with replacements applied
+    """
+    replacements = {
+        "tg": "tan",
+        "ctg": "cot",
+        "arcsin": "asin",
+        "arccos": "acos",
+        "arctg": "atan",
+        "arctan": "atan",
+        "arcctg": "acot",
+        "arccot": "acot"
+    }
+    result = function
+    for key, value in replacements.items():
+        result = result.replace(key, value)
+
+    return result
+
+
 class MathFunction:
     """
     This class represents a plot of function
@@ -218,8 +248,6 @@ class MathFunction:
         :param symbol: the variable in relation to which the limits will be considered (x by default)
         :return: a set of answers (functions)
         """
-        k = None
-        b = None
         ans = set()
 
         # TODO periodic function

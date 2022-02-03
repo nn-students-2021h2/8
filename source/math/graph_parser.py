@@ -6,7 +6,7 @@ import re
 import sympy as sy
 from sympy import SympifyError
 
-from source.math.math_function import MathFunction
+from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, STATEMENTS_LIMIT, ParseError
 
 
@@ -77,6 +77,7 @@ class GraphParser(Parser):
         return function
 
     def _process_function(self, token: str):
+        token = replace_incorrect_functions(token)
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
         try:
@@ -141,17 +142,11 @@ class GraphParser(Parser):
 
         for token in parts:
             # If it is a function range
-            try:
-                if self._process_range(token):
-                    continue
-            except ParseError as err:
-                raise err
+            if self._process_range(token):
+                continue
 
             # If it is a function
-            try:
-                function = self._process_function(token)
-            except ParseError as err:
-                raise err
+            function = self._process_function(token)
 
             # Next complex checking finds expressions like "x = 1".
             # They should be implicit because of sympy specifics

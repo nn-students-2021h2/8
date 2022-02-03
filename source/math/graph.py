@@ -12,7 +12,7 @@ from source.conf.config import Config
 from source.math.graph_parser import GraphParser
 
 
-class DrawException(Exception):
+class DrawError(Exception):
     """This exception is raised when sympy cannot draw a function plot"""
 
 
@@ -103,7 +103,7 @@ class Graph:
         try:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawException("Unexpected error, check your expression.") from err
+            raise DrawError("Unexpected error, check your expression.") from err
 
         # Set colors on implicit functions in legend. I had to do it because Sympy don't want to
         # add these functions in legend by itself.
