@@ -172,6 +172,14 @@ class GraphParser(Parser):
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
         try:
+            # I'm ashamed of it, sorry
+            y = sy.symbols("y")
+            is_only_y = sy.simplify(expr_parts[0]).free_symbols == {y}
+            if is_only_y and parts_count == 1:
+                token += "= 0"
+                expr_parts = token.split('=')
+                parts_count = 2
+
             if parts_count == 1:
                 function = sy.simplify(expr_parts[0])
             elif parts_count == 2:

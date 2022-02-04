@@ -1,7 +1,6 @@
 """
 Graph class module
 """
-
 from pathlib import Path
 
 import numpy as np
@@ -54,14 +53,26 @@ class Graph:
             - 'explicit' : explicit functions like y = x
             - 'implicit' : implicit functions (it does not have to be truth function),
                for instance, x^2 + y^2 = 4;
-               if it is possible, implicit functions are converted into explicit functions
-               (for example, y + x = 0 -> y = -x)
         """
+
+        # We have to set domain and/or range due to functions are calculating in given intervals and if we don't
+        # explicitly specify it, then later functions will be displayed cropped
+
+        # Get function range for plotting functions
+        if len(rng := tokens["range"]) != 2:
+            rng = [-10, 10]
+
+        # Get function domain for plotting functions
+        if len(domain := tokens["domain"]) != 2:
+            domain = [-10, 10]
+
         expl_func_count = 0
+        x, y = sy.symbols("x y")
 
         # Extract all explicit functions
         for expl_func in tokens['explicit']:
             self.plot.extend(sy.plot(expl_func.simplified_expr,
+                                     (x, domain[0], domain[1]),
                                      show=False))
 
             self.plot[expl_func_count].label = f'${sy.latex(expl_func.simplified_expr)}$'
@@ -70,6 +81,8 @@ class Graph:
         # Extract all implicit functions
         for impl_func in tokens['implicit']:
             self.plot.extend(sy.plot_implicit(impl_func.simplified_expr,
+                                              (x, domain[0], domain[1]),
+                                              (y, rng[0], rng[1]),
                                               adaptive=False,
                                               points=self.IMPLICIT_FUNCTION_POINTS,
                                               show=False,
@@ -77,10 +90,8 @@ class Graph:
 
             # Set label 'x = number' if it is expression like 'x = 1'
             label = impl_func.simplified_expr
-            is_x_equal_num = GraphParser.is_x_equal_num_expression(impl_func.expression)
-            if is_x_equal_num:
-                parts = impl_func.expression.split('=')
-                label = sy.Eq(sy.simplify(parts[0]), sy.simplify(parts[1]))
+            if GraphParser.is_x_equal_num_expression(impl_func.expression):
+                label = sy.Eq(impl_func.symbols[0], sy.solve(impl_func.simplified_expr)[0])
 
             self.plot.extend(sy.plot(0,
                                      label=f'${sy.latex(label)}$',
@@ -102,8 +113,6 @@ class Graph:
         # Set function domain
         if len(domain := tokens["domain"]) != 0:
             plt.xlim(domain)
-        else:
-            plt.xlim([-10, 10])
 
         # Set aspect ratio
         if len(ratio := tokens["aspect ratio"]) != 0:
@@ -113,8 +122,8 @@ class Graph:
         # add these functions in legend by itself.
         # Print self.plot variable to understand why it is needed
         legend = backend.ax[0].get_legend()
-        impl_func_count = len(tokens['implicit'])
-        expl_func_count = len(tokens['explicit'])
+        impl_func_count = len(tokens["implicit"])
+        expl_func_count = len(tokens["explicit"])
         counter = 0
         for i in range(expl_func_count, expl_func_count + 2 * impl_func_count, 2):
             legend.legendHandles[expl_func_count + counter].set_color(self.plot[i].line_color)

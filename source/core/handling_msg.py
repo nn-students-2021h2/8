@@ -34,8 +34,8 @@ def send_graph(update: Update, context: CallbackContext):
         expr = " ".join(context.args).lower()
     else:
         expr = update.message.text.lower()
-    parser = GraphParser()
 
+    parser = GraphParser()
     try:
         parser.parse(expr)
         graph = Graph(file_path)

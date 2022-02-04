@@ -35,7 +35,7 @@ class Parser(ABC):
         """
         The function checks if expression is like "x = 1"
         :param token: string expression
-        :return: true of false
+        :return: true or false
         """
         y = sy.Symbol('y')
         result = False
