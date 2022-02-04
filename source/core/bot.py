@@ -208,7 +208,10 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Main menu':
                 go_main(update)
             case _:
-                go_analyse_option(update, status_dict[update.message.text])
+                try:
+                    go_analyse_option(update, status_dict[update.message.text])
+                except KeyError:
+                    hmsg.send_analyse(update, context)
     elif Status.DERIVATIVE <= chat_status <= Status.STATIONARY_POINTS:
         match update.message.text:
             case 'Back':
