@@ -92,8 +92,8 @@ class Graph:
         backend = self.plot.backend(self.plot)
         try:
             backend.process_series()
-        except (ZeroDivisionError, OverflowError, TypeError):
-            raise DrawError("Unexpected error, check your expression.")
+        except (ZeroDivisionError, OverflowError, TypeError) as err:
+            raise DrawError("Unexpected error, check your expression.") from err
 
         # Set function range
         if len(rng := tokens["range"]) != 0:

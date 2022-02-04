@@ -20,7 +20,6 @@ def _process_function(token: str) -> sy.Function:
     """
     # Fix all incorrect functions in string representation of function
     token = replace_incorrect_functions(token)
-
     expr_parts = token.split('=')
     parts_count = len(expr_parts)
     try:
@@ -42,9 +41,9 @@ def _process_function(token: str) -> sy.Function:
                              "Please, check your math formula.")
 
         return function
-    except (SympifyError, TypeError, ValueError):
+    except (SympifyError, TypeError, ValueError) as err:
         raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
-                         "Please, check your math formula.")
+                         "Please, check your math formula.") from err
 
 
 class CalculusParser(Parser):
@@ -52,7 +51,7 @@ class CalculusParser(Parser):
     This class is used to parse user input, which is a function analysis request.
 
     Attributes:
-    :param action: a pattern class (string) that written in analyse_patterns.json (e.g. derivative, zeros, vertical asymptotes)
+    :param action: a pattern class (string) that written in analyse_patterns.json (e.g. derivative, zeros, asymptotes)
     :param function: MathFunction object representing user function to handle
     :param additional_params: a list of additional information that can be used in calculating the result
     """

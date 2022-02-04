@@ -21,9 +21,8 @@ def _split_query(expr: str) -> list:
         '{': '}'
     }
     expr_lst = list(expr)
-    for letter_index in range(len(expr_lst)):
-        letter = expr[letter_index]
-        if letter in brackets.keys():
+    for letter_index, letter in enumerate(expr_lst):
+        if letter in brackets:
             bracket_sequence += 1
         elif letter in brackets.values():
             bracket_sequence -= 1
@@ -34,6 +33,7 @@ def _split_query(expr: str) -> list:
 
         if (bracket_sequence < 0) or (bracket_sequence > 0 and letter_index == len(expr_lst) - 1):
             raise ParseError("Incorrect bracket sequence. Check your expression.")
+
     expr = "".join(expr_lst)
     parts = re.split('#', expr)
     return parts
@@ -65,10 +65,10 @@ class GraphParser(Parser):
         try:
             left = float(match.group(pattern_params[0]))
             right = float(match.group(pattern_params[1]))
-        except ValueError:
+        except ValueError as err:
             raise ParseError(f"Mistake in function {pattern_set} parameters.\n"
                              f"Your input: {token.strip()}\n"
-                             f"Please, check if numbers are correct.")
+                             f"Please, check if numbers are correct.") from err
         if left >= right:
             raise ParseError(f"Mistake in function {pattern_set} parameters.\n"
                              f"Your input: {token.strip()}\n"
@@ -80,10 +80,10 @@ class GraphParser(Parser):
         """Check function above"""
         try:
             ratio = float(match.group(pattern_params[0]))
-        except ValueError:
+        except ValueError as err:
             raise ParseError(f"Mistake in aspect ratio.\n"
                              f"Your input: {token.strip()}\n"
-                             f"Please, check if number is correct.")
+                             f"Please, check if number is correct.") from err
 
         if ratio <= 0:
             raise ParseError(f"Mistake in aspect ratio.\n"
@@ -214,9 +214,9 @@ class GraphParser(Parser):
             #     function = solutions[0]
 
             return function
-        except (SympifyError, TypeError, ValueError):
+        except (SympifyError, TypeError, ValueError) as err:
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
-                             "Please, check your math formula.")
+                             "Please, check your math formula.") from err
 
     def parse(self, expr: str):
         """
@@ -245,12 +245,12 @@ class GraphParser(Parser):
             # If it is a function
             try:
                 function = self._process_function(token)
-            except ParseError:
+            except ParseError as err:
                 # If we don't found a pattern, and it is not a function, then try to fix words
                 if self._find_pattern(pattern_dict, token, True):
                     continue
-                else:
-                    raise ParseError(f"I can't interpret the expression: {token}\nPlease check your input.")
+
+                raise err
 
             # Next complex check finds expressions like "x = 1".
             # They should be implicit because of sympy specifics
