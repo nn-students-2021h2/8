@@ -34,21 +34,22 @@ class Graph:
         """
         Change plot appearance
         """
-
         parameters = Config().properties["PLOT_APPEARANCE"]
         style.use(parameters["STYLE"]["style"])
 
-        for param in parameters["RC_PARAMS"]:
-            plt.rcParams[param] = parameters["RC_PARAMS"][param]
+        for param, value in parameters["RC_PARAMS"].items():
+            plt.rcParams[param] = value
 
     def draw(self, tokens: dict):
         """
-        Draw parsed function and save plot as image
+        Draw parsed functions and save plot as image
 
         Parameters
         ==========
         :param tokens: dict of parsed user input (see parse function in graph_parser.py to get more info)
             Keys:
+            - 'aspect ratio' : the ratio of x to y
+            - 'domain' : list of left and right x-limit
             - 'range' : list of two elements - range of the functions (left and right borders)
             - 'explicit' : explicit functions like y = x
             - 'implicit' : implicit functions (it does not have to be truth function),
@@ -77,6 +78,16 @@ class Graph:
 
             self.plot[expl_func_count].label = f'${sy.latex(expl_func.simplified_expr)}$'
             expl_func_count += 1
+
+        # Update plot parameters and y-limit for implicit functions
+        backend = self.plot.backend(self.plot)
+        try:
+            backend.process_series()
+        except (ZeroDivisionError, OverflowError, TypeError) as err:
+            raise DrawError("Unexpected error, check your expression.") from err
+        ylim = plt.ylim()
+        rng[0] = min(rng[0], ylim[0])
+        rng[1] = max(rng[1], ylim[1])
 
         # Extract all implicit functions
         for impl_func in tokens['implicit']:
