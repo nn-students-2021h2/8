@@ -141,4 +141,4 @@ class Graph:
             counter += 1
 
         backend.fig.savefig(self.file_path, dpi=250, bbox_inches='tight')
-        plt.close()
+        plt.close("all")

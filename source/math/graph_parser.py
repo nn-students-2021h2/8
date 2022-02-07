@@ -13,6 +13,12 @@ from source.math.parser import Parser, STATEMENTS_LIMIT, ParseError
 
 
 def _split_query(expr: str) -> list:
+    """
+    Tries to split a query string correctly.
+    Calculates correct bracket sequence and marks necessary commas as delimiters (by replacing it with '#')
+    :param expr: user input
+    :return: list of expression parts (tokens)
+    """
     # Replace some commas with '#' character to indicate parts to parse
     bracket_sequence = 0
     brackets = {
@@ -172,16 +178,15 @@ class GraphParser(Parser):
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
         try:
-            # I'm ashamed of it, sorry
-            y = sy.symbols("y")
-            is_only_y = sy.simplify(expr_parts[0]).free_symbols == {y}
-            if is_only_y and parts_count == 1:
-                token += "= 0"
-                expr_parts = token.split('=')
-                parts_count = 2
-
             if parts_count == 1:
                 function = sy.simplify(expr_parts[0])
+
+                # If there is only 'y' variable, then we can't understand what we should draw, because it is impossible
+                # to change axes in plot in our case
+                if function.free_symbols == {sy.Symbol('y')}:
+                    raise ParseError(f"Incorrect expression: {token}\n"
+                                     f"There is only 'y' variable. It's f(y) or f(x) = 0?\n"
+                                     f"Please, use 'x' instead of single 'y' variable for f(x) plot.")
             elif parts_count == 2:
                 # If parsed result always true or false (e.g. it is not a function at all)
                 result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
