@@ -4,6 +4,7 @@ Main core module with bot and logger functionality
 
 import logging
 
+import pymongo.collection
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
@@ -13,6 +14,8 @@ from source.math.graph import Graph
 
 from enum import Enum
 from functools import total_ordering
+
+from pymongo import MongoClient, errors
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -53,34 +56,68 @@ class Status(Enum):
         return NotImplemented
 
 
-chats_status_dict = {}
-"""Dictionary that returns the Status of user by chat id"""
+no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
+
+chat_status_table: pymongo.collection.Collection
+"""Collection that returns the Status of user by chat id"""
+
+
+def init_pymongo_db():
+    """Initialise connection to mongo database"""
+    global chat_status_table
+    conf = Config()
+    client = MongoClient(conf.properties["DB_PARAMS"]["ip"], conf.properties["DB_PARAMS"]["port"],
+                         serverSelectionTimeoutMS=5000)
+    try:
+        logger.info(client.server_info())
+    except errors.PyMongoError:
+        logger.error("Unable to connect to the MongoDB server.")
+    db = client[conf.properties["DB_PARAMS"]["database_name"]]
+    chat_status_table = db["chat_status"]
+    chat_status_table.create_index("chat_id", unique=True)
+
+
+def change_user_status(update: Update, status: Status) -> int:
+    """Update user status in mongo database. It returns 1 if the connection is lost and 0 if all ok"""
+    try:
+        if chat_status_table.find_one({"chat_id": update.message.chat_id}) is None:
+            chat_status_table.insert_one({"chat_id": update.message.chat_id, "status": status.value})
+        else:
+            chat_status_table.update_one({"chat_id": update.message.chat_id}, {"$set": {"status": status.value}})
+        return 0
+    except errors.PyMongoError:
+        update.message.reply_text(no_db_message)
+        return 1
 
 
 def go_main(update: Update):
     """Change status of user and send main menu to user."""
-    chats_status_dict[update.message.chat_id] = Status.MAIN
+    if change_user_status(update, Status.MAIN):
+        return
     reply_markup = ReplyKeyboardMarkup([['Draw graph'], ['Analyse function'], ['Get help']], resize_keyboard=True)
     update.message.reply_text('Choose action', reply_markup=reply_markup)
 
 
 def go_graph(update: Update):
     """Change status of user and send draw graph menu to user."""
-    chats_status_dict[update.message.chat_id] = Status.GRAPH
+    if change_user_status(update, Status.GRAPH):
+        return
     reply_markup = ReplyKeyboardMarkup([['Main menu']], resize_keyboard=True)
     update.message.reply_text("Enter function to draw or go to main menu", reply_markup=reply_markup)
 
 
 def go_analyse(update: Update):
     """Change status of user to 'analyse' and send analyse menu"""
-    chats_status_dict[update.message.chat_id] = Status.ANALYSE
+    if change_user_status(update, Status.ANALYSE):
+        return
     reply_markup = ReplyKeyboardMarkup([['Options'], ['Get help'], ['Main menu']], resize_keyboard=True)
     update.message.reply_text("Choose option or enter command or go to main menu", reply_markup=reply_markup)
 
 
 def go_analyse_menu(update: Update):
     """Change status of user to 'analyze menu' and send options to analyze menu'"""
-    chats_status_dict[update.message.chat_id] = Status.ANALYSE_MENU
+    if change_user_status(update, Status.ANALYSE_MENU):
+        return
     reply_markup = ReplyKeyboardMarkup([['Derivative', 'Domain', 'Range'],
                                         ['Stationary points', 'Periodicity'],
                                         ['Continuity', 'Convexity', 'Concavity'],
@@ -94,7 +131,8 @@ def go_analyse_menu(update: Update):
 
 def go_analyse_option(update: Update, option: Status):
     """Change status of user to option and send 'go back' menu'"""
-    chats_status_dict[update.message.chat_id] = option
+    if change_user_status(update, option):
+        return
     reply_markup = ReplyKeyboardMarkup([['Back'], ['Main menu']], resize_keyboard=True)
     update.message.reply_text("Enter function to analyse or go back", reply_markup=reply_markup)
 
@@ -138,7 +176,11 @@ def chat_help(update: Update, context: CallbackContext):
 
 def default_handler(update: Update, context: CallbackContext):
     """Checks user status and direct his message to suitable function."""
-    chat_status = chats_status_dict[update.message.chat_id]
+    try:
+        chat_status = Status(chat_status_table.find_one({"chat_id": update.message.chat_id})['status'])
+    except errors.PyMongoError:
+        update.message.reply_text(no_db_message)
+        return
     if chat_status == Status.MAIN:
         match update.message.text:
             case 'Draw graph':
@@ -242,5 +284,6 @@ def main():
 
 
 if __name__ == '__main__':
+    init_pymongo_db()
     logger.info('Bot is started')
     main()

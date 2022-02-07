@@ -21,5 +21,10 @@
       "axes.labelpad": 0,
       "figure.constrained_layout.use": true
     }
+  },
+  "DB_PARAMS": {
+    "database_name": "function-explorer-bot-db",
+    "ip": "localhost",
+    "port": 27017
   }
 }

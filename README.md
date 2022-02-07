@@ -47,7 +47,9 @@ If you want to use your bot token, then:
    packages. Then open your IDE, launch the Bot and type him next command: \
    `/analyse domain x` \
    IDE may ask you to install some dependencies of TeX (in popup window). Accept it and wait until installation is
-   complete After that you can use the Bot and TeX mode
+   complete  
+5) Install [MongoDB](https://www.mongodb.com/try/download/community) and start server 
+6) After that you can use the bot with your token
 
 About commands:
 
