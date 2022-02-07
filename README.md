@@ -13,7 +13,8 @@
 
 [![python](https://img.shields.io/badge/python-3.10%2B-green)]()
 [![pylint](https://img.shields.io/badge/linter-pylint-blue)]()
-[![pylint](https://img.shields.io/badge/TeX_Distribution-MiKTeX-red)]()
+[![TeX](https://img.shields.io/badge/TeX_Distribution-MiKTeX-red)]()
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-yellow)]()
 
 **Function Explorer Telegram Bot** is a tool that allows you to analyse functions, get information about them and draw
 graphs. This README.md will be added to as the project progresses.
@@ -47,7 +48,9 @@ If you want to use your bot token, then:
    packages. Then open your IDE, launch the Bot and type him next command: \
    `/analyse domain x` \
    IDE may ask you to install some dependencies of TeX (in popup window). Accept it and wait until installation is
-   complete After that you can use the Bot and TeX mode
+   complete  
+5) Install [MongoDB](https://www.mongodb.com/try/download/community) and start server 
+6) After that you can use the bot with your token
 
 About commands:
 
