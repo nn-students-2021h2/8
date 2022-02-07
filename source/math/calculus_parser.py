@@ -1,7 +1,6 @@
 """
 Parser for function analysis requests
 """
-import difflib
 import json
 import pathlib
 import re
@@ -13,7 +12,7 @@ from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
 
 
-def process_function(token: str) -> sy.Function:
+def _process_function(token: str) -> sy.Function:
     """
     Converting a string into a sympy function
     :param token: string to convert
@@ -21,7 +20,6 @@ def process_function(token: str) -> sy.Function:
     """
     # Fix all incorrect functions in string representation of function
     token = replace_incorrect_functions(token)
-
     expr_parts = token.split('=')
     parts_count = len(expr_parts)
     try:
@@ -29,7 +27,9 @@ def process_function(token: str) -> sy.Function:
             function = sy.simplify(expr_parts[0])
         elif parts_count == 2:
             # If expression like 'y = x', then discard left part, else construct expression "y - x = 0"
-            if re.match("^y$", expr_parts[0].strip()) is not None:
+            result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+            vars_intersection = result.lhs.free_symbols & result.rhs.free_symbols
+            if re.match("^y$", expr_parts[0].strip()) is not None and len(vars_intersection) == 0:
                 modified_expr = expr_parts[1]
             else:
                 modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
@@ -51,13 +51,10 @@ class CalculusParser(Parser):
     This class is used to parse user input, which is a function analysis request.
 
     Attributes:
-    :param action: a pattern class (string) that written in patterns.json (e.g. derivative, zeros, vertical asymptotes)
+    :param action: a pattern class (string) that written in analyse_patterns.json (e.g. derivative, zeros, asymptotes)
     :param function: MathFunction object representing user function to handle
     :param additional_params: a list of additional information that can be used in calculating the result
     """
-
-    # The accuracy of the prediction system. The bigger the number, the more similar the words need to be to correct it
-    PREDICTION_ACCURACY = 0.7
 
     def __init__(self, action="", function=None, additional_params=None):
         super().__init__()
@@ -66,28 +63,6 @@ class CalculusParser(Parser):
         self.action = action
         self.function = function
         self.additional_params = additional_params
-
-    def _predict_pattern(self, query: str, pattern_set: str, pattern_dict: dict) -> str:
-        """
-        Tries to correct words to fit the pattern based on keywords of pattern
-        :param query: query to fix
-        :param pattern_set: a class of query
-        :param pattern_dict: a dictionary where the keywords are
-        :return: if query was corrected, then function returns corrected string, else returns empty string
-        """
-        # Pick up words with length more than 2 chars
-        query_words = [word for word in query.split() if len(word) > 2]
-        pattern_words = pattern_dict[pattern_set]["keywords"]
-        result = query
-
-        # Tries to find similar words and replace old ones with them in result
-        for word in query_words:
-            matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=self.PREDICTION_ACCURACY)
-            if len(matches) == 1:
-                result = result.replace(word, str(matches[0]))
-                self.push_warning(f"Interpreting '{word}' as '{matches[0]}'")
-
-        return result if result != query else ""
 
     def _find_pattern(self, query: str, pattern_dict: dict, try_predict: bool) -> bool:
         """
@@ -107,7 +82,7 @@ class CalculusParser(Parser):
                     match = re.match(p, query)
 
                 # If we want to find correct pattern again, we need to fix wrong words in query
-                if try_predict and (fixed_query := self._predict_pattern(query, pattern_set, pattern_dict)):
+                if try_predict and (fixed_query := self._fix_words(query, pattern_set, pattern_dict)):
                     match = re.match(p, fixed_query)
 
                 if match:
@@ -116,7 +91,7 @@ class CalculusParser(Parser):
                     expression = match.group(pattern_params[0])
 
                     # Extract the function from query and construct MathFunction
-                    function = process_function(expression)
+                    function = _process_function(expression)
                     m_func = MathFunction(expression, function)
                     symbols = sorted(list(m_func.simplified_expr.free_symbols), key=lambda x: str(x))
 
@@ -316,12 +291,12 @@ class CalculusParser(Parser):
     def parse(self, query: str) -> bool:
         """
         Fills in class attributes based on the user request
-        Correlates user input with patterns defined in patterns.json
+        Correlates user input with patterns defined in analyse_patterns.json
         Extract function and additional parameters from input query
         :param query: user input, string (e.g. diff of x**2 by x)
         :return: true on successfully found pattern, false otherwise
         """
-        path = pathlib.Path(__file__).parent.resolve() / "patterns.json"
+        path = pathlib.Path(__file__).parent.resolve() / "analyse_patterns.json"
         with open(path, "r", encoding="utf-8") as file:
             pattern_dict = json.load(file)
 

@@ -1,4 +1,8 @@
+"""
+Tests for parsers
+"""
 import pytest
+
 import source.math.graph_parser as parser
 from source.math.graph_parser import ParseError
 
@@ -23,4 +27,4 @@ def test_is_x_equal_num_expression(token, result):
                                                 ("x^2, from ", ParseError)])
 def test_parse(expression, result):
     with pytest.raises(result):
-        x = parser.GraphParser.parse(parser.GraphParser(), expression)
+        parser.GraphParser.parse(parser.GraphParser(), expression)

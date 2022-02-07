@@ -13,7 +13,8 @@ disable = fixme,
           unused-argument,
           wrong-import-order,
           attribute-defined-outside-init,
-          unnecessary-lambda
+          unnecessary-lambda,
+          duplicate-code
 
 max-line-length = 120
 ignore-docstrings = yes
