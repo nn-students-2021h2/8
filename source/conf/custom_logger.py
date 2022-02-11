@@ -3,6 +3,7 @@ Logger formatter module
 """
 
 import logging
+from logging import Logger
 
 from pathlib import Path
 
@@ -31,8 +32,11 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logging(logger):
-    """Configurate logging system (file and console output)"""
+def setup_logging(logger: Logger):
+    """
+    Configurate logging system (file and console output)
+    :param logger:
+    """
     logger.setLevel(logging.DEBUG)
 
     console_handler = logging.StreamHandler()
