@@ -1,27 +1,23 @@
 """
 Main core module with bot and logger functionality
 """
-
 import logging
+from enum import Enum
+from functools import total_ordering
 
 import pymongo.collection
+from pymongo import MongoClient, errors
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import handling_msg as hmsg
 from source.conf.config import Config
+from source.conf.custom_logger import setup_logging
 from source.math.graph import Graph
 
-from enum import Enum
-from functools import total_ordering
-
-from pymongo import MongoClient, errors
-
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-
 logger = logging.getLogger(__name__)
+setup_logging(logger)
 
 
 @total_ordering
@@ -69,9 +65,9 @@ def init_pymongo_db():
     client = MongoClient(conf.properties["DB_PARAMS"]["ip"], conf.properties["DB_PARAMS"]["port"],
                          serverSelectionTimeoutMS=5000)
     try:
-        logger.info(client.server_info())
+        logger.debug(client.server_info())
     except errors.PyMongoError:
-        logger.error("Unable to connect to the MongoDB server.")
+        logger.critical("Unable to connect to the MongoDB server.")
     db = client[conf.properties["DB_PARAMS"]["database_name"]]
     chat_status_table = db["chat_status"]
     chat_status_table.create_index("chat_id", unique=True)
@@ -190,7 +186,7 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Get help':
                 chat_help(update, context)
             case _:
-                update.message.reply_text(hmsg.echo(update.message.text))
+                update.message.reply_text(hmsg.echo())
     elif chat_status == Status.ANALYSE:
         match update.message.text:
             case 'Main menu':
@@ -200,7 +196,7 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Get help':
                 update.message.reply_text('No')
             case _:
-                update.message.reply_text(hmsg.echo(update.message.text))
+                update.message.reply_text(hmsg.echo())
     elif chat_status == Status.ANALYSE_MENU:
         match update.message.text:
             case 'Back':
@@ -230,7 +226,7 @@ def default_handler(update: Update, context: CallbackContext):
 
 def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
-    logger.warning('Update %s\nCaused error %s', update, context.error)
+    logger.error('Update %s\nCaused error %s', update, context.error)
 
 
 def graph(update: Update, context: CallbackContext):

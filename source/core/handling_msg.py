@@ -9,6 +9,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 
 from source.conf import Config
+from source.core.bot import logger
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
@@ -20,7 +21,7 @@ SETTINGS = Config()
 PPI = '600'
 
 
-def echo(text: str):
+def echo():
     """On simple messages bot replies that didn't understand user"""
     return 'I didn\'t understand what you want'
 
@@ -35,13 +36,21 @@ def send_graph(update: Update, context: CallbackContext):
     else:
         expr = update.message.text.lower()
 
+    logger.info("User [id=%s] requested to draw a graph. User's input: `%s`", user['id'], expr)
+
     parser = GraphParser()
+
     try:
         parser.parse(expr)
         graph = Graph(file_path)
         graph.draw(parser.tokens)
-    except (ParseError, DrawError) as err:
+    except ParseError as err:
         update.message.reply_text(str(err))
+        logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
+        return
+    except DrawError as err:
+        update.message.reply_text(str(err))
+        logger.info("DrawError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
         return
 
     with open(file_path, 'rb') as graph_file:
@@ -61,14 +70,20 @@ def send_analyse(update: Update, context: CallbackContext):
         expr = " ".join(context.args).lower()
     else:
         expr = update.message.text.lower()
+
+    logger.info("User [id=%s] requested an analysis. User's input: `%s`", user['id'], expr)
+
     parser = CalculusParser()
+
     try:
         # Parse request and check if some template was found
         # If parser can't understand what user mean, it returns False
         is_pattern_found = parser.parse(expr)
         if not is_pattern_found:
             update.message.reply_text("Couldn't find a suitable template. Check the input.")
+            logger.info("Bot doesn't find any pattern for user's [id=%s] input: `%s`", user['id'], expr)
             return
+
         result = parser.process_query()
 
         # If USE_LATEX set in True, then send picture to the user. Else, send basic text
@@ -90,7 +105,13 @@ def send_analyse(update: Update, context: CallbackContext):
                 text=str(result)
             )
         parser.clear_warnings()
+    except ParseError as err:
+        update.message.reply_text(str(err))
+        logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
     except RecursionError:
         update.message.reply_text("Incorrect input. Please check your function.")
-    except (ParseError, ValueError, NotImplementedError) as err:
+        logger.warning("RecursionError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
+    except (ValueError, NotImplementedError) as err:
         update.message.reply_text(str(err))
+        logger.warning("ValueError or NotImplementedError exception raised on user's [id=%s] input: `%s`", user['id'],
+                       expr)
