@@ -5,6 +5,8 @@ from io import BytesIO
 from pathlib import Path
 
 import sympy as sy
+import telegram
+from PIL import Image, ImageOps
 from telegram import Update
 from telegram.ext import CallbackContext
 
@@ -16,8 +18,32 @@ from source.math.graph_parser import GraphParser, ParseError
 # We get "USE_LATEX" parameter from settings
 SETTINGS = Config()
 
-# A number of pixels per inch for TeX pictures
-PPI = '600'
+# A number of dots per inch for TeX pictures
+DPI = '600'
+
+
+def resize_image(image_to_resize: BytesIO, output_buffer: BytesIO):
+    """
+    Resize image to fit in the Telegram window and add a frame
+    :param image_to_resize: a BytesIO object containing the image you want to resize
+    :param output_buffer: result image buffer
+    """
+    image_to_resize.seek(0)
+    output_buffer.seek(0)
+
+    image = Image.open(BytesIO(image_to_resize.read()))
+    height, width = image.size
+    max_size = 10000
+
+    # Resize to max size
+    if height > max_size or width > max_size:
+        ratio = min(max_size / height, max_size / width)
+        image.thumbnail((int(height * ratio), int(width * ratio)))
+
+    # Set borders
+    # noinspection PyTypeChecker
+    ImageOps.expand(image, border=100, fill="white").save(output_buffer, format="PNG")
+    output_buffer.seek(0)
 
 
 def echo(text: str):
@@ -74,16 +100,26 @@ def send_analyse(update: Update, context: CallbackContext):
         # If USE_LATEX set in True, then send picture to the user. Else, send basic text
         if SETTINGS.properties["APP"]["USE_LATEX"]:
             latex = parser.make_latex(result)
-            with BytesIO() as latex_picture:
+            with BytesIO() as latex_picture, BytesIO() as resized_image:
                 sy.preview(fr'${latex}$', output='png', viewer='BytesIO', outputbuffer=latex_picture,
-                           dvioptions=['-D', PPI])
-                latex_picture.seek(0)
+                           dvioptions=['-D', DPI])
 
-                context.bot.send_photo(
-                    chat_id=user['id'],
-                    photo=latex_picture,
-                    caption="\n".join(parser.warnings)
-                )
+                resize_image(latex_picture, resized_image)
+
+                # If we can't send photo due to Telegram limitations, then send image as file instead
+                try:
+                    context.bot.send_photo(
+                        chat_id=user['id'],
+                        photo=resized_image,
+                        caption="\n".join(parser.warnings)
+                    )
+                except telegram.error.BadRequest:
+                    parser.push_warning("Photo size is too large, therefore I send you a file.")
+                    context.bot.send_document(
+                        chat_id=user['id'],
+                        document=resized_image,
+                        caption="\n".join(parser.warnings)
+                    )
         else:
             context.bot.send_message(
                 chat_id=user['id'],
