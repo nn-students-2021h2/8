@@ -76,8 +76,8 @@ def send_analyse(update: Update, context: CallbackContext):
     parser = CalculusParser()
 
     try:
-        # Parse request and check if some template was found
-        # If parser can't understand what user mean, it returns False
+        # Parse the request and check if any pattern was found
+        # If parser can't understand what the user means, it returns False
         is_pattern_found = parser.parse(expr)
         if not is_pattern_found:
             update.message.reply_text("Couldn't find a suitable template. Check the input.")
@@ -111,7 +111,7 @@ def send_analyse(update: Update, context: CallbackContext):
     except RecursionError:
         update.message.reply_text("Incorrect input. Please check your function.")
         logger.warning("RecursionError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
-    except (ValueError, NotImplementedError) as err:
-        update.message.reply_text(str(err))
+    except (ValueError, NotImplementedError):
+        update.message.reply_text("Sorry, a feature isn't implemented or input is invalid. Please check your function.")
         logger.warning("ValueError or NotImplementedError exception raised on user's [id=%s] input: `%s`", user['id'],
                        expr)
