@@ -1,12 +1,11 @@
 resources/*
-!resources/meme.png
 !resources/analysis_patterns.md
 !resources/graph_patterns.md
 source/conf/token.txt
-source/conf/default_config.json
 __pycache__
 *.pyc
 tmp
 .idea
 .vscode
 venv
+logs.txt
