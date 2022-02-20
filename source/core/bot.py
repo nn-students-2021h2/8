@@ -200,7 +200,7 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Get help':
                 update.message.reply_text('No')
             case _:
-                update.message.reply_text(hmsg.echo(update.message.text))
+                hmsg.send_analyse(update, context)
     elif chat_status == Status.ANALYSE_MENU:
         match update.message.text:
             case 'Back':
