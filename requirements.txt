@@ -3,5 +3,6 @@ sympy~=1.9
 telegram~=0.0.1
 python-telegram-bot~=13.10
 pytest~=6.2.5
-numpy~=1.21.5
+numpy~=1.22.0
 pymongo==4.0.1
+pillow~=9.0.1
