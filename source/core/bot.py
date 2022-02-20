@@ -2,6 +2,7 @@
 Main core module with bot and logger functionality
 """
 import logging
+import subprocess
 import threading
 import time
 from enum import Enum
@@ -186,7 +187,12 @@ def chat_help(update: Update, context: CallbackContext):
 def ping_google(update: Update):
     """Homework. Ping google.com and send min, max and avg time to user."""
     global last_ping
-    output = run(cmd.split(), stdout=PIPE, stderr=STDOUT, text=True, encoding='cp866').stdout.split('\n')
+    output = ""
+    try:
+        output = run(cmd.split(), stdout=PIPE, stderr=STDOUT, text=True, encoding='cp866',
+                     check=True).stdout.split('\n')
+    except subprocess.CalledProcessError:
+        logger.error("Subprocess.run returns non-zero code")
     last_ping = ("Approximate round-trip time in ms:\n" +
                  output[-2].replace('мсек', 'ms').replace('Минимальное', 'Min')
                                                  .replace('Максимальное', 'Max')
