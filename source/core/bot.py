@@ -2,6 +2,9 @@
 Main core module with bot and logger functionality
 """
 import logging
+import subprocess
+import threading
+import time
 from enum import Enum
 from functools import total_ordering
 
@@ -14,6 +17,8 @@ import handling_msg as hmsg
 from source.conf.config import Config
 from source.conf.custom_logger import setup_logging
 from source.math.graph import Graph
+
+from subprocess import run, STDOUT, PIPE
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -51,6 +56,14 @@ class Status(Enum):
             return self.value < other.value
         return NotImplemented
 
+
+hostname = "google.com"
+
+cmd = f"ping {hostname}"
+
+last_ping = ""  # Cache of pint. It sent to user if minute is not left.
+waiting_time = 60  # One minute timeout
+last_ping_time = waiting_time  # Last time when hostname was pinged
 
 no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 
@@ -90,7 +103,8 @@ def go_main(update: Update):
     """Change status of user and send main menu to user."""
     if change_user_status(update, Status.MAIN):
         return
-    reply_markup = ReplyKeyboardMarkup([['Draw graph'], ['Analyse function'], ['Get help']], resize_keyboard=True)
+    reply_markup = ReplyKeyboardMarkup([['Draw graph'], ['Analyse function'], ['Get help'], [f'Ping {hostname}']],
+                                       resize_keyboard=True)
     update.message.reply_text('Choose action', reply_markup=reply_markup)
 
 
@@ -170,12 +184,37 @@ def chat_help(update: Update, context: CallbackContext):
                               'the function.')
 
 
+def ping_google(update: Update):
+    """Homework. Ping google.com and send min, max and avg time to user."""
+    global last_ping
+    output = ""
+    try:
+        output = run(cmd.split(), stdout=PIPE, stderr=STDOUT, text=True, encoding='cp866',
+                     check=True).stdout.split('\n')
+    except subprocess.CalledProcessError:
+        logger.error("Subprocess.run returns non-zero code")
+    last_ping = ("Approximate round-trip time in ms:\n" +
+                 output[-2].replace('мсек', 'ms').replace('Минимальное', 'Min')
+                                                 .replace('Максимальное', 'Max')
+                                                 .replace('Среднее', 'Avg'))
+    update.message.reply_text(last_ping)
+
+
 def default_handler(update: Update, context: CallbackContext):
     """Checks user status and direct his message to suitable function."""
+    global last_ping_time
     try:
         chat_status = Status(chat_status_table.find_one({"chat_id": update.message.chat_id})['status'])
     except errors.PyMongoError:
         update.message.reply_text(no_db_message)
+        return
+    if update.message.text == f'Ping {hostname}':
+        if last_ping != "" and time.time() - last_ping_time < waiting_time:
+            update.message.reply_text(last_ping)
+        else:
+            last_ping_time = time.time()
+            tr = threading.Thread(target=ping_google, args=(update,))
+            tr.start()
         return
     if chat_status == Status.MAIN:
         match update.message.text:
