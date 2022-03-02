@@ -20,14 +20,14 @@ def replace_incorrect_functions(function: str) -> str:
     :return: function with replacements applied
     """
     replacements = {
-        "tg": "tan",
-        "ctg": "cot",
         "arcsin": "asin",
         "arccos": "acos",
         "arctg": "atan",
         "arctan": "atan",
         "arcctg": "acot",
-        "arccot": "acot"
+        "arccot": "acot",
+        "ctg": "cot",
+        "tg": "tan"
     }
     result = function
     for key, value in replacements.items():
@@ -48,7 +48,8 @@ class MathFunction:
     :param symbols: a list of math expression variables
     """
 
-    def __init__(self, expression: str, simplified_expr, func_type="explicit", symbols=None):
+    def __init__(self, expression: str, simplified_expr: (sy.Function | sy.Equality), func_type: str = "explicit",
+                 symbols: list = None):
         if symbols is None:
             symbols = []
         self.expression = expression
@@ -106,7 +107,7 @@ class MathFunction:
         # if it is expression like 'y + x', then replace 'y' with zero
         if len(self.symbols) > 1:
             function = function.subs(self.symbols[1], 0)
-        return sy.solveset(sy.Eq(function, 0), self.symbols[0])
+        return sy.solveset(sy.Eq(function, 0), self.symbols[0], sy.S.Reals)
 
     def axis_intersection(self, target_symbol: sy.Symbol, zero_symbol: sy.Symbol) -> sy.Set:
         """
@@ -124,7 +125,7 @@ class MathFunction:
             solutions = sy.solveset(partly_solved, target_symbol)
         return solutions
 
-    def periodicity(self, symbol: sy.Symbol):
+    def periodicity(self, symbol: sy.Symbol) -> (0, None, sy.Function):
         """
         Finds interval of periodicity
         :param symbol: see 'periodicity' arguments
@@ -154,7 +155,7 @@ class MathFunction:
         """
         return calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
 
-    def is_even(self, *symbols) -> bool:
+    def is_even(self, *symbols: sy.Symbol) -> bool:
         """
         Determine if the function is even
         :param symbols: all function variables (just 'x').
@@ -169,7 +170,7 @@ class MathFunction:
 
         return even_func == function
 
-    def is_odd(self, *symbols) -> bool:
+    def is_odd(self, *symbols: sy.Symbol) -> bool:
         """
         Determine if the function is odd
         :param symbols: all function variables
@@ -188,6 +189,13 @@ class MathFunction:
 
         return even_func == sy.simplify(function * (-1))
 
+    def _check_v_asymptote(self, symbol, point) -> bool:
+        left_limit = sy.limit(self.simplified_expr, symbol, point, '+')
+        right_limit = sy.limit(self.simplified_expr, symbol, point, '-')
+        if not point.is_infinite and (left_limit.is_infinite or right_limit.is_infinite):
+            return True
+        return False
+
     def vertical_asymptotes(self, symbol: sy.Symbol) -> set:
         """
         Try to find vertical asymptotes of the function
@@ -203,19 +211,23 @@ class MathFunction:
             not_exist = [not_exist]
 
         ans = set()
-        for values in not_exist:
-            if isinstance(values, sy.sets.sets.FiniteSet):
-                for cur in values:
-                    left_limit = sy.limit(self.simplified_expr, symbol, cur, '+')
-                    right_limit = sy.limit(self.simplified_expr, symbol, cur, '-')
-                    if left_limit.is_infinite or right_limit.is_infinite:
+        for value in not_exist:
+            if isinstance(value, sy.sets.sets.FiniteSet):
+                for cur in value:
+                    if self._check_v_asymptote(symbol, cur):
                         ans.add(cur)
-            elif isinstance(values, sy.sets.sets.Interval):
-                for cur in values.args[0:2]:
-                    left_limit = sy.limit(self.simplified_expr, symbol, cur, '+')
-                    right_limit = sy.limit(self.simplified_expr, symbol, cur, '-')
-                    if left_limit.is_infinite or right_limit.is_infinite:
+            elif isinstance(value, sy.sets.sets.Interval):
+                for cur in value.args[0:2]:
+                    if self._check_v_asymptote(symbol, cur):
                         ans.add(cur)
+
+        # If function is periodic, we can't yet give an accurate answer
+        if self.periodicity(symbol):
+            # If the domain of function is some kind of "R \ {...}", than we can omit the part "R \"
+            if isinstance(exist, sy.Complement):
+                ans.add(exist.args[1])
+            else:
+                ans.add(not_exist[0])
 
         if len(ans) == 0:
             ans.add(sy.EmptySet)
@@ -272,7 +284,7 @@ class MathFunction:
 
         return ans
 
-    def maximum(self, symbol: sy.Symbol) -> sy.Number:
+    def maximum(self, symbol: sy.Symbol) -> (sy.Number, sy.EmptySet):
         """
         Tries to find maximum value (not local maximums!) of the function
         :param symbol: see 'maximum' function args
@@ -283,7 +295,7 @@ class MathFunction:
             return sy.EmptySet
         return maximum
 
-    def minimum(self, symbol: sy.Symbol) -> sy.Number:
+    def minimum(self, symbol: sy.Symbol) -> (sy.Number, sy.EmptySet):
         """
         Tries to find minimum value (not local minimums!) of the function
         :param symbol: see 'minimum' function args
@@ -294,7 +306,7 @@ class MathFunction:
             return sy.EmptySet
         return minimum
 
-    def stationary_points(self, symbol: sy.Symbol) -> sy.Set:
+    def stationary_points(self, symbol: sy.Symbol) -> (sy.Set, sy.EmptySet):
         """
         Tries to find points of the function where derivative is zero
         :param symbol: see 'stationary_points' function args

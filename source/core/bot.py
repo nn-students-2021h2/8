@@ -7,6 +7,7 @@ import threading
 import time
 from enum import Enum
 from functools import total_ordering
+from subprocess import run, STDOUT, PIPE
 
 import pymongo.collection
 from pymongo import MongoClient, errors
@@ -17,8 +18,6 @@ import handling_msg as hmsg
 from source.conf.config import Config
 from source.conf.custom_logger import setup_logging
 from source.math.graph import Graph
-
-from subprocess import run, STDOUT, PIPE
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -195,8 +194,8 @@ def ping_google(update: Update):
         logger.error("Subprocess.run returns non-zero code")
     last_ping = ("Approximate round-trip time in ms:\n" +
                  output[-2].replace('мсек', 'ms').replace('Минимальное', 'Min')
-                                                 .replace('Максимальное', 'Max')
-                                                 .replace('Среднее', 'Avg'))
+                 .replace('Максимальное', 'Max')
+                 .replace('Среднее', 'Avg'))
     update.message.reply_text(last_ping)
 
 
@@ -284,6 +283,10 @@ def analyse(update: Update, context: CallbackContext):
         hmsg.send_analyse(update, context)
 
 
+def meme(update: Update, context: CallbackContext):
+    hmsg.send_meme(update, context)
+
+
 def main():
     """
     Set configuration and launch bot
@@ -302,6 +305,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('help', chat_help))
     updater.dispatcher.add_handler(CommandHandler('graph', graph))
     updater.dispatcher.add_handler(CommandHandler('analyse', analyse))
+    updater.dispatcher.add_handler(CommandHandler('meme', meme))
 
     # On non-command i.e. message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, default_handler))
@@ -313,8 +317,7 @@ def main():
     updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
+    # SIGTERM or SIGABRT
     updater.idle()
 
 

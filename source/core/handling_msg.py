@@ -4,6 +4,7 @@ In this module we process events related to bot (such as messages, requests)
 from io import BytesIO
 from pathlib import Path
 
+import requests as requests
 import sympy as sy
 import telegram
 from PIL import Image, ImageOps
@@ -151,3 +152,26 @@ def send_analyse(update: Update, context: CallbackContext):
         update.message.reply_text("Sorry, a feature isn't implemented or input is invalid. Please check your function.")
         logger.warning("ValueError or NotImplementedError exception raised on user's [id=%s] input: `%s`", user['id'],
                        expr)
+
+
+def send_meme(update, context):
+    """User requested some meme"""
+    user = update.message.from_user
+    logger.info("User [id=%s] requested a meme", user['id'])
+
+    content = requests.get("https://meme-api.herokuapp.com/gimme").json()
+    meme = BytesIO()
+    meme.write(requests.get(content["url"]).content)
+    meme.seek(0)
+    try:
+        context.bot.send_photo(
+            chat_id=user['id'],
+            photo=meme,
+            caption=content["postLink"]
+        )
+    except telegram.error.BadRequest as err:
+        logger.warning("User [id=%s] catches a BadRequest getting a meme: %s", user['id'], err.message)
+        context.bot.send_message(
+            chat_id=user['id'],
+            text="Sorry, something went wrong. Please try again later."
+        )

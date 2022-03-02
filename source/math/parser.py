@@ -7,9 +7,6 @@ from abc import ABC, abstractmethod
 
 import sympy as sy
 
-# How many statements (functions, domain, etc.) the Bot can handle
-STATEMENTS_LIMIT = 15
-
 
 class ParseError(Exception):
     """This exception will be thrown when something went wrong while parsing"""

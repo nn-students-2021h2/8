@@ -67,17 +67,14 @@ class Graph:
         if len(domain := tokens["domain"]) != 2:
             domain = [-10, 10]
 
-        expl_func_count = 0
         x, y = sy.symbols("x y")
 
         # Extract all explicit functions
-        for expl_func in tokens['explicit']:
-            self.plot.extend(sy.plot(expl_func.simplified_expr,
+        for func in tokens['explicit']:
+            self.plot.extend(sy.plot(func.simplified_expr,
                                      (x, domain[0], domain[1]),
-                                     show=False))
-
-            self.plot[expl_func_count].label = f'${sy.latex(expl_func.simplified_expr)}$'
-            expl_func_count += 1
+                                     show=False,
+                                     label=f'${sy.latex(func.simplified_expr)}$'))
 
         # Update plot parameters and y-limit for implicit functions
         backend = self.plot.backend(self.plot)
@@ -85,9 +82,6 @@ class Graph:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
             raise DrawError("Unexpected error, check your expression.") from err
-        ylim = plt.ylim()
-        rng[0] = min(rng[0], ylim[0])
-        rng[1] = max(rng[1], ylim[1])
 
         # Extract all implicit functions
         for impl_func in tokens['implicit']:
