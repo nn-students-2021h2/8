@@ -310,8 +310,7 @@ class CalculusParser(Parser):
             is_pattern_found = self._find_pattern(query, pattern_dict, True)
             if is_pattern_found:
                 return True
-            else:
-                raise err
+            raise err
 
         # If none of patterns were satisfied, then we can try to correct input and match the patterns again
         return self._find_pattern(query, pattern_dict, True)

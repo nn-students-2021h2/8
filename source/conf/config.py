@@ -44,14 +44,16 @@ class Config:
 
     @staticmethod
     def _open_patterns_files() -> tuple:
-        path = pathlib.Path(__file__).parents[1].resolve() / "math" / "graph_patterns.json"
+        path = pathlib.Path(__file__).parents[1] / "math" / "graph_patterns.json"
+        path.resolve()
         try:
             with open(path, "r", encoding="utf-8") as file:
                 graph_patterns = json.load(file)
         except IOError as err:
             raise ConfigException(f"Cannot open file '{path}'") from err
 
-        path = pathlib.Path(__file__).parents[1].resolve() / "math" / "analyse_patterns.json"
+        path = pathlib.Path(__file__).parents[1] / "math" / "analyse_patterns.json"
+        path.resolve()
         try:
             with open(path, "r", encoding="utf-8") as file:
                 analysis_patterns = json.load(file)

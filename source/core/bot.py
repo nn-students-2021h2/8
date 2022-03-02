@@ -284,6 +284,7 @@ def analyse(update: Update, context: CallbackContext):
 
 
 def meme(update: Update, context: CallbackContext):
+    """Call meme-api and send random meme from Reddit to user"""
     hmsg.send_meme(update, context)
 
 

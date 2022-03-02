@@ -4,7 +4,7 @@ In this module we process events related to bot (such as messages, requests)
 from io import BytesIO
 from pathlib import Path
 
-import requests as requests
+import requests
 import sympy as sy
 import telegram
 from PIL import Image, ImageOps
