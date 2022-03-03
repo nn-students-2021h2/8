@@ -3,8 +3,9 @@ In this module we process events related to bot (such as messages, requests)
 """
 from asyncio import sleep
 from io import BytesIO
-from pathlib import Path
 
+import aiogram.utils.exceptions
+import requests
 import sympy as sy
 import telegram
 from PIL import Image, ImageOps
@@ -54,35 +55,33 @@ def echo():
 
 async def send_graph(message: types.Message):
     """User requested to draw a plot"""
-    resources_path = Path(__file__).resolve().parents[2] / "resources"
-    user_id = message.chat.id
-    file_path = resources_path / f"{user_id}.png"
+    chat_id = message.chat.id
     if message.get_command():
         expr = message.get_args().lower()
     else:
         expr = message.text.lower()
 
-    logger.info("User [id=%s] requested to draw a graph. User's input: `%s`", user_id, expr)
+    logger.info("User [chat_id=%s] requested to draw a graph. User's input: `%s`", chat_id, expr)
 
     parser = GraphParser()
 
     try:
         parser.parse(expr)
-        graph = Graph(file_path)
+        graph = Graph()
         image = graph.draw(parser.tokens)
     except ParseError as err:
         await message.reply(str(err))
-        logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user_id, expr)
+        logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
         return
     except DrawError as err:
         await message.reply(str(err))
-        logger.info("DrawError exception raised on user's [id=%s] input: `%s`", user_id, expr)
+        logger.info("DrawError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
         return
 
     output_message = "Here a graph of requested functions"
     await sleep(0.1)
     await bot.send_photo(
-        chat_id=user_id,
+        chat_id=chat_id,
         photo=image,
         caption=output_message + '\n' + "\n".join(parser.warnings)
     )
@@ -93,13 +92,13 @@ async def send_graph(message: types.Message):
 
 async def send_analyse(message: types.Message):
     """User requested some function analysis"""
-    user = message.from_user
+    chat_id = message.chat.id
     if message.get_command():
         expr = message.get_args().lower()
     else:
         expr = message.text.lower()
 
-    logger.info("User [id=%s] requested an analysis. User's input: `%s`", user['id'], expr)
+    logger.info("User [chat_id=%s] requested an analysis. User's input: `%s`", chat_id, expr)
 
     parser = CalculusParser()
 
@@ -109,7 +108,7 @@ async def send_analyse(message: types.Message):
         is_pattern_found = parser.parse(expr)
         if not is_pattern_found:
             await message.reply("Couldn't find a suitable template. Check the input.")
-            logger.info("Bot doesn't find any pattern for user's [id=%s] input: `%s`", user['id'], expr)
+            logger.info("Bot doesn't find any pattern for user's [id=%s] input: `%s`", chat_id, expr)
             return
 
         result = parser.process_query()
@@ -126,30 +125,61 @@ async def send_analyse(message: types.Message):
                 # If we can't send photo due to Telegram limitations, then send image as file instead
                 try:
                     await bot.send_photo(
-                        chat_id=user['id'],
+                        chat_id=chat_id,
                         photo=resized_image,
                         caption="\n".join(parser.warnings)
                     )
                 except telegram.error.BadRequest:
                     parser.push_warning("Photo size is too large, therefore I send you a file.")
                     await bot.send_document(
-                        chat_id=user['id'],
+                        chat_id=chat_id,
                         document=resized_image,
                         caption="\n".join(parser.warnings)
                     )
         else:
             await bot.send_message(
-                chat_id=user['id'],
+                chat_id=chat_id,
                 text=str(result)
             )
         parser.clear_warnings()
     except ParseError as err:
         await message.reply(str(err))
-        logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
+        logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
     except RecursionError:
         await message.reply("Incorrect input. Please check your function.")
-        logger.warning("RecursionError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
+        logger.warning("RecursionError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
     except (ValueError, NotImplementedError):
         await message.reply("Sorry, a feature isn't implemented or input is invalid. Please check your function.")
-        logger.warning("ValueError or NotImplementedError exception raised on user's [id=%s] input: `%s`", user['id'],
+        logger.warning("ValueError or NotImplementedError exception raised on user's [chat_id=%s] input: `%s`", chat_id,
                        expr)
+
+
+async def send_meme(message: types.Message):
+    """User requested some meme"""
+    chat_id = message.chat.id
+    logger.info("User [id=%s] requested a meme", chat_id)
+
+    response = requests.get("https://meme-api.herokuapp.com/gimme/").json()
+    url = response["url"]
+    post_link = response["postLink"]
+    headers = requests.head(url).headers
+
+    try:
+        if headers["Content-Type"] == "image/gif":
+            await bot.send_animation(
+                chat_id=chat_id,
+                animation=url,
+                caption=post_link
+            )
+        else:
+            await bot.send_photo(
+                chat_id=chat_id,
+                photo=url,
+                caption=post_link
+            )
+    except aiogram.utils.exceptions.BadRequest as err:
+        logger.warning("User [id=%s] catches a BadRequest getting a meme: %s", chat_id, err)
+        await bot.send_message(
+            chat_id=chat_id,
+            text="Sorry, something went wrong. Please try again later."
+        )

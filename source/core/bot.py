@@ -222,6 +222,13 @@ async def analyse(message: types.Message):
         await hmsg.send_analyse(message)
 
 
+@dispatcher.message_handler(commands=["meme"])
+@dispatcher.throttled(anti_flood, rate=2)
+async def meme(message: types.Message):
+    """Call meme-api and send random meme from Reddit to user"""
+    await hmsg.send_meme(message)
+
+
 async def ping_google(message: types.Message):
     """Homework. Ping google.com and send min, max and avg time to user."""
     global last_ping

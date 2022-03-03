@@ -2,7 +2,6 @@
 Graph class module
 """
 from io import BytesIO
-from pathlib import Path
 
 import numpy as np
 import sympy as sy
@@ -17,18 +16,14 @@ class DrawError(Exception):
 
 
 class Graph:
-    """
-    This class represents plot of one or multiple functions
-    :param file_path: a file name / path which is used to keep plot
-    """
+    """This class represents plot of one or multiple functions"""
 
     # This variable adjusts the accuracy of the implicit function drawing
     # Increase it to get more antialiasing result
     IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["STYLE"]["implicit_function_points"]
 
-    def __init__(self, file_path: Path):
+    def __init__(self):
         self.plot = sy.plot(show=False, title="Plot", legend=True)
-        self.file_path = file_path
 
     @staticmethod
     def setup_plot_style():
