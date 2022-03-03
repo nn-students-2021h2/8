@@ -1,17 +1,17 @@
 """
 In this module we process events related to bot (such as messages, requests)
 """
+from asyncio import sleep
 from io import BytesIO
 from pathlib import Path
 
 import sympy as sy
 import telegram
 from PIL import Image, ImageOps
-from telegram import Update
-from telegram.ext import CallbackContext
+from aiogram import types
 
 from source.conf import Config
-from source.core.bot import logger
+from source.core.bot import logger, bot
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
@@ -52,50 +52,52 @@ def echo():
     return 'I didn\'t understand what you want'
 
 
-def send_graph(update: Update, context: CallbackContext):
+async def send_graph(message: types.Message):
     """User requested to draw a plot"""
-    user = update.message.from_user
     resources_path = Path(__file__).resolve().parents[2] / "resources"
-    file_path = resources_path / f"{user['id']}.png"
-    if context.args:
-        expr = " ".join(context.args).lower()
+    user_id = message.chat.id
+    file_path = resources_path / f"{user_id}.png"
+    if message.get_command():
+        expr = message.get_args().lower()
     else:
-        expr = update.message.text.lower()
+        expr = message.text.lower()
 
-    logger.info("User [id=%s] requested to draw a graph. User's input: `%s`", user['id'], expr)
+    logger.info("User [id=%s] requested to draw a graph. User's input: `%s`", user_id, expr)
 
     parser = GraphParser()
 
     try:
         parser.parse(expr)
         graph = Graph(file_path)
-        graph.draw(parser.tokens)
+        image = graph.draw(parser.tokens)
     except ParseError as err:
-        update.message.reply_text(str(err))
-        logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
+        await message.reply(str(err))
+        logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user_id, expr)
         return
     except DrawError as err:
-        update.message.reply_text(str(err))
-        logger.info("DrawError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
+        await message.reply(str(err))
+        logger.info("DrawError exception raised on user's [id=%s] input: `%s`", user_id, expr)
         return
 
-    with open(file_path, 'rb') as graph_file:
-        output_message = "Here a graph of requested functions"
-        context.bot.send_photo(
-            chat_id=user['id'],
-            photo=graph_file,
-            caption=output_message + '\n' + "\n".join(parser.warnings)
-        )
+    output_message = "Here a graph of requested functions"
+    await sleep(0.1)
+    await bot.send_photo(
+        chat_id=user_id,
+        photo=image,
+        caption=output_message + '\n' + "\n".join(parser.warnings)
+    )
+    image.close()
+
     parser.clear_warnings()
 
 
-def send_analyse(update: Update, context: CallbackContext):
+async def send_analyse(message: types.Message):
     """User requested some function analysis"""
-    user = update.message.from_user
-    if context.args:
-        expr = " ".join(context.args).lower()
+    user = message.from_user
+    if message.get_command():
+        expr = message.get_args().lower()
     else:
-        expr = update.message.text.lower()
+        expr = message.text.lower()
 
     logger.info("User [id=%s] requested an analysis. User's input: `%s`", user['id'], expr)
 
@@ -106,7 +108,7 @@ def send_analyse(update: Update, context: CallbackContext):
         # If parser can't understand what the user means, it returns False
         is_pattern_found = parser.parse(expr)
         if not is_pattern_found:
-            update.message.reply_text("Couldn't find a suitable template. Check the input.")
+            await message.reply("Couldn't find a suitable template. Check the input.")
             logger.info("Bot doesn't find any pattern for user's [id=%s] input: `%s`", user['id'], expr)
             return
 
@@ -123,31 +125,31 @@ def send_analyse(update: Update, context: CallbackContext):
 
                 # If we can't send photo due to Telegram limitations, then send image as file instead
                 try:
-                    context.bot.send_photo(
+                    await bot.send_photo(
                         chat_id=user['id'],
                         photo=resized_image,
                         caption="\n".join(parser.warnings)
                     )
                 except telegram.error.BadRequest:
                     parser.push_warning("Photo size is too large, therefore I send you a file.")
-                    context.bot.send_document(
+                    await bot.send_document(
                         chat_id=user['id'],
                         document=resized_image,
                         caption="\n".join(parser.warnings)
                     )
         else:
-            context.bot.send_message(
+            await bot.send_message(
                 chat_id=user['id'],
                 text=str(result)
             )
         parser.clear_warnings()
     except ParseError as err:
-        update.message.reply_text(str(err))
+        await message.reply(str(err))
         logger.info("ParseError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
     except RecursionError:
-        update.message.reply_text("Incorrect input. Please check your function.")
+        await message.reply("Incorrect input. Please check your function.")
         logger.warning("RecursionError exception raised on user's [id=%s] input: `%s`", user['id'], expr)
     except (ValueError, NotImplementedError):
-        update.message.reply_text("Sorry, a feature isn't implemented or input is invalid. Please check your function.")
+        await message.reply("Sorry, a feature isn't implemented or input is invalid. Please check your function.")
         logger.warning("ValueError or NotImplementedError exception raised on user's [id=%s] input: `%s`", user['id'],
                        expr)

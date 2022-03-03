@@ -1,6 +1,7 @@
 """
 Graph class module
 """
+from io import BytesIO
 from pathlib import Path
 
 import numpy as np
@@ -140,5 +141,9 @@ class Graph:
             legend.legendHandles[expl_func_count + counter].set_color(self.plot[i].line_color)
             counter += 1
 
-        backend.fig.savefig(self.file_path, dpi=250, bbox_inches='tight')
+        buf = BytesIO()
+        backend.fig.savefig(buf, format="png", dpi=250, bbox_inches='tight')
+        buf.seek(0)
         plt.close("all")
+
+        return buf
