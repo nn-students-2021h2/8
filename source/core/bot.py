@@ -283,11 +283,6 @@ def analyse(update: Update, context: CallbackContext):
         hmsg.send_analyse(update, context)
 
 
-def meme(update: Update, context: CallbackContext):
-    """Call meme-api and send random meme from Reddit to user"""
-    hmsg.send_meme(update, context)
-
-
 def main():
     """
     Set configuration and launch bot
@@ -306,7 +301,6 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('help', chat_help))
     updater.dispatcher.add_handler(CommandHandler('graph', graph))
     updater.dispatcher.add_handler(CommandHandler('analyse', analyse))
-    updater.dispatcher.add_handler(CommandHandler('meme', meme))
 
     # On non-command i.e. message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, default_handler))
