@@ -40,7 +40,7 @@ def _process_function(token: str) -> sy.Function:
                              "Please, check your math formula.")
 
         return function
-    except (SympifyError, TypeError, ValueError) as err:
+    except (SympifyError, TypeError, ValueError, AttributeError) as err:
         raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                          "Please, check your math formula.") from err
 

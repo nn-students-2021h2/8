@@ -225,7 +225,7 @@ class GraphParser(Parser):
             function = self._process_variables(function)
 
             return function
-        except (SympifyError, TypeError, ValueError, SyntaxError) as err:
+        except (SympifyError, TypeError, ValueError, SyntaxError, AttributeError) as err:
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                              "Please, check your math formula.") from err
 
