@@ -3,11 +3,8 @@ Main core module with bot and logger functionality
 """
 import asyncio
 import logging
-import subprocess
-import time
 from enum import Enum
 from functools import total_ordering
-from subprocess import run, STDOUT, PIPE
 
 import pymongo.collection
 from aiogram import Bot, Dispatcher, executor, types
@@ -21,6 +18,7 @@ import handling_msg as hmsg
 from source.conf.config import Config
 from source.conf.custom_logger import setup_logging
 from source.math.graph import Graph
+from source.middleware.anti_flood_middleware import ThrottlingMiddleware, rate_limit
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -64,14 +62,6 @@ class Status(Enum):
         return NotImplemented
 
 
-hostname = "google.com"
-
-cmd = f"ping {hostname}"
-
-last_ping = ""  # Cache of pint. It sent to user if minute is not left.
-waiting_time = 60  # One minute timeout
-last_ping_time = waiting_time  # Last time when hostname was pinged
-
 no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 
 chat_status_table: pymongo.collection.Collection
@@ -93,11 +83,6 @@ def init_pymongo_db():
     chat_status_table.create_index("chat_id", unique=True)
 
 
-async def anti_flood(*args, **kwargs):
-    """This function is called when user's message has been throttled"""
-    await args[0].answer(f"Flood is not allowed! You should wait {kwargs['rate']} seconds to repeat this action.")
-
-
 async def change_user_status(message: types.Message, status: Status) -> int:
     """Update user status in mongo database. It returns 1 if the connection is lost and 0 if all ok"""
     try:
@@ -115,8 +100,7 @@ async def go_main(message: types.Message):
     """Change status of user and send main menu to user."""
     if await change_user_status(message, Status.MAIN):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph", "Analyse function",
-                                                                 "Get help", f"Ping {hostname}")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph", "Analyse function", "Get help")
     await bot.send_message(message.chat.id, 'Choose action', reply_markup=reply_markup)
 
 
@@ -186,7 +170,7 @@ status_dict.update({value: key.lower() for key, value in status_dict.items()})
 
 
 @dispatcher.message_handler(commands=["start"])
-@dispatcher.throttled(anti_flood, rate=0.5)
+@rate_limit(limit=1)
 async def start(message: types.Message):
     """Send a message when the command /start is issued."""
     await bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name} {message.from_user.last_name}!')
@@ -194,7 +178,7 @@ async def start(message: types.Message):
 
 
 @dispatcher.message_handler(commands=["help"])
-@dispatcher.throttled(anti_flood, rate=0.5)
+@rate_limit(limit=1)
 async def chat_help(message: types.Message):
     """Send a message when the command /help is issued."""
     await bot.send_message(message.chat.id, 'Enter:\n/start to restart bot.\n/graph to draw graph.\n/analyse to '
@@ -202,7 +186,7 @@ async def chat_help(message: types.Message):
 
 
 @dispatcher.message_handler(commands=["graph"])
-@dispatcher.throttled(anti_flood, rate=2)
+@rate_limit(limit=2)
 async def graph(message: types.Message):
     """Draw graph, save it as image and send to the user."""
     if message.text == '/graph':
@@ -213,7 +197,7 @@ async def graph(message: types.Message):
 
 
 @dispatcher.message_handler(commands=["analyse"])
-@dispatcher.throttled(anti_flood, rate=2)
+@rate_limit(limit=2)
 async def analyse(message: types.Message):
     """Calculate requested function and send result to the user in LaTeX format (or not LaTeX - check config file)"""
     if message.text == '/analyse':
@@ -223,46 +207,22 @@ async def analyse(message: types.Message):
 
 
 @dispatcher.message_handler(commands=["meme"])
-@dispatcher.throttled(anti_flood, rate=2)
+@rate_limit(limit=2)
 async def meme(message: types.Message):
     """Call meme-api and send random meme from Reddit to user"""
     await hmsg.send_meme(message)
 
 
-async def ping_google(message: types.Message):
-    """Homework. Ping google.com and send min, max and avg time to user."""
-    global last_ping
-    output = ""
-    await asyncio.sleep(2)
-    try:
-        output = run(cmd.split(), stdout=PIPE, stderr=STDOUT, text=True, encoding='cp866',
-                     check=True).stdout.split('\n')
-    except subprocess.CalledProcessError:
-        logger.error("Subprocess.run returns non-zero code")
-    last_ping = ("Approximate round-trip time in ms:\n" +
-                 output[-2].replace('мсек', 'ms').replace('Минимальное', 'Min')
-                 .replace('Максимальное', 'Max')
-                 .replace('Среднее', 'Avg'))
-    await message.reply(last_ping)
-
-
 @dispatcher.message_handler(content_types=["text"])
-@dispatcher.throttled(anti_flood, rate=0.5)
+@rate_limit(limit=0.5)
 async def default_handler(message: types.Message):
     """Checks user status and direct his message to suitable function."""
-    global last_ping_time
     try:
         chat_status = Status(chat_status_table.find_one({"chat_id": message.chat.id})['status'])
     except errors.PyMongoError:
         await bot.send_message(message.chat.id, no_db_message)
         return
-    if message.text == f'Ping {hostname}':
-        if last_ping != "" and time.time() - last_ping_time < waiting_time:
-            await message.reply(last_ping)
-        else:
-            last_ping_time = time.time()
-            asyncio.create_task(ping_google(message, ))
-        return
+
     if chat_status == Status.MAIN:
         match message.text:
             case 'Draw graph':
@@ -321,4 +281,5 @@ if __name__ == '__main__':
     Graph.setup_plot_style()
     logger.info('Bot is started')
     dispatcher.middleware.setup(LoggingMiddleware(logger=logger))
-    executor.start_polling(dispatcher)
+    dispatcher.middleware.setup(ThrottlingMiddleware())
+    executor.start_polling(dispatcher, skip_updates=True)
