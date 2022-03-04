@@ -122,7 +122,6 @@ class CalculusParser(Parser):
         :param expression: list of expressions that should be represented in LaTeX format
         :return: LaTeX representation (string). If is can't find pattern set, then returns empty string
         """
-        result = ""
         pattern_set = self.action
         function = sy.latex(self.function.simplified_expr)
         symbols = list(map(sy.latex, self.function.symbols))

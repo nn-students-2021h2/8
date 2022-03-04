@@ -237,11 +237,6 @@ class GraphParser(Parser):
         :param expr: user input string to parse
         :return: true on successfully found patterns, false otherwise
         """
-
-        # path = pathlib.Path(__file__).parent.resolve() / "graph_patterns.json"
-        # with open(path, "r", encoding="utf-8") as file:
-        #     # TODO remember content of the file at the program start? Then we can don't open the file again
-        #     pattern_dict = json.load(file)
         pattern_dict = Config.graph_patterns
 
         parts = _split_query(expr)
