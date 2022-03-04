@@ -8,43 +8,43 @@
 You can also use any number of spaces between words. The case is not important
 
 1) **Derivative**:
-    - diff | differentiate | derivative (of)? _func_
-    - diff | differentiate | derivative (of)? _func_ by x, y, ...
+    - diff | differentiate | derivative (of)? (a | the)? (function)? _func_
+    - diff | differentiate | derivative (of)? (a | the)? (function)? _func_ by x, y, ...
 2) **Domain**:
-    - domain | definition (area | range) (of)? _func_
+    - domain | definition (area | range) (of)? (a | the)? (function)? _func_
 3) **Range**:
-    - range (of)? _func_
+    - range (of)? (a | the)? (function)? _func_
 4) **Zeros**:
-    - zeros | zeroes (of)? _func_
+    - zeros | zeroes (of)? (a | the)? (function)? _func_
 5) **Axes intersection**:
-    - intersect | intersection (with)? axes (of)? _func_
-    - axes intersect | intersection (of)? _func_
+    - intersect | intersection (with)? axes (of)? (a | the)? (function)? _func_
+    - axes intersect | intersection (of)? (a | the)? (function)? _func_
     - axes _func_
 6) **Periodicity**:
-    - period | periodicity (of)? _func_
+    - period | periodicity (of)? (a | the)? (function)? _func_
 7) **Convexity**:
-    - convex | convexity (of)? _func_
+    - convex | convexity (of)? (a | the)? (function)? _func_
 8) **Concavity**:
-    - concave | concavity (of)? _func_
+    - concave | concavity (of)? (a | the)? (function)? _func_
 9) **Continuity**:
-    - continuity | continuous (of)? _func_
+    - continuity | continuous (of)? (a | the)? (function)? _func_
 10) **Vertical asymptotes**:
-    - vertical | v asymptote(s)? (of)? _func_
+    - vertical | v asymptote(s)? (of)? (a | the)? (function)? _func_
 11) **Horizontal asymptotes**:
-    - Horizontal | h asymptote(s)? (of)? _func_
+    - Horizontal | h asymptote(s)? (of)? (a | the)? (function)? _func_
 12) **Slant asymptotes**:
-    - slant | s asymptote(s)? (of)? _func_
+    - slant | s asymptote(s)? (of)? (a | the)? (function)? _func_
 13) **Asymptotes**:
-    - asymptote(s)? (of)? _func_
+    - asymptote(s)? (of)? (a | the)? (function)? _func_
 14) **Evenness**:
-    - even(ness)? (of)? _func_
-    - is _func_ even(?)?
+    - even(ness)? (of)? (a | the)? (function)? _func_
+    - is (a | the)? (function)? _func_ even (function)?(?)?
 15) **Oddness**:
-    - odd(ness)? (of)? _func_
-    - is _func_ odd(?)?
+    - odd(ness)? (of)? (a | the)? (function)? _func_
+    - is (a | the)? (function)? _func_ odd (function)?(?)?
 16) **Maximum**:
-    - max(imum) | highest (value)? (of)? _func_
+    - max(imum) | highest (value)? (of)? (a | the)? (function)? _func_
 17) **Minimum**:
-    - min(imum) | lowest | smallest (value)? (of)? _func_
+    - min(imum) | lowest | smallest (value)? (of)? (a | the)? (function)? _func_
 18) **Stationary points**:
-    - crit(ical)? | stationary (points)? (of)? _func_
+    - crit(ical)? | stationary (points)? (of)? (a | the)? (function)? _func_
