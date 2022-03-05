@@ -8,6 +8,7 @@ import re
 import sympy as sy
 from sympy import SympifyError
 
+from source.extras.utilities import run_asynchronously
 from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, STATEMENTS_LIMIT, ParseError
 
@@ -231,6 +232,7 @@ class GraphParser(Parser):
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                              "Please, check your math formula.") from err
 
+    @run_asynchronously
     def parse(self, expr: str):
         """
         This method get string and tries to parse it in several groups (see 'tokens' variable)

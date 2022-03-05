@@ -8,6 +8,7 @@ import sympy as sy
 from matplotlib import pyplot as plt, style
 
 from source.conf.config import Config
+from source.extras.utilities import run_asynchronously
 from source.math.graph_parser import GraphParser
 
 
@@ -36,7 +37,8 @@ class Graph:
         for param, value in parameters["RC_PARAMS"].items():
             plt.rcParams[param] = value
 
-    def draw(self, tokens: dict):
+    @run_asynchronously
+    def draw(self, tokens: dict) -> BytesIO:
         """
         Draw parsed functions and save plot as image
 
