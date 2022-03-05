@@ -144,7 +144,7 @@ class MathFunction:
         Determine if the function is concave
         :return: true if it is concave, false otherwise
         """
-        return not calculus.is_convex(self.simplified_expr, symbol)
+        return calculus.is_convex(-self.simplified_expr, symbol)
 
     def continuity(self, symbol: sy.Symbol) -> sy.Interval:
         """
@@ -232,9 +232,9 @@ class MathFunction:
         neg_limit = sy.limit(self.simplified_expr, symbol, -sy.oo)
         ans = set()
 
-        if pos_limit.is_finite:
+        if pos_limit.is_number and pos_limit.is_finite:
             ans.add(pos_limit)
-        if neg_limit.is_finite:
+        if neg_limit.is_number and neg_limit.is_finite:
             ans.add(neg_limit)
 
         if len(ans) == 0:
@@ -253,15 +253,15 @@ class MathFunction:
         # TODO periodic function
 
         k = sy.limit(self.simplified_expr / symbol, symbol, sy.oo)
-        if k.is_finite:
+        if k.is_number:
             b = sy.limit(self.simplified_expr - k * symbol, symbol, sy.oo)
-            if b.is_finite:
+            if b.is_number:
                 ans.add(k * symbol + b)
 
         k = sy.limit(self.simplified_expr / symbol, symbol, -sy.oo)
-        if k.is_finite:
+        if k.is_number:
             b = sy.limit(self.simplified_expr - k * symbol, symbol, -sy.oo)
-            if b.is_finite:
+            if b.is_number:
                 ans.add(k * symbol + b)
 
         # If given function is line, then it is its own asymptote, so we should remove it from set
