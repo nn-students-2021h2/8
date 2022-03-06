@@ -1,27 +1,28 @@
 """
 Main core module with bot and logger functionality
 """
-
 import logging
+import subprocess
+import threading
+import time
+from enum import Enum
+from functools import total_ordering
 
 import pymongo.collection
+from pymongo import MongoClient, errors
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import handling_msg as hmsg
 from source.conf.config import Config
+from source.conf.custom_logger import setup_logging
 from source.math.graph import Graph
 
-from enum import Enum
-from functools import total_ordering
-
-from pymongo import MongoClient, errors
+from subprocess import run, STDOUT, PIPE
 
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-
 logger = logging.getLogger(__name__)
+setup_logging(logger)
 
 
 @total_ordering
@@ -56,6 +57,14 @@ class Status(Enum):
         return NotImplemented
 
 
+hostname = "google.com"
+
+cmd = f"ping {hostname}"
+
+last_ping = ""  # Cache of pint. It sent to user if minute is not left.
+waiting_time = 60  # One minute timeout
+last_ping_time = waiting_time  # Last time when hostname was pinged
+
 no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 
 chat_status_table: pymongo.collection.Collection
@@ -69,9 +78,9 @@ def init_pymongo_db():
     client = MongoClient(conf.properties["DB_PARAMS"]["ip"], conf.properties["DB_PARAMS"]["port"],
                          serverSelectionTimeoutMS=5000)
     try:
-        logger.info(client.server_info())
+        logger.debug(client.server_info())
     except errors.PyMongoError:
-        logger.error("Unable to connect to the MongoDB server.")
+        logger.critical("Unable to connect to the MongoDB server.")
     db = client[conf.properties["DB_PARAMS"]["database_name"]]
     chat_status_table = db["chat_status"]
     chat_status_table.create_index("chat_id", unique=True)
@@ -94,7 +103,8 @@ def go_main(update: Update):
     """Change status of user and send main menu to user."""
     if change_user_status(update, Status.MAIN):
         return
-    reply_markup = ReplyKeyboardMarkup([['Draw graph'], ['Analyse function'], ['Get help']], resize_keyboard=True)
+    reply_markup = ReplyKeyboardMarkup([['Draw graph'], ['Analyse function'], ['Get help'], [f'Ping {hostname}']],
+                                       resize_keyboard=True)
     update.message.reply_text('Choose action', reply_markup=reply_markup)
 
 
@@ -174,12 +184,37 @@ def chat_help(update: Update, context: CallbackContext):
                               'the function.')
 
 
+def ping_google(update: Update):
+    """Homework. Ping google.com and send min, max and avg time to user."""
+    global last_ping
+    output = ""
+    try:
+        output = run(cmd.split(), stdout=PIPE, stderr=STDOUT, text=True, encoding='cp866',
+                     check=True).stdout.split('\n')
+    except subprocess.CalledProcessError:
+        logger.error("Subprocess.run returns non-zero code")
+    last_ping = ("Approximate round-trip time in ms:\n" +
+                 output[-2].replace('мсек', 'ms').replace('Минимальное', 'Min')
+                                                 .replace('Максимальное', 'Max')
+                                                 .replace('Среднее', 'Avg'))
+    update.message.reply_text(last_ping)
+
+
 def default_handler(update: Update, context: CallbackContext):
     """Checks user status and direct his message to suitable function."""
+    global last_ping_time
     try:
         chat_status = Status(chat_status_table.find_one({"chat_id": update.message.chat_id})['status'])
     except errors.PyMongoError:
         update.message.reply_text(no_db_message)
+        return
+    if update.message.text == f'Ping {hostname}':
+        if last_ping != "" and time.time() - last_ping_time < waiting_time:
+            update.message.reply_text(last_ping)
+        else:
+            last_ping_time = time.time()
+            tr = threading.Thread(target=ping_google, args=(update,))
+            tr.start()
         return
     if chat_status == Status.MAIN:
         match update.message.text:
@@ -190,7 +225,7 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Get help':
                 chat_help(update, context)
             case _:
-                update.message.reply_text(hmsg.echo(update.message.text))
+                update.message.reply_text(hmsg.echo())
     elif chat_status == Status.ANALYSE:
         match update.message.text:
             case 'Main menu':
@@ -233,7 +268,7 @@ def default_handler(update: Update, context: CallbackContext):
 
 def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
-    logger.warning('Update %s\nCaused error %s', update, context.error)
+    logger.error('Update %s\nCaused error %s', update, context.error)
 
 
 def graph(update: Update, context: CallbackContext):

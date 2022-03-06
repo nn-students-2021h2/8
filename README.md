@@ -34,7 +34,7 @@ graphs. This README.md will be added to as the project progresses.
 
 Find our bot named "function explorer" in Telegram:
 
-![none](https://i.ibb.co/m8jWZpJ/image.png)
+![none](https://i.ibb.co/yqPb8Xn/function-explorer.png)
 
 Then start a conversation with the bot to check if it is activated.
 
