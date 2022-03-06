@@ -1,13 +1,12 @@
 """
 Parser for function analysis requests
 """
-import json
-import pathlib
 import re
 
 import sympy as sy
 from sympy import SympifyError
 
+from source.conf import Config
 from source.extras.utilities import run_asynchronously
 from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
@@ -37,12 +36,12 @@ def _process_function(token: str) -> sy.Function:
 
             function = sy.simplify(modified_expr)
         else:
-            raise ParseError("Mistake in implicit function: found more than 2 equals.\n"
+            raise ParseError("Mistake in implicit function: found more than 1 equal sign.\n"
                              f"Your input: {token.strip()}\n"
                              "Please, check your math formula.")
 
         return function
-    except (SympifyError, TypeError, ValueError) as err:
+    except (SympifyError, TypeError, ValueError, AttributeError) as err:
         raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                          "Please, check your math formula.") from err
 
@@ -57,7 +56,7 @@ class CalculusParser(Parser):
     :param additional_params: a list of additional information that can be used in calculating the result
     """
 
-    def __init__(self, action="", function=None, additional_params=None):
+    def __init__(self, action: str = "", function: sy.Function = None, additional_params: list = None):
         super().__init__()
         if additional_params is None:
             additional_params = []
@@ -124,7 +123,6 @@ class CalculusParser(Parser):
         :param expression: list of expressions that should be represented in LaTeX format
         :return: LaTeX representation (string). If is can't find pattern set, then returns empty string
         """
-        result = ""
         pattern_set = self.action
         function = sy.latex(self.function.simplified_expr)
         symbols = list(map(sy.latex, self.function.symbols))
@@ -195,6 +193,9 @@ class CalculusParser(Parser):
 
             case "stationary points":
                 result = fr"Stationary\ points\ of\ {function}:\\{first_result}"
+
+            case _:
+                raise ParseError(f"Unknown pattern set: {pattern_set}")
 
         return result
 
@@ -299,14 +300,17 @@ class CalculusParser(Parser):
         :param query: user input, string (e.g. diff of x**2 by x)
         :return: true on successfully found pattern, false otherwise
         """
-        path = pathlib.Path(__file__).parent.resolve() / "analyse_patterns.json"
-        with open(path, "r", encoding="utf-8") as file:
-            pattern_dict = json.load(file)
+        pattern_dict = Config.analysis_patterns
 
         # Check if input match any pattern
-        is_pattern_found = self._find_pattern(query, pattern_dict, False)
-        if is_pattern_found:
-            return True
+        try:
+            if self._find_pattern(query, pattern_dict, False):
+                return True
+        except ParseError as err:
+            # Maybe we should correct some words here. If nothing was changed, then we throw previous exception
+            if self._find_pattern(query, pattern_dict, True):
+                return True
+            raise err
 
         # If none of patterns were satisfied, then we can try to correct input and match the patterns again
         return self._find_pattern(query, pattern_dict, True)

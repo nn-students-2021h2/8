@@ -3,18 +3,17 @@ disable = fixme,
           import-error,
           global-statement,
           invalid-name,
-          no-self-use,
           too-few-public-methods,
           too-many-arguments,
           too-many-instance-attributes,
           too-many-locals,
           ungrouped-imports,
-          unpacking-non-sequence,
           unused-argument,
           wrong-import-order,
           attribute-defined-outside-init,
           unnecessary-lambda,
-          duplicate-code
+          duplicate-code,
+          too-many-branches
 
 max-line-length = 120
 ignore-docstrings = yes
