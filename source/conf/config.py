@@ -3,6 +3,7 @@ This module represents configuration class
 """
 
 import json
+import pathlib
 import sys
 from pathlib import Path
 
@@ -24,6 +25,8 @@ class Config:
     _instance = None
     _properties = None
     _default_file_path = Path(__file__).resolve().parent / "default_config.json"
+    graph_patterns = None
+    analysis_patterns = None
 
     def __new__(cls, *args, **kwargs):
         if not Config._instance:
@@ -33,10 +36,31 @@ class Config:
     def __init__(self, file_path=None):
         self._file_path = file_path or Config._default_file_path
         self._json_data = self._load_from_json()
+        Config.graph_patterns, Config.analysis_patterns = self._open_patterns_files()
         Config._properties = {}
 
         for name, value in self._json_data.items():
             Config._properties[name] = value
+
+    @staticmethod
+    def _open_patterns_files() -> tuple:
+        path = pathlib.Path(__file__).parents[1] / "math" / "graph_patterns.json"
+        path.resolve()
+        try:
+            with open(path, "r", encoding="utf-8") as file:
+                graph_patterns = json.load(file)
+        except IOError as err:
+            raise ConfigException(f"Cannot open file '{path}'") from err
+
+        path = pathlib.Path(__file__).parents[1] / "math" / "analyse_patterns.json"
+        path.resolve()
+        try:
+            with open(path, "r", encoding="utf-8") as file:
+                analysis_patterns = json.load(file)
+        except IOError as err:
+            raise ConfigException(f"Cannot open file '{path}'") from err
+
+        return graph_patterns, analysis_patterns
 
     def _load_from_json(self) -> dict:
         try:

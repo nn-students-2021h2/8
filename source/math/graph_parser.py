@@ -1,15 +1,14 @@
 """
 Parser for graph requests
 """
-import json
-import pathlib
 import re
 
 import sympy as sy
 from sympy import SympifyError
 
+from source.conf import Config
 from source.math.math_function import MathFunction, replace_incorrect_functions
-from source.math.parser import Parser, STATEMENTS_LIMIT, ParseError
+from source.math.parser import Parser, ParseError
 
 
 def _split_query(expr: str) -> list:
@@ -48,13 +47,18 @@ def _split_query(expr: str) -> list:
 class GraphParser(Parser):
     """
     This class represents parser for user input. Now, it parses expressions like:
-    x**2 + y^2, x, y = a, x = 1, from -12 to -2
+    x**2 + y^2, x, y = a, x = 1, x from -12 to -2, ratio=2
 
     User input is parsed in 'tokens' dictionary by several groups:
-    - range : function domain
-    - explicit : explicit functions
-    - implicit : implicit functions (or not functions) that can't be converted into explicit
+    - aspect ratio : aspect ratio of the final picture (e.g. [2])
+    - domain : function domain, i.e. x-limit (e.g. [-10, 10])
+    - range : function range, i.e. y-limit (e.g. [-10, 10])
+    - explicit : explicit functions (e.g. y = x**2)
+    - implicit : implicit functions (or not functions) that can't be converted into explicit (e.g. y**2 + x**2 = 4)
     """
+
+    # Limitation on the number of requested functions
+    FUNCTIONS_LIMIT = 10
 
     def __init__(self):
         super().__init__()
@@ -213,21 +217,15 @@ class GraphParser(Parser):
                     function = sy.Eq(sy.simplify(modified_expr), 0)
 
             else:
-                raise ParseError("Mistake in implicit function: Found more than 2 equals.\n"
+                raise ParseError("Mistake in implicit function: Found more than 1 equal sign.\n"
                                  f"Your input: {token.strip()}\n"
                                  "Please, check your math formula")
 
             # Change variables
             function = self._process_variables(function)
 
-            # Trying to convert implicit function into explicit (in order to optimize job)
-            # We can't be sure if function can be converted in case several solutions for 'y'
-            # solutions = sy.solve(function, y)
-            # if len(solutions) == 1:
-            #     function = solutions[0]
-
             return function
-        except (SympifyError, TypeError, ValueError) as err:
+        except (SympifyError, TypeError, ValueError, SyntaxError, AttributeError) as err:
             raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                              "Please, check your math formula.") from err
 
@@ -239,14 +237,9 @@ class GraphParser(Parser):
         :param expr: user input string to parse
         :return: true on successfully found patterns, false otherwise
         """
+        pattern_dict = Config.graph_patterns
+
         parts = _split_query(expr)
-
-        if len(parts) >= STATEMENTS_LIMIT:
-            raise ParseError(f"Too many arguments. The limit is {STATEMENTS_LIMIT} statements.")
-
-        path = pathlib.Path(__file__).parent.resolve() / "graph_patterns.json"
-        with open(path, "r", encoding="utf-8") as file:
-            pattern_dict = json.load(file)
 
         for token in parts:
             token = token.strip()
@@ -283,4 +276,8 @@ class GraphParser(Parser):
                 self.tokens['explicit'].append(graph)
             else:
                 # If it is an unknown expression
-                raise ParseError(f"Cannot resolve statement: {token}")
+                raise ParseError(f"Cannot resolve a statement: {token}")
+
+        if (functions_count := len(self.tokens["explicit"]) + len(self.tokens["implicit"])) > self.FUNCTIONS_LIMIT:
+            raise ParseError(f"Too many functions requested ({functions_count}). "
+                             f"The limit is {self.FUNCTIONS_LIMIT} functions.")
