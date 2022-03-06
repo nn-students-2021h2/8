@@ -301,8 +301,7 @@ class CalculusParser(Parser):
 
         # Check if input match any pattern
         try:
-            is_pattern_found = self._find_pattern(query, pattern_dict, False)
-            if is_pattern_found:
+            if self._find_pattern(query, pattern_dict, False):
                 return True
         except ParseError as err:
             # Maybe we should correct some words here. If nothing was changed, then we throw previous exception
