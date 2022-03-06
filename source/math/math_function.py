@@ -192,9 +192,7 @@ class MathFunction:
     def _check_v_asymptote(self, symbol, point) -> bool:
         left_limit = sy.limit(self.simplified_expr, symbol, point, '+')
         right_limit = sy.limit(self.simplified_expr, symbol, point, '-')
-        if not point.is_infinite and (left_limit.is_infinite or right_limit.is_infinite):
-            return True
-        return False
+        return not point.is_infinite and (left_limit.is_infinite or right_limit.is_infinite)
 
     def vertical_asymptotes(self, symbol: sy.Symbol) -> set:
         """
