@@ -5,7 +5,6 @@ import asyncio
 import logging
 from enum import Enum
 from functools import total_ordering
-from subprocess import run, STDOUT, PIPE
 
 import pymongo.collection
 from aiogram import Bot, Dispatcher, executor, types
