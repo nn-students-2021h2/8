@@ -62,7 +62,8 @@ def test_zeros(expr, result):
                                           (MathFunction("", sy.sqrt(x ** 2) - 4), [{-4, 4}, {-4}]),
                                           (MathFunction("", sy.ln(x)), [{1}, {sy.zoo}]),
                                           (MathFunction("", (x - 2) * (4 * x - 4) * (x + 3)), [{2, 1, -3}, {24}]),
-                                          (MathFunction("", 1 / (x + 0.5) + 2), [{-1.0}, {sy.sympify(4.0)}])])
+                                          (
+                                          MathFunction("", 1 / (x + 0.5) + 2), [{sy.Number(-1.0)}, {sy.sympify(4.0)}])])
 def test_axis_intersection(expr, result):
     assert expr.axis_intersection(x, y) == result[0]
     assert expr.axis_intersection(y, x) == result[1]
