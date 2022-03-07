@@ -1,13 +1,14 @@
 """
 Graph class module
 """
-from pathlib import Path
+from io import BytesIO
 
 import numpy as np
 import sympy as sy
 from matplotlib import pyplot as plt, style
 
 from source.conf.config import Config
+from source.extras.utilities import run_asynchronously
 from source.math.graph_parser import GraphParser
 
 
@@ -16,18 +17,14 @@ class DrawError(Exception):
 
 
 class Graph:
-    """
-    This class represents plot of one or multiple functions
-    :param file_path: a file name / path which is used to keep plot
-    """
+    """This class represents plot of one or multiple functions"""
 
     # This variable adjusts the accuracy of the implicit function drawing
     # Increase it to get more antialiasing result
     IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["STYLE"]["implicit_function_points"]
 
-    def __init__(self, file_path: Path):
+    def __init__(self):
         self.plot = sy.plot(show=False, title="Plot", legend=True)
-        self.file_path = file_path
 
     @staticmethod
     def setup_plot_style():
@@ -40,7 +37,8 @@ class Graph:
         for param, value in parameters["RC_PARAMS"].items():
             plt.rcParams[param] = value
 
-    def draw(self, tokens: dict):
+    @run_asynchronously
+    def draw(self, tokens: dict) -> BytesIO:
         """
         Draw parsed functions and save plot as image
 
@@ -134,5 +132,9 @@ class Graph:
             legend.legendHandles[expl_func_count + counter].set_color(self.plot[i].line_color)
             counter += 1
 
-        backend.fig.savefig(self.file_path, dpi=250, bbox_inches='tight')
+        buf = BytesIO()
+        backend.fig.savefig(buf, format="png", dpi=250, bbox_inches='tight')
+        buf.seek(0)
         plt.close("all")
+
+        return buf

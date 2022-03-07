@@ -7,6 +7,7 @@ import sympy as sy
 from sympy import SympifyError
 
 from source.conf import Config
+from source.extras.utilities import run_asynchronously
 from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
 
@@ -198,6 +199,7 @@ class CalculusParser(Parser):
 
         return result
 
+    @run_asynchronously
     def process_query(self) -> list:
         """
         Tries to calculate the requested function
@@ -289,6 +291,7 @@ class CalculusParser(Parser):
 
         return result
 
+    @run_asynchronously
     def parse(self, query: str) -> bool:
         """
         Fills in class attributes based on the user request
