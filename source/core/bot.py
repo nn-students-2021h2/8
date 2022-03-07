@@ -234,7 +234,7 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Get help':
                 update.message.reply_text('No')
             case _:
-                update.message.reply_text(hmsg.echo())
+                hmsg.send_analyse(update, context)
     elif chat_status == Status.ANALYSE_MENU:
         match update.message.text:
             case 'Back':
@@ -242,7 +242,10 @@ def default_handler(update: Update, context: CallbackContext):
             case 'Main menu':
                 go_main(update)
             case _:
-                go_analyse_option(update, status_dict[update.message.text])
+                try:
+                    go_analyse_option(update, status_dict[update.message.text])
+                except KeyError:
+                    hmsg.send_analyse(update, context)
     elif Status.DERIVATIVE <= chat_status <= Status.STATIONARY_POINTS:
         match update.message.text:
             case 'Back':
