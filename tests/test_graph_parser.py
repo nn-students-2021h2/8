@@ -26,9 +26,10 @@ def test_is_x_equal_num_expression(token, result):
                                                 ("y=4*x+3*z", ParseError),
                                                 ("y=2+x, from 6 to 1", ParseError),
                                                 ("x^2, from ", ParseError)])
-def test_parse(expression, result):
+@pytest.mark.asyncio
+async def test_parse(expression, result):
     with pytest.raises(result):
-        parser.GraphParser.parse(parser.GraphParser(), expression)
+        await parser.GraphParser.parse(parser.GraphParser(), expression)
 
 
 @pytest.mark.parametrize("expr, result", [('x*4', ['x*4']),
