@@ -97,8 +97,8 @@ class CalculusParser(Parser):
 
                     # Check if listed variables are correct
                     for var in symbols:
-                        if not str(var).isalpha():
-                            raise ParseError(f"Variables can only contain letters\nIncorrect variable: '{var}'")
+                        if not str(var).isalpha() or not str(var).isascii():
+                            raise ParseError(f"Variables can only contain latin letters\nIncorrect variable: '{var}'")
 
                     # If there is no variables, then we can't get the answer. In order to not getting errors,
                     # we can append fictitious variable 'x'

@@ -1,10 +1,11 @@
 """
-Tests for parsers
+Tests for graph parser
 """
+
 import pytest
 
 import source.math.graph_parser as parser
-from source.math.graph_parser import ParseError
+from source.math.parser import ParseError
 
 
 @pytest.mark.parametrize("token, result", [(' x= 1', True),
@@ -28,3 +29,19 @@ def test_is_x_equal_num_expression(token, result):
 def test_parse(expression, result):
     with pytest.raises(result):
         parser.GraphParser.parse(parser.GraphParser(), expression)
+
+
+@pytest.mark.parametrize("expr, result", [('x*4', ['x*4']),
+                                          ('sin( 2* x) + 12\n 10\nx*2', ['sin( 2* x) + 12', ' 10', 'x*2']),
+                                          ('xxxx', ['xxxx']),
+                                          ('1\n2\n2\n*\n', ['1', '2', '2', '*', ''])])
+def test_split_query_success(expr, result):
+    assert parser._split_query(expr) == result
+
+
+@pytest.mark.parametrize("expr, result", [('(((', ParseError),
+                                          ('))}{{}', ParseError),
+                                          (')(x*2', ParseError)])
+def test_split_query_error(expr, result):
+    with pytest.raises(result):
+        parser._split_query(expr)

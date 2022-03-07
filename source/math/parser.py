@@ -48,11 +48,10 @@ class Parser(ABC):
     @property
     def warnings(self) -> list:
         """
-        Delete warnings and return its values
+        Warnings getter
         :return: warnings as a list
         """
-        warning_list = self._warnings
-        return warning_list
+        return self._warnings
 
     def clear_warnings(self):
         """

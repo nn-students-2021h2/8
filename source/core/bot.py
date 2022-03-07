@@ -242,7 +242,7 @@ async def default_handler(message: types.Message):
             case 'Get help':
                 await bot.send_message(message.chat.id, 'No')
             case _:
-                await message.reply(hmsg.echo())
+                await hmsg.send_analyse(message)
     elif chat_status == Status.ANALYSE_MENU:
         match message.text:
             case 'Back':
@@ -250,7 +250,10 @@ async def default_handler(message: types.Message):
             case 'Main menu':
                 await go_main(message)
             case _:
-                await go_analyse_option(message, status_dict[message.text])
+                try:
+                    await go_analyse_option(message, status_dict[message.text])
+                except KeyError:
+                    await hmsg.send_analyse(message)
     elif Status.DERIVATIVE <= chat_status <= Status.STATIONARY_POINTS:
         match message.text:
             case 'Back':
