@@ -3,11 +3,11 @@ Tests for math functions
 """
 
 import pytest
-from source.math.math_function import MathFunction
+import sympy as sy
 from sympy.abc import x, y
 
 import source.math.math_function as math_f
-import sympy as sy
+from source.math.math_function import MathFunction
 
 
 @pytest.mark.parametrize('incorrect, correct', [('sin(x)+tg(x+2)', 'sin(x)+tan(x+2)'),
@@ -55,14 +55,14 @@ def test_zeros(expr, result):
     assert expr.zeros() == result
 
 
-@pytest.mark.parametrize("expr, result", [(MathFunction("", 2 * x - 5), [{2.5}, {-5}]),
+@pytest.mark.parametrize("expr, result", [(MathFunction("", 2 * x - 5), [{sy.Number(5) / sy.Number(2)}, {-5}]),
                                           (MathFunction("", 1 / x), [sy.EmptySet, {sy.zoo}]),
                                           (MathFunction("", x ** 2 + y ** 2 - 1), [{-1, 1}, {1, -1}]),
                                           (MathFunction("", x ** 2 - 4 * x - 0), [{0, 4}, {0}]),
                                           (MathFunction("", sy.sqrt(x ** 2) - 4), [{-4, 4}, {-4}]),
                                           (MathFunction("", sy.ln(x)), [{1}, {sy.zoo}]),
                                           (MathFunction("", (x - 2) * (4 * x - 4) * (x + 3)), [{2, 1, -3}, {24}]),
-                                          (MathFunction("", 1 / (x + 0.5) + 2), [{-1}, {sy.sympify(4.0)}])])
+                                          (MathFunction("", 1 / (x + 0.5) + 2), [{-1.0}, {sy.sympify(4.0)}])])
 def test_axis_intersection(expr, result):
     assert expr.axis_intersection(x, y) == result[0]
     assert expr.axis_intersection(y, x) == result[1]
