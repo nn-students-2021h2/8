@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: "mongo-database-container"
+    network_mode: host
+    image: mongo:latest
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=function-explorer-bot-db
+      - MONGO_INITDB_USERNAME=root
+      - MONGO_INITDB_PASSWORD=rootpassword
+  bot:
+    container_name: "telegram-bot-container"
+    network_mode: host
+    build: .
+    restart: always
+    depends_on:
+      - db
