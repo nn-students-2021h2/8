@@ -206,11 +206,10 @@ def test_slant_asymptotes(expr, result):
     assert expr.slant_asymptotes(*expr.symbols) == result
 
 
-@pytest.mark.parametrize("expr, result", [(MathFunction("", -(x ** 2 + 1), symbols=[x]), -1),
+@pytest.mark.parametrize("expr, result", [(MathFunction("", (x ** 2 + 1) * -1, symbols=[x]), -1),
                                           (MathFunction("", x ** 2, symbols=[x]), sy.oo),
                                           (MathFunction("", sy.sin(x), symbols=[x]), 1),
                                           (MathFunction("", sy.tan(x), symbols=[x]), sy.oo),
-                                          (MathFunction("", sy.asin(x), symbols=[x]), sy.pi / 2),
                                           (MathFunction("", sy.cos(x), symbols=[x]), 1),
                                           (MathFunction("", x ** 3, symbols=[x]), sy.oo),
                                           (MathFunction("", sy.log(x), symbols=[x]), sy.oo),
@@ -222,11 +221,18 @@ def test_maximum(expr, result):
     assert expr.maximum(*expr.symbols) == result
 
 
-@pytest.mark.parametrize("expr, result", [(MathFunction("", -(x ** 2 + 1), symbols=[x]), -sy.oo),
+@pytest.mark.parametrize("expr, exception", [(MathFunction("", sy.acot(x), symbols=[x]), NotImplementedError),
+                                             (MathFunction("", sy.acos(x), symbols=[x]), ValueError),
+                                             (MathFunction("", sy.asin(x), symbols=[x]), ValueError)])
+def test_maximum_exception(expr, exception):
+    with pytest.raises(exception):
+        expr.maximum(*expr.symbols)
+
+
+@pytest.mark.parametrize("expr, result", [(MathFunction("", (x ** 2 + 1) * -1, symbols=[x]), -sy.oo),
                                           (MathFunction("", x ** 2, symbols=[x]), 0),
                                           (MathFunction("", sy.sin(x), symbols=[x]), -1),
                                           (MathFunction("", sy.tan(x), symbols=[x]), -sy.oo),
-                                          (MathFunction("", sy.asin(x), symbols=[x]), -sy.pi / 2),
                                           (MathFunction("", sy.cos(x), symbols=[x]), -1),
                                           (MathFunction("", x ** 3, symbols=[x]), -sy.oo),
                                           (MathFunction("", sy.log(x), symbols=[x]), -sy.oo),
@@ -236,6 +242,14 @@ def test_maximum(expr, result):
                                           (MathFunction("", sy.sqrt(sy.sqrt(sy.sqrt(x))), symbols=[x]), sy.Number(0))])
 def test_minimum(expr, result):
     assert expr.minimum(*expr.symbols) == result
+
+
+@pytest.mark.parametrize("expr, exception", [(MathFunction("", sy.acot(x), symbols=[x]), NotImplementedError),
+                                             (MathFunction("", sy.acos(x), symbols=[x]), ValueError),
+                                             (MathFunction("", sy.asin(x), symbols=[x]), ValueError)])
+def test_minimum_exception(expr, exception):
+    with pytest.raises(exception):
+        expr.minimum(*expr.symbols)
 
 
 @pytest.mark.parametrize("expr, result", [(MathFunction("", x ** 2, symbols=[x]), {0}),
