@@ -100,7 +100,10 @@ async def go_main(message: types.Message):
     """Change status of user and send main menu to user."""
     if await change_user_status(message, Status.MAIN):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph", "Analyse function", "Get help")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph")
+    reply_markup.add("Analyse function")
+    reply_markup.add("Get help")
+    reply_markup.add("Meme")
     await bot.send_message(message.chat.id, 'Choose action', reply_markup=reply_markup)
 
 
@@ -116,7 +119,9 @@ async def go_analyse(message: types.Message):
     """Change status of user to 'analyse' and send analyse menu"""
     if await change_user_status(message, Status.ANALYSE):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Options", "Get help", "Main menu")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Options")
+    reply_markup.add("Get help")
+    reply_markup.add("Main menu")
     await bot.send_message(message.chat.id, "Choose option or enter command or go to main menu",
                            reply_markup=reply_markup)
 
@@ -140,7 +145,8 @@ async def go_analyse_option(message: types.Message, option: Status):
     """Change status of user to option and send 'go back' menu'"""
     if await change_user_status(message, option):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Back", "Main menu")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Back")
+    reply_markup.add("Main menu")
     await bot.send_message(message.chat.id, "Enter function to analyse or go back", reply_markup=reply_markup)
 
 
@@ -182,7 +188,7 @@ async def start(message: types.Message):
 async def chat_help(message: types.Message):
     """Send a message when the command /help is issued."""
     await bot.send_message(message.chat.id, 'Enter:\n/start to restart bot.\n/graph to draw graph.\n/analyse to '
-                                            'go on to investigate the function.')
+                                            'go on to investigate the function.\n/meme to get random meme from reddit.')
 
 
 @dispatcher.message_handler(commands=["graph"])
@@ -222,7 +228,9 @@ async def default_handler(message: types.Message):
     except errors.PyMongoError:
         await bot.send_message(message.chat.id, no_db_message)
         return
-
+    if message.text == 'Meme':
+        await meme(message)
+        return
     if chat_status == Status.MAIN:
         match message.text:
             case 'Draw graph':
