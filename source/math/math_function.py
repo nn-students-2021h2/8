@@ -253,7 +253,7 @@ class MathFunction:
         # TODO periodic function
 
         k = sy.limit(self.simplified_expr / symbol, symbol, sy.oo)
-        if k.is_number:
+        if k.is_number and k.is_finite:
             b = sy.limit(self.simplified_expr - k * symbol, symbol, sy.oo)
             if b.is_number:
                 ans.add(k * symbol + b)
