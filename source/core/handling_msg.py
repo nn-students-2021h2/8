@@ -16,6 +16,7 @@ from source.extras.utilities import run_asynchronously
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
+from source.math.math_function import MathError
 
 # We get "USE_LATEX" parameter from settings
 SETTINGS = Config()
@@ -154,10 +155,13 @@ async def send_analyse(message: types.Message):
     except ParseError as err:
         await message.reply(str(err))
         logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
+    except MathError as err:
+        await message.reply(str(err))
+        logger.info("MathError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
     except RecursionError:
         await message.reply("Incorrect input. Please check your function.")
         logger.warning("RecursionError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
-    except (ValueError, TypeError, NotImplementedError):
+    except (ValueError, TypeError, AttributeError, NotImplementedError):
         await message.reply("Sorry, can't solve the problem or the input is invalid. Please check your function.")
         logger.warning("ValueError or NotImplementedError exception raised on user's [chat_id=%s] input: `%s`", chat_id,
                        expr)

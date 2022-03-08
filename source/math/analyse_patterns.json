@@ -5,7 +5,7 @@
         "6",
         "7"
       ],
-      "^(differentiate|diff|derivative)[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(?!by)(.+)$": [
+      "^(differentiate|diff|derivative)[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)(?!by)$": [
         "6"
       ]
     },

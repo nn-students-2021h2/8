@@ -2,9 +2,11 @@
 Parser for function analysis requests
 """
 import re
+from tokenize import TokenError
 
 import sympy as sy
 from sympy import SympifyError
+from sympy.parsing.sympy_parser import standard_transformations, implicit_multiplication_application, convert_xor
 
 from source.conf import Config
 from source.extras.utilities import run_asynchronously
@@ -22,28 +24,30 @@ def _process_function(token: str) -> sy.Function:
     token = replace_incorrect_functions(token)
     expr_parts = token.split('=')
     parts_count = len(expr_parts)
+    rules = standard_transformations + (implicit_multiplication_application, convert_xor)
     try:
         if parts_count == 1:
-            function = sy.simplify(expr_parts[0])
+            function = sy.parse_expr(expr_parts[0], transformations=rules)
         elif parts_count == 2:
             # If expression like 'y = x', then discard left part, else construct expression "y - x = 0"
-            result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+            result = sy.Eq(sy.parse_expr(expr_parts[0], transformations=rules),
+                           sy.parse_expr(expr_parts[1], transformations=rules))
             vars_intersection = result.lhs.free_symbols & result.rhs.free_symbols
             if re.match("^y$", expr_parts[0].strip()) is not None and len(vars_intersection) == 0:
                 modified_expr = expr_parts[1]
             else:
                 modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
 
-            function = sy.simplify(modified_expr)
+            function = sy.parse_expr(modified_expr, transformations=rules)
         else:
             raise ParseError("Mistake in implicit function: found more than 1 equal sign.\n"
                              f"Your input: {token.strip()}\n"
                              "Please, check your math formula.")
-
-        return function
-    except (SympifyError, TypeError, ValueError, AttributeError) as err:
+    except (SympifyError, TypeError, ValueError, AttributeError, TokenError, SyntaxError) as err:
         raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
                          "Please, check your math formula.") from err
+
+    return function
 
 
 class CalculusParser(Parser):
@@ -56,7 +60,7 @@ class CalculusParser(Parser):
     :param additional_params: a list of additional information that can be used in calculating the result
     """
 
-    def __init__(self, action: str = "", function: sy.Function = None, additional_params: list = None):
+    def __init__(self, action: str = "", function: MathFunction = None, additional_params: list = None):
         super().__init__()
         if additional_params is None:
             additional_params = []
