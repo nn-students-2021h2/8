@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 
 services:
   db:
@@ -10,10 +10,16 @@ services:
       - MONGO_INITDB_DATABASE=function-explorer-bot-db
       - MONGO_INITDB_USERNAME=root
       - MONGO_INITDB_PASSWORD=rootpassword
+    volumes:
+      - BotData:/home/app/data
   bot:
     container_name: "telegram-bot-container"
     network_mode: host
     build: .
     restart: always
+    volumes:
+      - BotData:/home/app/data
     depends_on:
       - db
+volumes:
+  BotData:
