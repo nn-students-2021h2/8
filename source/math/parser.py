@@ -7,6 +7,8 @@ from abc import ABC, abstractmethod
 
 import sympy as sy
 
+from source.extras.translation import _
+
 
 class ParseError(Exception):
     """This exception will be thrown when something went wrong while parsing"""
@@ -66,9 +68,10 @@ class Parser(ABC):
         """
         self._warnings.append(warning)
 
-    def _fix_words(self, query: str, pattern_set: str, pattern_dict: dict) -> str:
+    def _fix_words(self, query: str, pattern_set: str, pattern_dict: dict, lang: str = "en") -> str:
         """
         Tries to correct words to fit the pattern based on keywords of pattern
+        :param lang:
         :param query: query to fix
         :param pattern_set: a class of query
         :param pattern_dict: a dictionary where the keywords are
@@ -84,6 +87,6 @@ class Parser(ABC):
             matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=self.PREDICTION_ACCURACY)
             if len(matches) == 1 and matches[0] != word:
                 result = result.replace(word, str(matches[0]))
-                self.push_warning(_("Interpreting '{}' as '{}'".format(word, matches[0])))
+                self.push_warning(_("Interpreting '{}' as '{}'", locale=lang).format(word, matches[0]))
 
         return result if result != query else ""

@@ -31,8 +31,8 @@ token: str = Config().properties["APP"]["TOKEN"]
 bot: Bot = Bot(token=token)
 dispatcher: Dispatcher = Dispatcher(bot, storage=MemoryStorage())
 
-i18n = dispatcher.middleware.setup(LanguageMiddleware("Bot", Path(__file__).parents[2] / "locales"))
-_ = i18n.gettext
+# Set up translator TODO move setup into 'main'
+_ = i18n = dispatcher.middleware.setup(LanguageMiddleware("Bot", Path(__file__).parents[2] / "locales"))
 
 
 @total_ordering
@@ -67,8 +67,6 @@ class Status(Enum):
         return NotImplemented
 
 
-no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
-
 chat_status_table: pymongo.collection.Collection
 """Collection that returns the Status of user by chat id"""
 
@@ -97,6 +95,7 @@ async def change_user_status(message: types.Message, status: Status) -> int:
             chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"status": status.value}})
         return 0
     except errors.PyMongoError:
+        no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
         await bot.send_message(message.chat.id, no_db_message)
         return 1
 
@@ -179,8 +178,8 @@ status_dict.update({value: key.lower() for key, value in status_dict.items()})
 @rate_limit(limit=1)
 async def start(message: types.Message):
     """Send a message when the command /start is issued."""
-    await bot.send_message(message.chat.id,
-                           _('Hello, {} {}!').format(message.from_user.first_name, message.from_user.last_name))
+    user = message.from_user
+    await bot.send_message(message.chat.id, _('Hello, {} {}!').format(user.first_name, user.last_name))
     await go_main(message)
 
 
@@ -227,6 +226,7 @@ async def default_handler(message: types.Message):
     try:
         chat_status = Status(chat_status_table.find_one({"chat_id": message.chat.id})['status'])
     except errors.PyMongoError:
+        no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
         await bot.send_message(message.chat.id, no_db_message)
         return
 
@@ -239,7 +239,7 @@ async def default_handler(message: types.Message):
             case 'Get help':
                 await chat_help(message)
             case _:
-                await message.reply(hmsg.echo())
+                await message.reply(_('I didn\'t understand what you want'))
     elif chat_status == Status.ANALYSE:
         match message.text:
             case 'Main menu':

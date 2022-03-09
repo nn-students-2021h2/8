@@ -7,14 +7,16 @@ import sympy as sy
 from sympy import SympifyError
 
 from source.conf import Config
+from source.extras.translation import _
 from source.extras.utilities import run_asynchronously
 from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
 
 
-def _process_function(token: str) -> sy.Function:
+def _process_function(token: str, lang: str = "en") -> sy.Function:
     """
     Converting a string into a sympy function
+    :param lang:
     :param token: string to convert
     :return: sympy simplified function object
     """
@@ -38,12 +40,12 @@ def _process_function(token: str) -> sy.Function:
         else:
             raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
                                "Your input: {}\n"
-                               "Please, check your math formula.".format(token.strip())))
+                               "Please, check your math formula.", locale=lang).format(token.strip()))
 
         return function
     except (SympifyError, TypeError, ValueError, AttributeError) as err:
         raise ParseError(_("Mistake in expression.\nYour input: {}\n"
-                           "Please, check your math formula.".format(token.strip()))) from err
+                           "Please, check your math formula.", locale=lang).format(token.strip())) from err
 
 
 class CalculusParser(Parser):
@@ -64,9 +66,10 @@ class CalculusParser(Parser):
         self.function = function
         self.additional_params = additional_params
 
-    def _find_pattern(self, query: str, pattern_dict: dict, try_predict: bool) -> bool:
+    def _find_pattern(self, query: str, pattern_dict: dict, try_predict: bool, lang: str = "en") -> bool:
         """
         Tries to find pattern matching the given query
+        :param lang:
         :param query: user input
         :param pattern_dict: a dictionary of patterns
         :param try_predict: if there is a need to correct the query and try to find pattern again
@@ -82,7 +85,7 @@ class CalculusParser(Parser):
                     match = re.match(p, query)
 
                 # If we want to find correct pattern again, we need to fix wrong words in query
-                if try_predict and (fixed_query := self._fix_words(query, pattern_set, pattern_dict)):
+                if try_predict and (fixed_query := self._fix_words(query, pattern_set, pattern_dict, lang)):
                     match = re.match(p, fixed_query)
 
                 if match:
@@ -91,15 +94,15 @@ class CalculusParser(Parser):
                     expression = match.group(pattern_params[0])
 
                     # Extract the function from query and construct MathFunction
-                    function = _process_function(expression)
+                    function = _process_function(expression, lang)
                     m_func = MathFunction(expression, function)
                     symbols = sorted(list(m_func.simplified_expr.free_symbols), key=lambda x: str(x))
 
                     # Check if listed variables are correct
                     for var in symbols:
                         if not str(var).isalpha() or not str(var).isascii():
-                            raise ParseError(
-                                _("Variables can only contain latin letters\nIncorrect variable: '{}'").format(var))
+                            raise ParseError(_("Variables can only contain latin letters\nIncorrect variable: '{}'",
+                                               locale=lang).format(var))
 
                     # If there is no variables, then we can't get the answer. In order to not getting errors,
                     # we can append fictitious variable 'x'
@@ -118,9 +121,10 @@ class CalculusParser(Parser):
 
         return False
 
-    def make_latex(self, expression: list) -> str:
+    def make_latex(self, expression: list, lang: str = "en") -> str:
         """
         Converts the given argument into LaTeX format according to the parser's pattern set
+        :param lang:
         :param expression: list of expressions that should be represented in LaTeX format
         :return: LaTeX representation (string). If is can't find pattern set, then returns empty string
         """
@@ -196,14 +200,15 @@ class CalculusParser(Parser):
                 result = fr"Stationary\ points\ of\ {function}:\\{first_result}"
 
             case _:
-                raise ParseError(_("Unknown pattern set: {}".format(pattern_set)))
+                raise ParseError(_("Unknown pattern set: {}", lang).format(pattern_set))
 
         return result
 
     @run_asynchronously
-    def process_query(self) -> list:
+    def process_query(self, lang="en") -> list:
         """
         Tries to calculate the requested function
+        :param lang:
         :return: list of results
         """
         m_func = self.function
@@ -224,8 +229,9 @@ class CalculusParser(Parser):
                     # Check if listed variables are correct
                     for var in symbols:
                         if not str(var).isalpha():
-                            raise ParseError(
-                                _("Variables can only contain letters\nIncorrect variable: '{}'".format(var)))
+                            raise ParseError(_("Variables can only contain letters\nIncorrect variable: '{}'",
+                                               locale=lang)
+                                             .format(var))
 
                 result.append(m_func.derivative(*symbols))
 
@@ -294,11 +300,12 @@ class CalculusParser(Parser):
         return result
 
     @run_asynchronously
-    def parse(self, query: str) -> bool:
+    def parse(self, query: str, lang: str = "en") -> bool:
         """
         Fills in class attributes based on the user request
         Correlates user input with patterns defined in analyse_patterns.json
         Extract function and additional parameters from input query
+        :param lang:
         :param query: user input, string (e.g. diff of x**2 by x)
         :return: true on successfully found pattern, false otherwise
         """
@@ -306,13 +313,13 @@ class CalculusParser(Parser):
 
         # Check if input match any pattern
         try:
-            if self._find_pattern(query, pattern_dict, False):
+            if self._find_pattern(query, pattern_dict, False, lang):
                 return True
         except ParseError as err:
             # Maybe we should correct some words here. If nothing was changed, then we throw previous exception
-            if self._find_pattern(query, pattern_dict, True):
+            if self._find_pattern(query, pattern_dict, True, lang):
                 return True
             raise err
 
         # If none of patterns were satisfied, then we can try to correct input and match the patterns again
-        return self._find_pattern(query, pattern_dict, True)
+        return self._find_pattern(query, pattern_dict, True, lang)

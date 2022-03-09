@@ -14,7 +14,7 @@ async def get_language(user_id):
     :param user_id: id of requested user
     :return: language code (e.g. "en", "ru")
     """
-    return None
+    return "ru"
 
 
 class LanguageMiddleware(I18nMiddleware):
@@ -28,4 +28,4 @@ class LanguageMiddleware(I18nMiddleware):
         :return: language code
         """
         user = types.User.get_current()
-        return await get_language(user.id) or "ru"
+        return await get_language(user.id) or "en"

@@ -8,6 +8,8 @@ from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils.exceptions import Throttled
 
+from source.extras.translation import _
+
 
 def rate_limit(limit: float, key=None):
     """

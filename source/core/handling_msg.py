@@ -11,14 +11,15 @@ from aiogram import types
 from aiogram.utils.exceptions import BadRequest
 
 from source.conf import Config
-from source.core.bot import _
 from source.core.bot import logger, bot
+from source.extras.translation import _
 from source.extras.utilities import run_asynchronously
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
-
 # We get "USE_LATEX" parameter from settings
+from source.middleware.localization_middleware import get_language
+
 SETTINGS = Config()
 
 # A number of dots per inch for TeX pictures
@@ -50,14 +51,10 @@ def resize_image(image_to_resize: BytesIO, output_buffer: BytesIO):
     output_buffer.seek(0)
 
 
-def echo():
-    """On simple messages bot replies that didn't understand user"""
-    return _('I didn\'t understand what you want')
-
-
 async def send_graph(message: types.Message):
     """User requested to draw a plot"""
     chat_id = message.chat.id
+    user_language = await get_language(message.from_user.id)
     if message.get_command():
         expr = message.get_args().lower()
     else:
@@ -68,9 +65,9 @@ async def send_graph(message: types.Message):
     parser = GraphParser()
 
     try:
-        await parser.parse(expr)
+        await parser.parse(expr, user_language)
         graph = Graph()
-        image = await graph.draw(parser.tokens)
+        image = await graph.draw(parser.tokens, user_language)
     except ParseError as err:
         await message.reply(str(err))
         logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
@@ -98,13 +95,13 @@ def run_TeX(latex: str, result_picture: BytesIO):
     :param latex: latex text to compile
     :param result_picture: rendered picture
     """
-    sy.preview(fr'${latex}$', output='png', viewer='BytesIO', outputbuffer=result_picture,
-               dvioptions=['-D', DPI])
+    sy.preview(fr'${latex}$', output='png', viewer='BytesIO', outputbuffer=result_picture, dvioptions=['-D', DPI])
 
 
 async def send_analyse(message: types.Message):
     """User requested some function analysis"""
     chat_id = message.chat.id
+    user_language = await get_language(message.from_user.id)
     if message.get_command():
         expr = message.get_args().lower()
     else:
@@ -117,17 +114,17 @@ async def send_analyse(message: types.Message):
     try:
         # Parse the request and check if any pattern was found
         # If parser can't understand what the user means, it returns False
-        is_pattern_found = await parser.parse(expr)
+        is_pattern_found = await parser.parse(expr, user_language)
         if not is_pattern_found:
             await message.reply(_("Couldn't find a suitable template. Check the input."))
             logger.info("Bot doesn't find any pattern for user's [id=%s] input: `%s`", chat_id, expr)
             return
 
-        result = await parser.process_query()
+        result = await parser.process_query(user_language)
 
         # If USE_LATEX set in True, then send picture to the user. Else, send basic text
         if SETTINGS.properties["APP"]["USE_LATEX"]:
-            latex = parser.make_latex(result)
+            latex = parser.make_latex(result, user_language)
             with BytesIO() as latex_picture, BytesIO() as resized_image:
                 await run_TeX(latex, latex_picture)
                 await resize_image(latex_picture, resized_image)

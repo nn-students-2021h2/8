@@ -8,6 +8,7 @@ import sympy as sy
 from matplotlib import pyplot as plt, style
 
 from source.conf.config import Config
+from source.extras.translation import _
 from source.extras.utilities import run_asynchronously
 from source.math.graph_parser import GraphParser
 
@@ -38,12 +39,13 @@ class Graph:
             plt.rcParams[param] = value
 
     @run_asynchronously
-    def draw(self, tokens: dict) -> BytesIO:
+    def draw(self, tokens: dict, lang: str = "en") -> BytesIO:
         """
         Draw parsed functions and save plot as image
 
         Parameters
         ==========
+        :param lang:
         :param tokens: dict of parsed user input (see parse function in graph_parser.py to get more info)
             Keys:
             - 'aspect ratio' : the ratio of x to y
@@ -79,7 +81,7 @@ class Graph:
         try:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError(_("Unexpected error, check your expression.")) from err
+            raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
 
         # Extract all implicit functions
         for impl_func in tokens['implicit']:
@@ -107,7 +109,7 @@ class Graph:
         try:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError(_("Unexpected error, check your expression.")) from err
+            raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
 
         # Set function range
         if len(rng := tokens["range"]) != 0:

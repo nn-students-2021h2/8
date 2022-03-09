@@ -5,6 +5,8 @@ Math Function class module
 import sympy as sy
 import sympy.calculus.util as calculus
 
+from source.extras.translation import _
+
 
 def replace_incorrect_functions(function: str) -> str:
     """

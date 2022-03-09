@@ -1,8 +1,9 @@
-# Step 1:
-pybabel extract --input-dirs=. -o locales/bot.pot
-pybabel update -d locales -D bot -i locales/bot.pot
+# Step 1: extract all the marked string from the code and update bot.po files in locales/*lang*/LC_MESSAGES folder
+pybabel extract --project=FunctionExplorerBot --version=1.0 --input-dirs=. -o locales/bot.pot
+pybabel update -d locales -D bot --update-header-comment -N -i locales/bot.pot
 
-# Step 2: update the translations in bot.po files (it should be done manually)
+# Step 2: update the translations in bot.po files (it should be done manually! To update russian translations,
+# open locales/ru/LC_MESSAGES/bot.po file and find not translated lines)
 
-# Step 3: compile the translationed files
+# Step 3: compile the translated files
 pybabel compile -d locales -D bot
