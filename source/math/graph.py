@@ -79,7 +79,7 @@ class Graph:
         try:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError("Unexpected error, check your expression.") from err
+            raise DrawError(_("Unexpected error, check your expression.")) from err
 
         # Extract all implicit functions
         for impl_func in tokens['implicit']:
@@ -107,7 +107,7 @@ class Graph:
         try:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError("Unexpected error, check your expression.") from err
+            raise DrawError(_("Unexpected error, check your expression.")) from err
 
         # Set function range
         if len(rng := tokens["range"]) != 0:

@@ -1,0 +1,270 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-03-09 12:42+0300\n"
+"PO-Revision-Date: 2022-03-09 01:10+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: source/core/bot.py:70
+msgid ""
+"There were problems, the functionality is limited.\n"
+"You can only use the bot with commands."
+msgstr ""
+"Возникли некоторые технические проблемы, функциональность ограничена.\n"
+"Вы можете использовать только команды."
+
+#: source/core/bot.py:109
+msgid "Choose action"
+msgstr "Выберите действие"
+
+#: source/core/bot.py:117 source/core/bot.py:280
+msgid "Enter function you want to draw or go to the main menu"
+msgstr "Введите функцию, которую вы хотите нарисовать, или вернитесь в главное меню"
+
+#: source/core/bot.py:126
+msgid "Choose option or enter command or go to main menu"
+msgstr "Выберите действие, введите команду, или вернитесь в главное меню"
+
+#: source/core/bot.py:142
+msgid "Choose option to analyse or go back"
+msgstr "Выберите опцию или вернитесь в меню"
+
+#: source/core/bot.py:150
+msgid "Enter function to analyse or go back"
+msgstr "Введите функцию, которую хотите проанализировать, или вернитесь в меню"
+
+#: source/core/bot.py:183
+msgid "Hello, {} {}!"
+msgstr "Здравствуйте, {} {}!"
+
+#: source/core/bot.py:191
+msgid ""
+"Enter:\n"
+"/start to restart bot.\n"
+"/graph to draw graph.\n"
+"/analyse to go on to investigate the function."
+msgstr ""
+"Введите:\n"
+"/start для перезапуска бота.\n"
+"/graph для построения графиков.\n"
+"/analyse чтобы перейти к исследованию функций."
+
+#: source/core/bot.py:273
+#, fuzzy
+msgid "Enter function to explore or go back"
+msgstr "Введите функцию, которую хотите проанализировать, или вернитесь в меню"
+
+#: source/core/handling_msg.py:55
+msgid "I didn't understand what you want"
+msgstr "Не понял, что вы хотите"
+
+#: source/core/handling_msg.py:83
+msgid "Here a graph of requested functions"
+msgstr "Вот ваш график"
+
+#: source/core/handling_msg.py:122
+msgid "Couldn't find a suitable template. Check the input."
+msgstr "Не удалось найти подходящий шаблон. Проверьте входные данные."
+
+#: source/core/handling_msg.py:143
+msgid "Photo size is too large, therefore I send you a file."
+msgstr "Размер фотографии слишком большой, поэтому я отправлю ответ в виде файла."
+
+#: source/core/handling_msg.py:159
+msgid "Incorrect input. Please check your function."
+msgstr "Некорректный ввод. Пожалуйста, проверьте вашу функцию."
+
+#: source/core/handling_msg.py:162
+msgid ""
+"Sorry, can't solve the problem or the input is invalid. Please check your"
+" function."
+msgstr ""
+"Извините, не могу решить задачу, либо ввод некорректный. Пожалуйста, "
+"проверьте вашу функцию."
+
+#: source/core/handling_msg.py:197
+msgid "Sorry, something went wrong. Please try again later."
+msgstr "Извините, что-то пошло не так. Пожалуйста, повторите попытку позже"
+
+#: source/math/calculus_parser.py:41
+msgid ""
+"Mistake in implicit function: found more than 1 equal sign.\n"
+"Your input: {}\n"
+"Please, check your math formula."
+msgstr ""
+"Ошибка в неявно заданной функции: в выражении больше одного знака равно.\n"
+"Ваш ввод: {}\n"
+"Пожалуйста, проверьте введённую функцию."
+
+#: source/math/calculus_parser.py:46 source/math/graph_parser.py:232
+msgid ""
+"Mistake in expression.\n"
+"Your input: {}\n"
+"Please, check your math formula."
+msgstr ""
+"Ошибка в выражении.\n"
+"Ваш ввод: {}\n"
+"Пожалуйста, проверьте введённую функцию."
+
+#: source/math/calculus_parser.py:102
+msgid ""
+"Variables can only contain latin letters\n"
+"Incorrect variable: '{}'"
+msgstr ""
+"Переменные могут содержать только латинские буквы.Некорректная "
+"переменная: '{}'"
+
+#: source/math/calculus_parser.py:199
+msgid "Unknown pattern set: {}"
+msgstr "Неизвестный шаблон: {}"
+
+#: source/math/calculus_parser.py:228
+msgid ""
+"Variables can only contain letters\n"
+"Incorrect variable: '{}'"
+msgstr ""
+"Переменные могут содержать только латинские буквы\n"
+"Некорректная переменная: '{}'"
+
+#: source/math/graph.py:82 source/math/graph.py:110
+msgid "Unexpected error, check your expression."
+msgstr "Неожиданная ошибка, проверьте введённые данные."
+
+#: source/math/graph_parser.py:41
+msgid "Incorrect bracket sequence. Check your expression."
+msgstr "Неправильная скобочная последовательность. Проверьте выражение."
+
+#: source/math/graph_parser.py:80
+msgid ""
+"Mistake in function {} parameters.\n"
+"Your input: {}\n"
+"Please, check if numbers are correct."
+msgstr ""
+"Ошибка в параметрах функции {}.\n"
+"Ваш ввод: {}\n"
+"Пожалуйста, проверьте, что все введённые числа корректны."
+
+#: source/math/graph_parser.py:87
+msgid ""
+"Mistake in function {} parameters.\n"
+"Your input: {}\n"
+"Left argument cannot be more or equal than right one: {} >= {}."
+msgstr ""
+"Ошибка в параметрах функции {}.\n"
+"Ваш ввод: {}\n"
+"Левый аргумент не может быть больше или равен правому: {} >= {}."
+
+#: source/math/graph_parser.py:95
+msgid ""
+"Mistake in aspect ratio.\n"
+"Your input: {}\n"
+"Please, check if number is correct."
+msgstr ""
+"Ошибка в параметре соотношения сторон.\n"
+"Ваш ввод: {}\n"
+"Пожалуйста, проверьте, что числа корректны."
+
+#: source/math/graph_parser.py:102
+msgid ""
+"Mistake in aspect ratio.\n"
+"Your input: {}\n"
+"Aspect ratio cannot be negative or equal to zero."
+msgstr ""
+"Ошибка в параметре соотношения сторон.\n"
+"Ваш ввод: {}\n"
+"Соотношение сторон не может быть отрицательным или равным нулю."
+
+#: source/math/graph_parser.py:154
+msgid "Variable '{}' is replaced by 'y'"
+msgstr "Переменная '{}' заменена на 'y'"
+
+#: source/math/graph_parser.py:159 source/math/graph_parser.py:171
+msgid "Variable '{}' is replaced by 'x'"
+msgstr "Переменная '{}' заменена на 'x'"
+
+#: source/math/graph_parser.py:166
+msgid ""
+"Variable '{}' is replaced by 'y',\n"
+"variable '{}' is replaced by 'x'"
+msgstr ""
+"Переменная '{}' заменена на 'y',\n"
+"переменная '{}' заменена на 'x'"
+
+#: source/math/graph_parser.py:192
+msgid ""
+"Incorrect expression: {}\n"
+"There is only 'y' variable. It's f(y) or f(x) = 0?\n"
+"Please, use 'x' instead of single 'y' variable for f(x) plot."
+msgstr ""
+"Неверное выражение: {}\n"
+"В нём только переменная 'y'. Это f(y) или f(x) = 0?\n"
+"Пожалуйста, используйте 'x' вместо единственной переменной 'y' для "
+"построения графика f(x)."
+
+#: source/math/graph_parser.py:210
+msgid "Result of expression '{}' is always {}"
+msgstr "Результат выражения '{}' всегда {}"
+
+#: source/math/graph_parser.py:223
+msgid ""
+"Mistake in implicit function: found more than 1 equal sign.\n"
+"Your input: {}\n"
+"Please, check your math formula"
+msgstr ""
+"Ошибка в неявно заданной функции: в выражении больше одного знака равно.\n"
+"Ваш ввод: {}\n"
+"Пожалуйста, проверьте введённую функцию."
+
+#: source/math/graph_parser.py:283
+msgid "Cannot resolve a statement: {}"
+msgstr "Не удалось разобрать выражение: {}"
+
+#: source/math/graph_parser.py:286
+msgid "Too many functions requested ({}). The limit is {} functions."
+msgstr "Запрошено слишком много функций ({}). Ограничение - {} функций."
+
+#: source/math/math_function.py:78
+msgid ""
+"Since there is more than one variable in the expression, the variable(s) "
+"of differentiation must be supplied to differentiate:\n"
+"{}"
+msgstr ""
+
+#: source/math/parser.py:87
+msgid "Interpreting '{}' as '{}'"
+msgstr "'{}' интерпретировано как '{}'"
+
+#: source/middleware/anti_flood_middleware.py:81
+msgid "Flood is not allowed! You should wait {} seconds to repeat this action."
+msgstr ""
+"Флуд запрещен! Вы должны подождать {} секунд, чтобы повторить это "
+"действие."
+
+#~ msgid "Hello, %s %s!"
+#~ msgstr "Привет, %s %s!"
+
+#~ msgid "Hello, {first_name} {second_name}!"
+#~ msgstr "Привет, {first_name} {second_name}!"
+
+#~ msgid ""
+#~ "Поскольку в выражении имеется более "
+#~ "одной переменной, то для дифференцирования "
+#~ "требуется уточнить, по какой переменной(-ым)"
+#~ " дифференцировать:\n"
+#~ "{}"
+#~ msgstr ""
+

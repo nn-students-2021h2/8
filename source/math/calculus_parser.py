@@ -36,14 +36,14 @@ def _process_function(token: str) -> sy.Function:
 
             function = sy.simplify(modified_expr)
         else:
-            raise ParseError("Mistake in implicit function: found more than 1 equal sign.\n"
-                             f"Your input: {token.strip()}\n"
-                             "Please, check your math formula.")
+            raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
+                               "Your input: {}\n"
+                               "Please, check your math formula.".format(token.strip())))
 
         return function
     except (SympifyError, TypeError, ValueError, AttributeError) as err:
-        raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
-                         "Please, check your math formula.") from err
+        raise ParseError(_("Mistake in expression.\nYour input: {}\n"
+                           "Please, check your math formula.".format(token.strip()))) from err
 
 
 class CalculusParser(Parser):
@@ -98,7 +98,8 @@ class CalculusParser(Parser):
                     # Check if listed variables are correct
                     for var in symbols:
                         if not str(var).isalpha() or not str(var).isascii():
-                            raise ParseError(f"Variables can only contain latin letters\nIncorrect variable: '{var}'")
+                            raise ParseError(
+                                _("Variables can only contain latin letters\nIncorrect variable: '{}'").format(var))
 
                     # If there is no variables, then we can't get the answer. In order to not getting errors,
                     # we can append fictitious variable 'x'
@@ -195,7 +196,7 @@ class CalculusParser(Parser):
                 result = fr"Stationary\ points\ of\ {function}:\\{first_result}"
 
             case _:
-                raise ParseError(f"Unknown pattern set: {pattern_set}")
+                raise ParseError(_("Unknown pattern set: {}".format(pattern_set)))
 
         return result
 
@@ -223,7 +224,8 @@ class CalculusParser(Parser):
                     # Check if listed variables are correct
                     for var in symbols:
                         if not str(var).isalpha():
-                            raise ParseError(f"Variables can only contain letters\nIncorrect variable: '{var}'")
+                            raise ParseError(
+                                _("Variables can only contain letters\nIncorrect variable: '{}'".format(var)))
 
                 result.append(m_func.derivative(*symbols))
 

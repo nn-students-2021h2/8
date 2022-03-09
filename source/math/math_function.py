@@ -75,9 +75,9 @@ class MathFunction:
                 for symbol in symbols:
                     diff_function = sy.diff(diff_function, symbol)
         except ValueError as err:
-            raise ValueError(f"Since there is more than one variable in the expression, "
-                             f"the variable(s) of differentiation must be supplied to "
-                             f"differentiate:\n{self.expression}") from err
+            raise ValueError(_("Since there is more than one variable in the expression, "
+                               "the variable(s) of differentiation must be supplied to "
+                               "differentiate:\n{}").format(self.expression)) from err
 
         return diff_function
 

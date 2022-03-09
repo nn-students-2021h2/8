@@ -11,6 +11,7 @@ from aiogram import types
 from aiogram.utils.exceptions import BadRequest
 
 from source.conf import Config
+from source.core.bot import _
 from source.core.bot import logger, bot
 from source.extras.utilities import run_asynchronously
 from source.math.calculus_parser import CalculusParser
@@ -51,7 +52,7 @@ def resize_image(image_to_resize: BytesIO, output_buffer: BytesIO):
 
 def echo():
     """On simple messages bot replies that didn't understand user"""
-    return 'I didn\'t understand what you want'
+    return _('I didn\'t understand what you want')
 
 
 async def send_graph(message: types.Message):
@@ -79,7 +80,7 @@ async def send_graph(message: types.Message):
         logger.info("DrawError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
         return
 
-    output_message = "Here a graph of requested functions"
+    output_message = _("Here a graph of requested functions")
     await bot.send_photo(
         chat_id=chat_id,
         photo=image,
@@ -118,7 +119,7 @@ async def send_analyse(message: types.Message):
         # If parser can't understand what the user means, it returns False
         is_pattern_found = await parser.parse(expr)
         if not is_pattern_found:
-            await message.reply("Couldn't find a suitable template. Check the input.")
+            await message.reply(_("Couldn't find a suitable template. Check the input."))
             logger.info("Bot doesn't find any pattern for user's [id=%s] input: `%s`", chat_id, expr)
             return
 
@@ -139,7 +140,7 @@ async def send_analyse(message: types.Message):
                         caption="\n".join(parser.warnings)
                     )
                 except telegram.error.BadRequest:
-                    parser.push_warning("Photo size is too large, therefore I send you a file.")
+                    parser.push_warning(_("Photo size is too large, therefore I send you a file."))
                     await bot.send_document(
                         chat_id=chat_id,
                         document=resized_image,
@@ -155,10 +156,10 @@ async def send_analyse(message: types.Message):
         await message.reply(str(err))
         logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
     except RecursionError:
-        await message.reply("Incorrect input. Please check your function.")
+        await message.reply(_("Incorrect input. Please check your function."))
         logger.warning("RecursionError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
     except (ValueError, TypeError, NotImplementedError):
-        await message.reply("Sorry, can't solve the problem or the input is invalid. Please check your function.")
+        await message.reply(_("Sorry, can't solve the problem or the input is invalid. Please check your function."))
         logger.warning("ValueError or NotImplementedError exception raised on user's [chat_id=%s] input: `%s`", chat_id,
                        expr)
 
@@ -193,5 +194,5 @@ async def send_meme(message: types.Message):
         logger.warning("User [id=%s] catches a BadRequest getting a meme: %s", chat_id, err)
         await bot.send_message(
             chat_id=chat_id,
-            text="Sorry, something went wrong. Please try again later."
+            text=_("Sorry, something went wrong. Please try again later.")
         )

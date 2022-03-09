@@ -84,6 +84,6 @@ class Parser(ABC):
             matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=self.PREDICTION_ACCURACY)
             if len(matches) == 1 and matches[0] != word:
                 result = result.replace(word, str(matches[0]))
-                self.push_warning(f"Interpreting '{word}' as '{matches[0]}'")
+                self.push_warning(_("Interpreting '{}' as '{}'".format(word, matches[0])))
 
         return result if result != query else ""
