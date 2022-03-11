@@ -6,6 +6,7 @@ import re
 from abc import ABC, abstractmethod
 
 import sympy as sy
+from sympy.parsing.sympy_parser import convert_xor, implicit_multiplication_application, standard_transformations
 
 
 class ParseError(Exception):
@@ -37,9 +38,10 @@ class Parser(ABC):
         y = sy.Symbol('y')
         result = False
         parts = token.split('=')
+        rules = standard_transformations + (implicit_multiplication_application, convert_xor)
         if len(parts) == 2:
-            first_part = sy.simplify(parts[0])
-            second_part = sy.simplify(parts[1])
+            first_part = sy.parse_expr(parts[0], transformations=rules)
+            second_part = sy.parse_expr(parts[1], transformations=rules)
             symbols = first_part.free_symbols | second_part.free_symbols
             result = len(symbols) == 1 and symbols != {y}
 

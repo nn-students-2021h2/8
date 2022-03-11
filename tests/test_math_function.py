@@ -4,6 +4,7 @@ Tests for math functions
 
 import pytest
 import sympy as sy
+from sympy import Eq
 from sympy.abc import x, y
 
 import source.math.math_function as math_f
@@ -35,8 +36,9 @@ def test_derivative(expr, result):
     assert expr.derivative() == result
 
 
-@pytest.mark.parametrize("expression, result", [(MathFunction("", x + y), ValueError),
-                                                (MathFunction("", y ** x - 2), ValueError)])
+@pytest.mark.parametrize("expression, result", [(MathFunction("", x + y), math_f.MathError),
+                                                (MathFunction("", y ** x - 2), math_f.MathError),
+                                                (MathFunction("", Eq(y ** 2, x)), math_f.MathError)])
 def test_derivative_exceptions(expression, result):
     with pytest.raises(result):
         expression.derivative()
@@ -137,14 +139,15 @@ def test_frange(expr, result):
     assert expr.frange(*expr.symbols) == result
 
 
-@pytest.mark.parametrize("expr, result", [(MathFunction("", x, symbols=[x]), None),
+@pytest.mark.parametrize("expr, result", [(MathFunction("", x, symbols=[x]), "Aperiodic function"),
                                           (MathFunction("", sy.sin(x), symbols=[x]), sy.pi * 2),
                                           (MathFunction("", sy.tan(x), symbols=[x]), sy.pi),
-                                          (MathFunction("", sy.atan(x), symbols=[x]), None),
-                                          (MathFunction("", sy.sin(x) * x, symbols=[x]), None),
+                                          (MathFunction("", sy.atan(x), symbols=[x]), "Aperiodic function"),
+                                          (MathFunction("", sy.sin(x) * x, symbols=[x]), "Aperiodic function"),
                                           (MathFunction("", sy.log(sy.sin(x)), symbols=[x]), sy.pi * 2),
                                           (MathFunction("", sy.sqrt((sy.sin(x)) ** 2), symbols=[x]), sy.pi),
-                                          (MathFunction("", 13 * x ** 0, symbols=[x]), 0)])
+                                          (MathFunction("", 13 * x ** 0, symbols=[x]),
+                                           "Function is constant (any period)")])
 def test_periodicity(expr, result):
     assert expr.periodicity(*expr.symbols) == result
 
