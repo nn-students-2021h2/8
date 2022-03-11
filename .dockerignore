@@ -1,0 +1,18 @@
+# Project
+.idea/
+.github/
+.*ignore
+README.md
+CONTRIBUTING.md
+.pylintrc
+/resources
+
+
+# Cache
+*.py[cod]
+__pycache__
+
+
+# Docker
+docker-compose*.yml
+Dockerfile
