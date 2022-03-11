@@ -2,9 +2,11 @@
 Parser for graph requests
 """
 import re
+from tokenize import TokenError
 
 import sympy as sy
 from sympy import SympifyError
+from sympy.parsing.sympy_parser import convert_xor, implicit_multiplication_application, standard_transformations
 
 from source.conf import Config
 from source.extras.translation import _
@@ -191,9 +193,10 @@ class GraphParser(Parser):
         token = replace_incorrect_functions(token)
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
+        rules = standard_transformations + (implicit_multiplication_application, convert_xor)
         try:
             if parts_count == 1:
-                function = sy.simplify(expr_parts[0])
+                function = sy.parse_expr(expr_parts[0], transformations=rules)
 
                 # If there is only 'y' variable, then we can't understand what we should draw, because it is impossible
                 # to change axes in plot in our case
@@ -203,7 +206,8 @@ class GraphParser(Parser):
                                        "Please, use 'x' instead of single 'y' variable for f(x) plot.").format(token))
             elif parts_count == 2:
                 # If parsed result always true or false (e.g. it is not a function at all)
-                result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+                result = sy.Eq(sy.parse_expr(expr_parts[0], transformations=rules),
+                               sy.parse_expr(expr_parts[1], transformations=rules))
 
                 # Check if number of variables is less than 2
                 if len(result.free_symbols) > 2:
@@ -223,10 +227,10 @@ class GraphParser(Parser):
                 vars_intersection = result.lhs.free_symbols & result.rhs.free_symbols
                 if re.match("^y$", expr_parts[0].strip()) is not None and len(vars_intersection) == 0:
                     modified_expr = expr_parts[1]
-                    function = sy.simplify(modified_expr)
+                    function = sy.parse_expr(modified_expr, transformations=rules)
                 else:
                     modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
-                    function = sy.Eq(sy.simplify(modified_expr), 0)
+                    function = sy.Eq(sy.parse_expr(modified_expr, transformations=rules), 0)
 
             else:
                 raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
@@ -235,11 +239,11 @@ class GraphParser(Parser):
 
             # Change variables
             function = self._process_variables(function)
-
-            return function
-        except (SympifyError, TypeError, ValueError, SyntaxError, AttributeError) as err:
+        except (SympifyError, TypeError, ValueError, AttributeError, TokenError, SyntaxError) as err:
             raise ParseError(_("Mistake in expression.\nYour input: {}\n"
                                "Please, check your math formula.").format(token.strip())) from err
+
+        return function
 
     @run_asynchronously
     def parse(self, expr: str, lang: str = "en"):

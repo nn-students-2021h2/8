@@ -9,6 +9,7 @@
       "implicit_function_points": 1000
     },
     "RC_PARAMS": {
+      "font.family": "sans-serif",
       "legend.loc": "upper right",
       "legend.frameon": true,
       "legend.framealpha": 0.6,
