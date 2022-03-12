@@ -81,7 +81,7 @@ def init_pymongo_db():
     client = MongoClient(conf.properties["DB_PARAMS"]["ip"], conf.properties["DB_PARAMS"]["port"],
                          serverSelectionTimeoutMS=5000)
     try:
-        logger.info(client.server_info())
+        logger.debug(client.server_info())
     except errors.PyMongoError:
         logger.critical("Unable to connect to the MongoDB server.")
     db = client[conf.properties["DB_PARAMS"]["database_name"]]
