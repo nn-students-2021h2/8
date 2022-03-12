@@ -68,6 +68,8 @@ class Status(Enum):
         return NotImplemented
 
 
+no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
+
 chat_status_table: pymongo.collection.Collection
 """Collection that returns the Status of user by chat id"""
 
@@ -98,8 +100,7 @@ async def change_user_status(message: types.Message, status: Status) -> int:
             chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"status": status.value}})
         return 0
     except errors.PyMongoError:
-        no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
-        await bot.send_message(message.chat.id, no_db_message)
+        await bot.send_message(message.chat.id, _(no_db_message))
         return 1
 
 
@@ -110,7 +111,7 @@ async def go_main(message: types.Message):
     try:
         meme_is_active = chat_status_table.find_one({"chat_id": message.chat.id})['meme']
     except errors.PyMongoError:
-        await bot.send_message(message.chat.id, no_db_message)
+        await bot.send_message(message.chat.id, _(no_db_message))
         return
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph")
     reply_markup.add("Analyse function")
@@ -128,7 +129,7 @@ async def go_settings(message: types.Message):
     try:
         user_settings = chat_status_table.find_one({"chat_id": message.chat.id})
     except errors.PyMongoError:
-        await bot.send_message(message.chat.id, no_db_message)
+        await bot.send_message(message.chat.id, _(no_db_message))
         return
     await bot.send_message(message.chat.id, f"Your settings\n"
                                             f"Language: {user_settings['lang']}\n"
@@ -261,8 +262,7 @@ async def default_handler(message: types.Message):
     try:
         chat_status = Status(chat_status_table.find_one({"chat_id": message.chat.id})['status'])
     except errors.PyMongoError:
-        no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
-        await bot.send_message(message.chat.id, no_db_message)
+        await bot.send_message(message.chat.id, _(no_db_message))
         return
     if message.text == 'Meme':
         await meme(message)
@@ -327,24 +327,24 @@ async def default_handler(message: types.Message):
                 try:
                     chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": True}})
                 except errors.PyMongoError:
-                    await bot.send_message(message.chat.id, no_db_message)
+                    await bot.send_message(message.chat.id, _(no_db_message))
             case 'Off meme':
                 try:
                     chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": False}})
                 except errors.PyMongoError:
-                    await bot.send_message(message.chat.id, no_db_message)
+                    await bot.send_message(message.chat.id, _(no_db_message))
             case 'Set en language':
                 try:
                     chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": 'en'}})
                 except errors.PyMongoError:
-                    await bot.send_message(message.chat.id, no_db_message)
+                    await bot.send_message(message.chat.id, _(no_db_message))
             case 'Set ru language':
                 try:
                     chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": 'ru'}})
                 except errors.PyMongoError:
-                    await bot.send_message(message.chat.id, no_db_message)
+                    await bot.send_message(message.chat.id, _(no_db_message))
             case _:
-                await message.reply(hmsg.echo())
+                await message.reply(_('I didn\'t understand what you want'))
                 return
         await bot.send_message(message.chat.id, "New settings saved")
         await go_settings(message)
