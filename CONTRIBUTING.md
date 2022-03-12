@@ -21,9 +21,10 @@
 ## 1 Requirements
 
 * `Python 3.10` or greater
-* `MiKTeX` as a TeX distribution to display text in TeX format, [download](https://miktex.org/download)
+* `MiKTeX` as a TeX distribution to display text in TeX format, for example, [MiKTeX](https://miktex.org/download)
+  or [TeX Live](https://www.tug.org/texlive/)
 * `Pylint` as a static code analysis tool. It is necessary to fix all Pylint warnings. Specific rules for linter are
-  prescribed in `.pylintrc`. To install Pylint, type in the terminal:
+  prescribed in `.pylintrc`. To can use requirements-dev to install if. Alternatively, type in the terminal:
 
 ```shell
 pip install pylint
@@ -68,7 +69,7 @@ _with `Sympy` and `Matplotlib` as backend_<br>
 - Aspect ratio _[DONE]_
 - Scale
 - Appearance, stylesheet
-- Performance and stability _[IN PROGRESS]_
+- Performance and stability _[IN PROGRESS ALWAYS]_
 
 2) **Functional analysis**<br>
    We need to create a functional for the study of mathematical functions and organize a convenient interface for
@@ -85,7 +86,6 @@ _with `Sympy` and `Matplotlib` as backend_<br>
 - Periodicity _[DONE]_
 - Convexity _[DONE]_
 - Concavity _[DONE]_
-- Continuity _[DONE]_
 - Asymptotes (vertical, horizontal and slant) _[DONE]_
 - Evenness and oddness _[DONE]_
 - Maximum value _[DONE]_
@@ -107,10 +107,9 @@ attributes can be found for a particular function. The functionality can be impl
    The bot must have a clear system of interaction with the user. For example, through buttons and commands.<br><br>
    A rough set of commands is as follows:
 
-- `Start` IDK why this is needed, seems to be a crutch of Telegram, though I've seen bots that do not require this
-  command to work in principle. Maybe it is not necessary
-- `Draw` Draw charts mode
-- `Analysis` Function analysis mode
+- `Start` To tell the bot about the user. You will be written in database. Use it if bot doesn't answer on your requests
+- `Graph` Draw charts mode
+- `Analyse` Function analysis mode
 - `Examples` Contains examples of commands (functions that is). Can be combined with 'help'.
 - `Help`: Help information about commands and bot. Should explain command syntax and tell what's expected of the user
   and what work the bot will do
@@ -118,11 +117,11 @@ attributes can be found for a particular function. The functionality can be impl
 - On `unknown` commands bot should respond adequately
 - To `text`, `pictures`, `files` etc. bot should react adequately in any state
 
-2) **Configuration** _[IN PROGRESS]_ <br>
+2) **Configuration** _[DONE]_ <br>
    I really need a class implemented as a singleton that can parse a json file with settings and apply the changes. In
    case of an error opening or reading the file, exception should be thrown.
 
-3) **Logging** <br>
+3) **Logging** _[DONE]_ <br>
    Every user action should be logged in terminal or file.
 
 <a id="3.4-repository"></a>
