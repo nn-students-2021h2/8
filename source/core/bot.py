@@ -60,12 +60,15 @@ class Status(Enum):
     MINIMUM = 19
     STATIONARY_POINTS = 20
     ANALYSE_MENU = 21
+    SETTINGS = 22
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:
             return self.value < other.value
         return NotImplemented
 
+
+no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 
 chat_status_table: pymongo.collection.Collection
 """Collection that returns the Status of user by chat id"""
@@ -90,13 +93,14 @@ async def change_user_status(message: types.Message, status: Status) -> int:
     """Update user status in mongo database. It returns 1 if the connection is lost and 0 if all ok"""
     try:
         if chat_status_table.find_one({"chat_id": message.chat.id}) is None:
-            chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value})
+            chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value,
+                                                                      "lang": "en",
+                                                                      "meme": False})
         else:
             chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"status": status.value}})
         return 0
     except errors.PyMongoError:
-        no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
-        await bot.send_message(message.chat.id, no_db_message)
+        await bot.send_message(message.chat.id, _(no_db_message))
         return 1
 
 
@@ -104,8 +108,37 @@ async def go_main(message: types.Message):
     """Change status of user and send main menu to user."""
     if await change_user_status(message, Status.MAIN):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph", "Analyse function", "Get help")
+    try:
+        meme_is_active = chat_status_table.find_one({"chat_id": message.chat.id})['meme']
+    except errors.PyMongoError:
+        await bot.send_message(message.chat.id, _(no_db_message))
+        return
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph")
+    reply_markup.add("Analyse function")
+    reply_markup.add("Settings")
+    reply_markup.add("Get help")
+    if meme_is_active:
+        reply_markup.add("Meme")
     await bot.send_message(message.chat.id, _('Choose action'), reply_markup=reply_markup)
+
+
+async def go_settings(message: types.Message):
+    """Change status of user and send settings menu to user."""
+    if await change_user_status(message, Status.SETTINGS):
+        return
+    try:
+        user_settings = chat_status_table.find_one({"chat_id": message.chat.id})
+    except errors.PyMongoError:
+        await bot.send_message(message.chat.id, _(no_db_message))
+        return
+    await bot.send_message(message.chat.id, f"Your settings\n"
+                                            f"Language: {user_settings['lang']}\n"
+                                            f"Meme: {'on' if user_settings['meme'] else 'off'}")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    reply_markup.add(f"Set {'ru' if user_settings['lang'] == 'en' else 'en'} language")
+    reply_markup.add(f"{'Off' if user_settings['meme'] else 'On'} meme")
+    reply_markup.add("Main menu")
+    await bot.send_message(message.chat.id, "Choose changes that you want.", reply_markup=reply_markup)
 
 
 async def go_graph(message: types.Message):
@@ -121,7 +154,9 @@ async def go_analyse(message: types.Message):
     """Change status of user to 'analyse' and send analyse menu"""
     if await change_user_status(message, Status.ANALYSE):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Options", "Get help", "Main menu")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Options")
+    reply_markup.add("Get help")
+    reply_markup.add("Main menu")
     await bot.send_message(message.chat.id, _("Choose option or enter command or go to main menu"),
                            reply_markup=reply_markup)
 
@@ -145,7 +180,8 @@ async def go_analyse_option(message: types.Message, option: Status):
     """Change status of user to option and send 'go back' menu'"""
     if await change_user_status(message, option):
         return
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Back", "Main menu")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Back")
+    reply_markup.add("Main menu")
     await bot.send_message(message.chat.id, _("Enter function to analyse or go back"), reply_markup=reply_markup)
 
 
@@ -226,10 +262,8 @@ async def default_handler(message: types.Message):
     try:
         chat_status = Status(chat_status_table.find_one({"chat_id": message.chat.id})['status'])
     except errors.PyMongoError:
-        no_db_message = _("There were problems, the functionality is limited.\nYou can only use the bot with commands.")
-        await bot.send_message(message.chat.id, no_db_message)
+        await bot.send_message(message.chat.id, _(no_db_message))
         return
-
     if chat_status == Status.MAIN:
         match message.text:
             case 'Draw graph':
@@ -238,6 +272,11 @@ async def default_handler(message: types.Message):
                 await go_analyse(message)
             case 'Get help':
                 await chat_help(message)
+            case 'Meme':
+                await meme(message)
+                return
+            case 'Settings':
+                await go_settings(message)
             case _:
                 await message.reply(_('I didn\'t understand what you want'))
     elif chat_status == Status.ANALYSE:
@@ -278,6 +317,37 @@ async def default_handler(message: types.Message):
             case _:
                 await hmsg.send_graph(message)
                 await bot.send_message(message.chat.id, _("Enter function you want to draw or go to the main menu"))
+    elif chat_status == Status.SETTINGS:
+        logger.debug(message.text)
+        match message.text:
+            case 'Main menu':
+                await go_main(message)
+                return
+            case 'On meme':
+                try:
+                    chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": True}})
+                except errors.PyMongoError:
+                    await bot.send_message(message.chat.id, _(no_db_message))
+            case 'Off meme':
+                try:
+                    chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": False}})
+                except errors.PyMongoError:
+                    await bot.send_message(message.chat.id, _(no_db_message))
+            case 'Set en language':
+                try:
+                    chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": 'en'}})
+                except errors.PyMongoError:
+                    await bot.send_message(message.chat.id, _(no_db_message))
+            case 'Set ru language':
+                try:
+                    chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": 'ru'}})
+                except errors.PyMongoError:
+                    await bot.send_message(message.chat.id, _(no_db_message))
+            case _:
+                await message.reply(_('I didn\'t understand what you want'))
+                return
+        await bot.send_message(message.chat.id, "New settings saved")
+        await go_settings(message)
 
 
 @dispatcher.errors_handler()
