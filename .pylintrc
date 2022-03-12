@@ -16,5 +16,6 @@ disable = fixme,
           too-many-branches
 
 max-line-length = 120
+max-statements = 100
 ignore-docstrings = yes
 init-hook='import sys; sys.setrecursionlimit(8 * sys.getrecursionlimit())' # to avoid https://stackoverflow.com/questions/36496192/pylint-infinite-recursion-in-astriod-package

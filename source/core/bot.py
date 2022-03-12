@@ -88,7 +88,9 @@ async def change_user_status(message: types.Message, status: Status) -> int:
     """Update user status in mongo database. It returns 1 if the connection is lost and 0 if all ok"""
     try:
         if chat_status_table.find_one({"chat_id": message.chat.id}) is None:
-            chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value, "lang":"en", "meme": False})
+            chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value,
+                                                                      "lang": "en",
+                                                                      "meme": False})
         else:
             chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"status": status.value}})
         return 0
@@ -124,8 +126,11 @@ async def go_settings(message: types.Message):
     except errors.PyMongoError:
         await bot.send_message(message.chat.id, no_db_message)
         return
-    await bot.send_message(message.chat.id, f"Your settings\nLanguage: {user_settings['lang']}\nMeme: {'on' if user_settings['meme'] else 'off'}")
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(f"Set {'ru' if user_settings['lang'] == 'en' else 'en'} language")
+    await bot.send_message(message.chat.id, f"Your settings\n"
+                                            f"Language: {user_settings['lang']}\n"
+                                            f"Meme: {'on' if user_settings['meme'] else 'off'}")
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    reply_markup.add(f"Set {'ru' if user_settings['lang'] == 'en' else 'en'} language")
     reply_markup.add(f"{'Off' if user_settings['meme'] else 'On'} meme")
     reply_markup.add("Main menu")
     await bot.send_message(message.chat.id, "Choose changes that you want.", reply_markup=reply_markup)
