@@ -6,6 +6,9 @@ import re
 from abc import ABC, abstractmethod
 
 import sympy as sy
+from sympy.parsing.sympy_parser import convert_xor, implicit_multiplication_application, standard_transformations
+
+from source.extras.translation import _
 
 
 class ParseError(Exception):
@@ -37,9 +40,10 @@ class Parser(ABC):
         y = sy.Symbol('y')
         result = False
         parts = token.split('=')
+        rules = standard_transformations + (implicit_multiplication_application, convert_xor)
         if len(parts) == 2:
-            first_part = sy.simplify(parts[0])
-            second_part = sy.simplify(parts[1])
+            first_part = sy.parse_expr(parts[0], transformations=rules)
+            second_part = sy.parse_expr(parts[1], transformations=rules)
             symbols = first_part.free_symbols | second_part.free_symbols
             result = len(symbols) == 1 and symbols != {y}
 
@@ -66,9 +70,10 @@ class Parser(ABC):
         """
         self._warnings.append(warning)
 
-    def _fix_words(self, query: str, pattern_set: str, pattern_dict: dict) -> str:
+    def _fix_words(self, query: str, pattern_set: str, pattern_dict: dict, lang: str = "en") -> str:
         """
         Tries to correct words to fit the pattern based on keywords of pattern
+        :param lang:
         :param query: query to fix
         :param pattern_set: a class of query
         :param pattern_dict: a dictionary where the keywords are
@@ -84,6 +89,6 @@ class Parser(ABC):
             matches = difflib.get_close_matches(word, pattern_words, n=1, cutoff=self.PREDICTION_ACCURACY)
             if len(matches) == 1 and matches[0] != word:
                 result = result.replace(word, str(matches[0]))
-                self.push_warning(f"Interpreting '{word}' as '{matches[0]}'")
+                self.push_warning(_("Interpreting '{}' as '{}'", locale=lang).format(word, matches[0]))
 
         return result if result != query else ""

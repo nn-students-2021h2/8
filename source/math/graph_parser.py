@@ -2,20 +2,24 @@
 Parser for graph requests
 """
 import re
+from tokenize import TokenError
 
 import sympy as sy
 from sympy import SympifyError
+from sympy.parsing.sympy_parser import convert_xor, implicit_multiplication_application, standard_transformations
 
 from source.conf import Config
+from source.extras.translation import _
 from source.extras.utilities import run_asynchronously
 from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
 
 
-def _split_query(expr: str) -> list:
+def _split_query(expr: str, lang: str = "en") -> list:
     """
     Tries to split a query string correctly.
     Calculates correct bracket sequence and marks necessary commas as delimiters (by replacing it with '#')
+    :param lang:
     :param expr: user input
     :return: list of expression parts (tokens)
     """
@@ -38,7 +42,7 @@ def _split_query(expr: str) -> list:
             expr_lst[letter_index] = '#'
 
         if (bracket_sequence < 0) or (bracket_sequence > 0 and letter_index == len(expr_lst) - 1):
-            raise ParseError("Incorrect bracket sequence. Check your expression.")
+            raise ParseError(_("Incorrect bracket sequence. Check your expression.", locale=lang))
 
     expr = "".join(expr_lst)
     parts = re.split('#', expr)
@@ -65,9 +69,11 @@ class GraphParser(Parser):
         super().__init__()
         self.tokens = {'aspect ratio': [], 'domain': [], 'range': [], 'explicit': [], 'implicit': []}
 
-    def _update_domain_range(self, match: re.Match, pattern_params: list, pattern_set: str, token: str):
+    def _update_domain_range(self, match: re.Match, pattern_params: list, pattern_set: str, token: str,
+                             lang: str = "en"):
         """
         Extract domain or range of the function and update tokens
+        :param lang:
         :param match: pattern from which we can get numbers
         :param pattern_params: list of groups of parameters in match
         :param pattern_set: class of query ("domain" or "range")
@@ -77,34 +83,39 @@ class GraphParser(Parser):
             left = float(match.group(pattern_params[0]))
             right = float(match.group(pattern_params[1]))
         except ValueError as err:
-            raise ParseError(f"Mistake in function {pattern_set} parameters.\n"
-                             f"Your input: {token.strip()}\n"
-                             f"Please, check if numbers are correct.") from err
+            raise ParseError(_("Mistake in function {} parameters.\n"
+                               "Your input: {}\n"
+                               "Please, check if numbers are correct.",
+                               locale=lang).format(pattern_set, token.strip())) from err
         if left >= right:
-            raise ParseError(f"Mistake in function {pattern_set} parameters.\n"
-                             f"Your input: {token.strip()}\n"
-                             f"Left argument cannot be more or equal than right one: "
-                             f"{left} >= {right}.")
+            raise ParseError(_("Mistake in function {} parameters.\n"
+                               "Your input: {}\n"
+                               "Left argument cannot be more or equal than right one: "
+                               "{} >= {}.", locale=lang).format(pattern_set, token.strip(), left, right))
         self.tokens[pattern_set] = [left, right]
 
-    def _update_aspect_ratio(self, match: re.Match, pattern_params: list, pattern_set: str, token: str):
-        """Check function above"""
+    def _update_aspect_ratio(self, match: re.Match, pattern_params: list, pattern_set: str, token: str,
+                             lang: str = "en"):
+        """Check function above
+        :param lang:
+        """
         try:
             ratio = float(match.group(pattern_params[0]))
         except ValueError as err:
-            raise ParseError(f"Mistake in aspect ratio.\n"
-                             f"Your input: {token.strip()}\n"
-                             f"Please, check if number is correct.") from err
+            raise ParseError(_("Mistake in aspect ratio.\n"
+                               "Your input: {}\n"
+                               "Please, check if number is correct.", locale=lang).format(token.strip())) from err
 
         if ratio <= 0:
-            raise ParseError(f"Mistake in aspect ratio.\n"
-                             f"Your input: {token.strip()}\n"
-                             f"Aspect ratio cannot be negative or equal to zero.")
+            raise ParseError(_("Mistake in aspect ratio.\n"
+                               "Your input: {}\n"
+                               "Aspect ratio cannot be negative or equal to zero.", locale=lang).format(token.strip()))
         self.tokens[pattern_set] = [ratio]
 
-    def _find_pattern(self, pattern_dict: dict, token: str, try_predict: bool) -> bool:
+    def _find_pattern(self, pattern_dict: dict, token: str, try_predict: bool, lang: str = "en") -> bool:
         """
         Tries to find suitable pattern for given token and apply it (change tokens)
+        :param lang:
         :param pattern_dict: dictionary of patterns
         :param token: part of user input
         :param try_predict: if there is a need to fix query
@@ -120,7 +131,7 @@ class GraphParser(Parser):
                     match = re.match(p, token)
 
                 # If we want to find correct pattern again, we need to fix wrong words in query
-                if try_predict and (fixed_query := self._fix_words(token, pattern_set, pattern_dict)):
+                if try_predict and (fixed_query := self._fix_words(token, pattern_set, pattern_dict, lang)):
                     match = re.match(p, fixed_query)
 
                 if match:
@@ -129,11 +140,11 @@ class GraphParser(Parser):
 
                     match pattern_set:
                         case "domain":
-                            self._update_domain_range(match, pattern_params, pattern_set, token)
+                            self._update_domain_range(match, pattern_params, pattern_set, token, lang)
                         case "range":
-                            self._update_domain_range(match, pattern_params, pattern_set, token)
+                            self._update_domain_range(match, pattern_params, pattern_set, token, lang)
                         case "aspect ratio":
-                            self._update_aspect_ratio(match, pattern_params, pattern_set, token)
+                            self._update_aspect_ratio(match, pattern_params, pattern_set, token, lang)
 
                     return True
 
@@ -151,24 +162,24 @@ class GraphParser(Parser):
 
         # First check: expression contains x, a (replace a = y)
         if (x in symbols) and (y not in symbols) and len(var := list(symbols - {x})) == 1:
-            self.push_warning(f"Variable '{var[0]}' is replaced by 'y'")
+            self.push_warning(_("Variable '{}' is replaced by 'y'").format(var[0]))
             return function.replace(var[0], y)
 
         # Second check: expression contains y, a (replace a = x)
         if (y in symbols) and (x not in symbols) and len(var := list(symbols - {y})) == 1:
-            self.push_warning(f"Variable '{var[0]}' is replaced by 'x'")
+            self.push_warning(_("Variable '{}' is replaced by 'x'").format(var[0]))
             return function.replace(var[0], x)
 
         # Third check: expression contains a, b (replace a = x, b = y)
         if (x not in symbols) and (y not in symbols) and len(symbols) == 2:
             variables = list(symbols)
-            self.push_warning(f"Variable '{variables[0]}' is replaced by 'y',\n"
-                              f"variable '{variables[1]}' is replaced by 'x'")
+            self.push_warning(_("Variable '{}' is replaced by 'y',\n"
+                                "variable '{}' is replaced by 'x'".format(variables[0], variables[1])))
             return function.replace(variables[0], y).replace(variables[1], x)
 
         # Fourth check: expression contains a (replace a = x)
         if (x not in symbols) and (y not in symbols) and len(var := list(symbols)) == 1:
-            self.push_warning(f"Variable '{var[0]}' is replaced by 'x'")
+            self.push_warning(_("Variable '{}' is replaced by 'x'").format(var[0]))
             return function.replace(var[0], x)
 
         return function
@@ -182,72 +193,77 @@ class GraphParser(Parser):
         token = replace_incorrect_functions(token)
         expr_parts = token.split('=')
         parts_count = len(expr_parts)
+        rules = standard_transformations + (implicit_multiplication_application, convert_xor)
         try:
             if parts_count == 1:
-                function = sy.simplify(expr_parts[0])
+                function = sy.parse_expr(expr_parts[0], transformations=rules)
 
                 # If there is only 'y' variable, then we can't understand what we should draw, because it is impossible
                 # to change axes in plot in our case
                 if function.free_symbols == {sy.Symbol('y')}:
-                    raise ParseError(f"Incorrect expression: {token}\n"
-                                     f"There is only 'y' variable. It's f(y) or f(x) = 0?\n"
-                                     f"Please, use 'x' instead of single 'y' variable for f(x) plot.")
+                    raise ParseError(_("Incorrect expression: {}\n"
+                                       "There is only 'y' variable. It's f(y) or f(x) = 0?\n"
+                                       "Please, use 'x' instead of single 'y' variable for f(x) plot.").format(token))
             elif parts_count == 2:
                 # If parsed result always true or false (e.g. it is not a function at all)
-                result = sy.Eq(sy.simplify(expr_parts[0]), sy.simplify(expr_parts[1]))
+                result = sy.Eq(sy.parse_expr(expr_parts[0], transformations=rules),
+                               sy.parse_expr(expr_parts[1], transformations=rules))
 
                 # Check if number of variables is less than 2
                 if len(result.free_symbols) > 2:
-                    raise ParseError(f"Incorrect expression: {token}\n"
-                                     f"There are {len(result.free_symbols)} variables: "
-                                     f"{', '.join(str(var) for var in result.free_symbols)}\n"
-                                     f"You can use a maximum of 2 variables.")
+                    variables = ', '.join(str(var) for var in result.free_symbols)
+                    raise ParseError(("Incorrect expression: {}\n"
+                                      "There are {} variables: {}\n"
+                                      "You can use a maximum of 2 variables.").format(token,
+                                                                                      len(result.free_symbols),
+                                                                                      variables))
 
                 # If it is expressions like 1 = 1 or 1 = 0
                 if result is sy.true or result is sy.false:
-                    raise ParseError(f"Result of expression '{token}' is always {result}")
+                    raise ParseError(_("Result of expression '{}' is always {}").format(token, result))
 
                 # If expression like 'y = x', then discard left part, else construct expression "y - x = 0"
                 # or if expression is not like 'y = y ** 2' (same variables at the both sides)
                 vars_intersection = result.lhs.free_symbols & result.rhs.free_symbols
                 if re.match("^y$", expr_parts[0].strip()) is not None and len(vars_intersection) == 0:
                     modified_expr = expr_parts[1]
-                    function = sy.simplify(modified_expr)
+                    function = sy.parse_expr(modified_expr, transformations=rules)
                 else:
                     modified_expr = f"{expr_parts[0]} - ({expr_parts[1]})"
-                    function = sy.Eq(sy.simplify(modified_expr), 0)
+                    function = sy.Eq(sy.parse_expr(modified_expr, transformations=rules), 0)
 
             else:
-                raise ParseError("Mistake in implicit function: Found more than 1 equal sign.\n"
-                                 f"Your input: {token.strip()}\n"
-                                 "Please, check your math formula")
+                raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
+                                   "Your input: {}\n"
+                                   "Please, check your math formula").format(token.strip()))
 
             # Change variables
             function = self._process_variables(function)
+        except (SympifyError, TypeError, ValueError, AttributeError, TokenError, SyntaxError) as err:
+            raise ParseError(_("Mistake in expression.\nYour input: {}\n"
+                               "Please, check your math formula.").format(token.strip())) from err
 
-            return function
-        except (SympifyError, TypeError, ValueError, SyntaxError, AttributeError) as err:
-            raise ParseError(f"Mistake in expression.\nYour input: {token.strip()}\n"
-                             "Please, check your math formula.") from err
+        return function
 
     @run_asynchronously
-    def parse(self, expr: str):
+    def parse(self, expr: str, lang: str = "en"):
         """
         This method get string and tries to parse it in several groups (see 'tokens' variable)
 
         Parameters:
+        :param lang:
         :param expr: user input string to parse
         :return: true on successfully found patterns, false otherwise
         """
         pattern_dict = Config.graph_patterns
 
-        parts = _split_query(expr)
+        parts = _split_query(expr, lang)
 
         for token in parts:
             token = token.strip()
 
             # Check if expression matches any pattern
-            if self._find_pattern(pattern_dict, token, False):
+            if self._find_pattern(pattern_dict, token, False, lang):
                 continue
 
             # If it is a function
@@ -255,7 +271,7 @@ class GraphParser(Parser):
                 function = self._process_function(token)
             except ParseError as err:
                 # If we don't found a pattern, and it is not a function, then try to fix words
-                if self._find_pattern(pattern_dict, token, True):
+                if self._find_pattern(pattern_dict, token, True, lang):
                     continue
 
                 raise err
@@ -278,8 +294,8 @@ class GraphParser(Parser):
                 self.tokens['explicit'].append(graph)
             else:
                 # If it is an unknown expression
-                raise ParseError(f"Cannot resolve a statement: {token}")
+                raise ParseError(_("Cannot resolve a statement: {}", locale=lang).format(token))
 
         if (functions_count := len(self.tokens["explicit"]) + len(self.tokens["implicit"])) > self.FUNCTIONS_LIMIT:
-            raise ParseError(f"Too many functions requested ({functions_count}). "
-                             f"The limit is {self.FUNCTIONS_LIMIT} functions.")
+            raise ParseError(_("Too many functions requested ({}). "
+                               "The limit is {} functions.", locale=lang).format(functions_count, self.FUNCTIONS_LIMIT))

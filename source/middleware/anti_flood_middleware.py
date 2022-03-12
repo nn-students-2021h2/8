@@ -8,6 +8,8 @@ from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils.exceptions import Throttled
 
+from source.extras.translation import _
+
 
 def rate_limit(limit: float, key=None):
     """
@@ -78,7 +80,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         # User can send only 3 requests before locking (bot will not answer further requests until unlocking)
         if throttled.exceeded_count <= 3:
             await message.reply(
-                f"Flood is not allowed! You should wait {throttled.rate} seconds to repeat this action.")
+                _("Flood is not allowed! You should wait {} seconds to repeat this action.").format(throttled.rate))
 
         # Sleep.
         await asyncio.sleep(delta)

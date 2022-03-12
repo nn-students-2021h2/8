@@ -5,6 +5,8 @@ Math Function class module
 import sympy as sy
 import sympy.calculus.util as calculus
 
+from source.extras.translation import _
+
 
 def replace_incorrect_functions(function: str) -> str:
     """
@@ -36,6 +38,10 @@ def replace_incorrect_functions(function: str) -> str:
     return result
 
 
+class MathError(Exception):
+    """Special exception for custom mathematical errors handling"""
+
+
 class MathFunction:
     """
     This class represents a plot of function
@@ -48,7 +54,7 @@ class MathFunction:
     :param symbols: a list of math expression variables
     """
 
-    def __init__(self, expression: str, simplified_expr: (sy.Function | sy.Equality), func_type: str = "explicit",
+    def __init__(self, expression: str, simplified_expr: (sy.Expr | sy.Eq), func_type: str = "explicit",
                  symbols: list = None):
         if symbols is None:
             symbols = []
@@ -75,9 +81,9 @@ class MathFunction:
                 for symbol in symbols:
                     diff_function = sy.diff(diff_function, symbol)
         except ValueError as err:
-            raise ValueError(f"Since there is more than one variable in the expression, "
-                             f"the variable(s) of differentiation must be supplied to "
-                             f"differentiate:\n{self.expression}") from err
+            raise MathError(_("Since there is more than one variable in the expression, "
+                               "the variable(s) of differentiation must be supplied to "
+                               "differentiate:\n{}").format(self.expression)) from err
 
         return diff_function
 
@@ -131,7 +137,12 @@ class MathFunction:
         :param symbol: see 'periodicity' arguments
         :return: see return of the 'periodicity' function
         """
-        return calculus.periodicity(self.simplified_expr, symbol)
+        result = calculus.periodicity(self.simplified_expr, symbol)
+        if result is None:
+            result = "Aperiodic function"
+        if result == 0:
+            result = "Function is constant (any period)"
+        return result
 
     def convexity(self, symbol: sy.Symbol) -> bool:
         """
@@ -220,7 +231,7 @@ class MathFunction:
                         ans.add(cur)
 
         # If function is periodic, we can't yet give an accurate answer
-        if self.periodicity(symbol):
+        if calculus.periodicity(self.simplified_expr, symbol):
             # If the domain of function is some kind of "R \ {...}", than we can omit the part "R \"
             if isinstance(exist, sy.Complement):
                 ans.add(exist.args[1])
