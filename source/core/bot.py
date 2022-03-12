@@ -264,9 +264,6 @@ async def default_handler(message: types.Message):
     except errors.PyMongoError:
         await bot.send_message(message.chat.id, _(no_db_message))
         return
-    if message.text == 'Meme':
-        await meme(message)
-        return
     if chat_status == Status.MAIN:
         match message.text:
             case 'Draw graph':
@@ -275,6 +272,9 @@ async def default_handler(message: types.Message):
                 await go_analyse(message)
             case 'Get help':
                 await chat_help(message)
+            case 'Meme':
+                await meme(message)
+                return
             case 'Settings':
                 await go_settings(message)
             case _:
