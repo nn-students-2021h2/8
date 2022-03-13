@@ -11,7 +11,7 @@ from aiogram import types
 from aiogram.utils.exceptions import BadRequest
 
 from source.conf import Config
-from source.core.bot import logger, bot
+from source.core.bot import logger, bot, mongo
 from source.extras.translation import _
 from source.extras.utilities import run_asynchronously
 from source.math.calculus_parser import CalculusParser
@@ -56,7 +56,7 @@ def resize_image(image_to_resize: BytesIO, output_buffer: BytesIO):
 async def send_graph(message: types.Message):
     """User requested to draw a plot"""
     chat_id = message.chat.id
-    user_language = await get_language(message.from_user.id)
+    user_language = await get_language(message, mongo)
     if message.get_command():
         expr = message.get_args().lower()
     else:
@@ -103,7 +103,7 @@ def run_TeX(latex: str, result_picture: BytesIO):
 async def send_analyse(message: types.Message):
     """User requested some function analysis"""
     chat_id = message.chat.id
-    user_language = await get_language(message.from_user.id)
+    user_language = await get_language(message, mongo)
     if message.get_command():
         expr = message.get_args().lower()
     else:
