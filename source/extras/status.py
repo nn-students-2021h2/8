@@ -1,3 +1,4 @@
+"""File contain class Status, that use as finite state machine"""
 from enum import Enum
 from functools import total_ordering
 
@@ -16,7 +17,7 @@ class Status(Enum):
     PERIODICITY = 8
     CONVEXITY = 9
     CONCAVITY = 10
-    CONTINUITY = 11
+    MONOTONICITY = 11
     V_ASYMPTOTES = 12
     H_ASYMPTOTES = 13
     S_ASYMPTOTES = 14

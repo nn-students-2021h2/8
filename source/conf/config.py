@@ -34,6 +34,9 @@ class Config:
         return Config._instance
 
     def __init__(self, file_path=None):
+        if Config._properties:
+            return
+
         self._file_path = file_path or Config._default_file_path
         self._json_data = self._load_from_json()
         Config.graph_patterns, Config.analysis_patterns = self._open_patterns_files()

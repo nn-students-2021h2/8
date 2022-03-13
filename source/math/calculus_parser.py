@@ -46,10 +46,15 @@ def _process_function(token: str, lang: str = "en") -> sy.Function:
                                "Your input: {}\n"
                                "Please, check your math formula.", locale=lang).format(token.strip()))
 
-        return function
-    except (SympifyError, TypeError, ValueError, AttributeError, TokenError, SyntaxError) as err:
+
+    except (SympifyError, TypeError, ValueError, AttributeError, TokenError) as err:
         raise ParseError(_("Mistake in expression.\nYour input: {}\n"
                            "Please, check your math formula.", locale=lang).format(token.strip())) from err
+
+    except SyntaxError as err:
+        raise ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
+                           "such as placing '*' (multiplication) signs and parentheses.",
+                           locale=lang).format(token.strip())) from err
 
     return function
 
@@ -202,6 +207,9 @@ class CalculusParser(Parser):
             case "minimum":
                 result = fr"Min\ value\ of\ {function}:\\{first_result}"
 
+            case "monotonicity":
+                result = fr"Monotonicity\ of\ {function}:\\{first_result}"
+
             case "stationary points":
                 result = fr"Stationary\ points\ of\ {function}:\\{first_result}"
 
@@ -299,6 +307,9 @@ class CalculusParser(Parser):
 
             case "minimum":
                 result.append(m_func.minimum(symbols[0]))
+
+            case "monotonicity":
+                result.append(m_func.monotonicity(symbols[0], lang))
 
             case "stationary points":
                 result.append(m_func.stationary_points(symbols[0]))

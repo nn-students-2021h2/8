@@ -13,13 +13,13 @@ from pymongo import errors
 
 import handling_msg as hmsg
 from source.conf.config import Config
+from source.core.database import MongoDatabase, no_db_message
 from source.extras.custom_logger import setup_logging
+from source.extras.status import Status
+from source.extras.translation import _
 from source.math.graph import Graph
 from source.middleware.anti_flood_middleware import ThrottlingMiddleware, rate_limit
 from source.middleware.localization_middleware import LanguageMiddleware
-from source.core.database import MongoDatabase, no_db_message
-from source.extras.status import Status
-
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -34,8 +34,7 @@ dispatcher: Dispatcher = Dispatcher(bot, storage=MemoryStorage())
 mongo = MongoDatabase(logger, bot)
 
 # Set up translator TODO move setup into 'main'
-_ = i18n = dispatcher.middleware.setup(LanguageMiddleware("Bot", path=Path(__file__).parents[2] / "locales", mongo=mongo))
-
+dispatcher.middleware.setup(LanguageMiddleware("Bot", path=Path(__file__).parents[2] / "locales", mongo=mongo))
 
 status_dict = {
     'Derivative': Status.DERIVATIVE,
@@ -46,7 +45,7 @@ status_dict = {
     'Periodicity': Status.PERIODICITY,
     'Convexity': Status.CONVEXITY,
     'Concavity': Status.CONCAVITY,
-    'Continuity': Status.CONTINUITY,
+    'Monotonicity': Status.MONOTONICITY,
     'Vertical asymptotes': Status.V_ASYMPTOTES,
     'Horizontal asymptotes': Status.H_ASYMPTOTES,
     'Slant asymptotes': Status.S_ASYMPTOTES,
@@ -75,7 +74,7 @@ async def start(message: types.Message):
 @rate_limit(limit=1)
 async def chat_help(message: types.Message):
     """Send a message when the command /help is issued."""
-    await bot.send_message(message.chat.id, _('Enter:\n/start to restart bot.\n/graph to draw graph.\n/analyse to '
+    await bot.send_message(message.chat.id, _('Enter:\n/start to restart bot.\n/graph to draw a graph.\n/analyse to '
                                               'go on to investigate the function.'))
 
 
@@ -116,80 +115,74 @@ async def default_handler(message: types.Message):
     except errors.PyMongoError:
         await bot.send_message(message.chat.id, _(no_db_message))
         return
+
+    text = message.text
     if chat_status == Status.MAIN:
-        match message.text:
-            case 'Draw graph':
-                await mongo.go_graph(message)
-            case 'Analyse function':
-                await mongo.go_analyse(message)
-            case 'Get help':
-                await chat_help(message)
-            case 'Meme':
-                await meme(message)
-                return
-            case 'Settings':
-                await mongo.go_settings(message)
-            case _:
-                await message.reply(_('I didn\'t understand what you want'))
+        if text == _('Draw a graph'):
+            await mongo.go_graph(message)
+        elif text == _('Analyse function'):
+            await mongo.go_analyse(message)
+        elif text == _('Get help'):
+            await chat_help(message)
+        elif text == _('Meme'):
+            await meme(message)
+            return
+        elif text == _('Settings'):
+            await mongo.go_settings(message)
+        else:
+            await message.reply(_('I didn\'t understand what you want'))
     elif chat_status == Status.ANALYSE:
-        match message.text:
-            case 'Main menu':
-                await mongo.go_main(message)
-            case 'Options':
-                await mongo.go_analyse_menu(message)
-            case 'Get help':
-                await bot.send_message(message.chat.id, 'No')
-            case _:
-                await hmsg.send_analyse(message)
+        if text == _('Main menu'):
+            await mongo.go_main(message)
+        elif text == _('Options'):
+            await mongo.go_analyse_menu(message)
+        elif text == _('Get help'):
+            await bot.send_message(message.chat.id, 'No')  # TODO help
+        else:
+            await hmsg.send_analyse(message)
     elif chat_status == Status.ANALYSE_MENU:
-        match message.text:
-            case 'Back':
-                await mongo.go_analyse(message)
-            case 'Main menu':
-                await mongo.go_main(message)
-            case _:
-                try:
-                    await mongo.go_analyse_option(message, status_dict[message.text])
-                except KeyError:
-                    await hmsg.send_analyse(message)
-    elif Status.DERIVATIVE <= chat_status <= Status.STATIONARY_POINTS:
-        match message.text:
-            case 'Back':
-                await mongo.go_analyse_menu(message)
-            case 'Main menu':
-                await mongo.go_main(message)
-            case _:
-                message.text = f'{status_dict[chat_status]} {message.text.lower()}'
+        if text == _('Back'):
+            await mongo.go_analyse(message)
+        elif text == _('Main menu'):
+            await mongo.go_main(message)
+        else:
+            try:
+                status_dict_translated = {_(k): v for k, v in status_dict.items()}
+                await mongo.go_analyse_option(message, status_dict_translated[message.text])
+            except KeyError:
                 await hmsg.send_analyse(message)
-                await bot.send_message(message.chat.id, _("Enter function to explore or go back"))
+    elif Status.DERIVATIVE <= chat_status <= Status.STATIONARY_POINTS:
+        if text == _('Back'):
+            await mongo.go_analyse_menu(message)
+        elif text == _('Main menu'):
+            await mongo.go_main(message)
+        else:
+            message.text = f'{status_dict[chat_status]} {message.text.lower()}'
+            await hmsg.send_analyse(message)
+            await bot.send_message(message.chat.id, _("Enter a function to explore or go back"))
     elif chat_status == Status.GRAPH:
-        match message.text:
-            case 'Main menu':
-                await mongo.go_main(message)
-            case _:
-                await hmsg.send_graph(message)
-                await bot.send_message(message.chat.id, _("Enter function you want to draw or go to the main menu"))
+        if text == _('Main menu'):
+            await mongo.go_main(message)
+        else:
+            await hmsg.send_graph(message)
+            await bot.send_message(message.chat.id, _("Enter a function you want to draw or go to the main menu"))
     elif chat_status == Status.SETTINGS:
         logger.debug(message.text)
         try:
-            match message.text:
-                case 'Main menu':
-                    await mongo.go_main(message)
-                    return
-                case 'On meme':
-                    mongo.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": True}})
-                case 'Off meme':
-                    mongo.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": False}})
-                case 'Set en language':
-                    mongo.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": 'en'}})
-                case 'Set ru language':
-                    mongo.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": 'ru'}})
-                case _:
-                    await message.reply(_('I didn\'t understand what you want'))
-                    return
+            if text == _('Main menu'):
+                await mongo.go_main(message)
+                return
+            if text in [on := _('On meme'), _('Off meme')]:
+                await mongo.set_meme(message, text == on)
+            elif text in [_('Set en language'), _('Set ru language')]:
+                language = text.split()[1]
+                await mongo.set_language(message, language)
+            else:
+                await message.reply(_('I didn\'t understand what you want'))
+                return
         except errors.PyMongoError:
             await bot.send_message(message.chat.id, _(no_db_message))
-        await bot.send_message(message.chat.id, "New settings saved")
+        await bot.send_message(message.chat.id, _("Settings saved"))
         await mongo.go_settings(message)
 
 

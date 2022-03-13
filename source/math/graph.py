@@ -135,7 +135,7 @@ class Graph:
             counter += 1
 
         buf = BytesIO()
-        backend.fig.savefig(buf, format="png", dpi=250, bbox_inches='tight')
+        backend.fig.savefig(buf, format="png", dpi=300, bbox_inches='tight')
         buf.seek(0)
         plt.close("all")
 

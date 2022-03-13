@@ -18,14 +18,13 @@ from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
-
 # We get "USE_LATEX" parameter from settings
 from source.middleware.localization_middleware import get_language
 
 SETTINGS = Config()
 
 # A number of dots per inch for TeX pictures
-DPI = '600'
+DPI = '500'
 
 
 @run_asynchronously
@@ -97,7 +96,11 @@ def run_TeX(latex: str, result_picture: BytesIO):
     :param latex: latex text to compile
     :param result_picture: rendered picture
     """
-    sy.preview(fr'${latex}$', output='png', viewer='BytesIO', outputbuffer=result_picture, dvioptions=['-D', DPI])
+    preamble = r"""\documentclass[varwidth,12pt]{standalone}
+    \usepackage{euler} \usepackage{amsmath} \usepackage{amsfonts} \usepackage[russian]{babel}
+    \begin{document}"""
+    sy.preview(fr'${latex}$', output='png', preamble=preamble,
+               viewer='BytesIO', outputbuffer=result_picture, dvioptions=['-D', DPI])
 
 
 async def send_analyse(message: types.Message):

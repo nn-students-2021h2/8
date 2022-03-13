@@ -82,8 +82,8 @@ class MathFunction:
                     diff_function = sy.diff(diff_function, symbol)
         except ValueError as err:
             raise MathError(_("Since there is more than one variable in the expression, "
-                               "the variable(s) of differentiation must be supplied to "
-                               "differentiate:\n{}").format(self.expression)) from err
+                              "the variable(s) of differentiation must be supplied to "
+                              "differentiate:\n{}").format(self.expression)) from err
 
         return diff_function
 
@@ -164,7 +164,28 @@ class MathFunction:
         :param symbol: see 'continuous_domain' arguments
         :return: an interval of continuity
         """
+        # TODO unused function. For now
         return calculus.continuous_domain(self.simplified_expr, symbol, sy.S.Reals)
+
+    def monotonicity(self, symbol: sy.Symbol, lang: str = "en") -> str:
+        """
+        Determines the type of monotonicity of the function
+        :param lang:
+        :param symbol: the argument of the function ('x')
+        :return: type of function as string
+        """
+        if sy.is_monotonic(self.simplified_expr, symbol=symbol):
+            types = {
+                sy.is_strictly_decreasing: _("Strictly decreasing", locale=lang),
+                sy.is_strictly_increasing: _("Strictly increasing", locale=lang),
+                sy.is_increasing: _("Increasing", locale=lang),
+                sy.is_decreasing: _("Decreasing", locale=lang)
+            }
+            for func, value in types.items():
+                if func(self.simplified_expr, symbol=symbol):
+                    return value
+            raise MathError(_("Can't determine type of the function", locale=lang))
+        return _("Non-monotonic", locale=lang)
 
     def is_even(self, *symbols: sy.Symbol) -> bool:
         """

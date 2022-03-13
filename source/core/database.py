@@ -1,14 +1,13 @@
 """
 Database module
 """
-from source.conf.config import Config
-from pymongo import MongoClient, errors
 from aiogram import types
 from aiogram.types import ReplyKeyboardMarkup
+from pymongo import MongoClient, errors
 
+from source.conf.config import Config
 from source.extras.status import Status
-from source.extras.translation import _
-
+from source.extras.translation import _, i18n
 
 no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 
@@ -34,11 +33,29 @@ class MongoDatabase:
         try:
             if self.chat_status_table.find_one({"chat_id": message.chat.id}) is None:
                 self.chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value,
-                                                                               "lang": message.from_user.language_code,
-                                                                               "meme": False})
+                                                   "lang": message.from_user.language_code,
+                                                   "meme": False})
             else:
                 self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"status": status.value}})
             return 0
+        except errors.PyMongoError:
+            await self.bot.send_message(message.chat.id, _(no_db_message))
+            return 1
+
+    async def set_meme(self, message: types.Message, switcher: bool):
+        """Turn on/off the meme button"""
+        try:
+            self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": switcher}})
+        except errors.PyMongoError:
+            await self.bot.send_message(message.chat.id, _(no_db_message))
+            return 1
+
+    async def set_language(self, message: types.Message, language: str):
+        """Set the language of the user"""
+        try:
+            self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": language}})
+            message.from_user.language_code = language
+            await i18n.trigger("pre_process_message", (message, {}))  # Trigger i18n middleware to change the language
         except errors.PyMongoError:
             await self.bot.send_message(message.chat.id, _(no_db_message))
             return 1
@@ -52,13 +69,13 @@ class MongoDatabase:
         except errors.PyMongoError:
             await self.bot.send_message(message.chat.id, _(no_db_message))
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Draw graph")
-        reply_markup.add("Analyse function")
-        reply_markup.add("Settings")
-        reply_markup.add("Get help")
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Draw a graph"))
+        reply_markup.add(_("Analyse function"))
+        reply_markup.add(_("Settings"))
+        reply_markup.add(_("Get help"))
         if meme_is_active:
-            reply_markup.add("Meme")
-        await self.bot.send_message(message.chat.id, _('Choose action'), reply_markup=reply_markup)
+            reply_markup.add(_("Meme"))
+        await self.bot.send_message(message.chat.id, _('Choose an action'), reply_markup=reply_markup)
 
     async def go_settings(self, message: types.Message):
         """Change status of user and send settings menu to user."""
@@ -69,45 +86,47 @@ class MongoDatabase:
         except errors.PyMongoError:
             await self.bot.send_message(message.chat.id, _(no_db_message))
             return
-        await self.bot.send_message(message.chat.id, f"Your settings\n"
-                                                     f"Language: {user_settings['lang']}\n"
-                                                     f"Meme: {'on' if user_settings['meme'] else 'off'}")
+        await self.bot.send_message(message.chat.id,
+                                    _("Your settings\nLanguage: {}\nMeme: {}")
+                                    .format(user_settings['lang'], _('on') if user_settings['meme'] else _('off')))
         reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        reply_markup.add(f"Set {'ru' if user_settings['lang'] == 'en' else 'en'} language")
-        reply_markup.add(f"{'Off' if user_settings['meme'] else 'On'} meme")
-        reply_markup.add("Main menu")
-        await self.bot.send_message(message.chat.id, "Choose changes that you want.", reply_markup=reply_markup)
+        reply_markup.add(_("Set {} language").format('ru' if user_settings['lang'] == 'en' else 'en'))
+        reply_markup.add(_("{} meme button").format(_('Off') if user_settings['meme'] else _('On')))
+        reply_markup.add(_("Main menu"))
+        await self.bot.send_message(message.chat.id, _("Select the setting you want to apply."),
+                                    reply_markup=reply_markup)
 
     async def go_graph(self, message: types.Message):
         """Change status of user and send draw graph menu to user."""
         if await self.change_user_status(message, Status.GRAPH):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Main menu")
-        await self.bot.send_message(message.chat.id, _("Enter function you want to draw or go to the main menu"),
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Main menu"))
+        await self.bot.send_message(message.chat.id, _("Enter a function you want to draw or go to the main menu"),
                                     reply_markup=reply_markup)
 
     async def go_analyse(self, message: types.Message):
         """Change status of user to 'analyse' and send analyse menu"""
         if await self.change_user_status(message, Status.ANALYSE):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Options")
-        reply_markup.add("Get help")
-        reply_markup.add("Main menu")
-        await self.bot.send_message(message.chat.id, _("Choose option or enter command or go to main menu"),
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Options"))
+        reply_markup.add(_("Get help"))
+        reply_markup.add(_("Main menu"))
+        await self.bot.send_message(message.chat.id, _("Choose an option or enter your request or go to the main menu"),
                                     reply_markup=reply_markup)
 
     async def go_analyse_menu(self, message: types.Message):
         """Change status of user to 'analyze menu' and send options to analyze menu'"""
         if await self.change_user_status(message, Status.ANALYSE_MENU):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add('Derivative', 'Domain', 'Range',
-                                                                     'Stationary points', 'Periodicity',
-                                                                     'Continuity', 'Convexity', 'Concavity',
-                                                                     'Horizontal asymptotes', 'Vertical asymptotes',
-                                                                     'Asymptotes', 'Evenness', 'Oddness',
-                                                                     'Axes intersection', 'Slant asymptotes',
-                                                                     'Maximum', 'Minimum', 'Zeros',
-                                                                     'Main menu', 'Back')
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_('Derivative'), _('Domain'), _('Range'),
+                                                                     _('Stationary points'), _('Periodicity'),
+                                                                     _('Monotonicity'), _('Convexity'), _('Concavity'),
+                                                                     _('Horizontal asymptotes'),
+                                                                     _('Vertical asymptotes'),
+                                                                     _('Asymptotes'), _('Evenness'), _('Oddness'),
+                                                                     _('Axes intersection'), _('Slant asymptotes'),
+                                                                     _('Maximum'), _('Minimum'), _('Zeros'),
+                                                                     _('Main menu'), _('Back'))
         await self.bot.send_message(message.chat.id, _("Choose option to analyse or go back"),
                                     reply_markup=reply_markup)
 
@@ -115,9 +134,9 @@ class MongoDatabase:
         """Change status of user to option and send 'go back' menu'"""
         if await self.change_user_status(message, option):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add("Back")
-        reply_markup.add("Main menu")
-        await self.bot.send_message(message.chat.id, _("Enter function to analyse or go back"),
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Back"))
+        reply_markup.add(_("Main menu"))
+        await self.bot.send_message(message.chat.id, _("Enter a function to analyse or go back"),
                                     reply_markup=reply_markup)
 
     async def user_language(self, message: types.Message) -> str:

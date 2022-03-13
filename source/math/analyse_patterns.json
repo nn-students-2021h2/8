@@ -261,5 +261,22 @@
       "critical",
       "stationary"
     ]
+  },
+  "monotonicity": {
+    "patterns": {
+      "^monotonic(ity)?[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
+        "6"
+      ],
+      "^type[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
+        "5"
+      ]
+    },
+    "keywords": [
+      "the",
+      "function",
+      "monotonicity",
+      "monotonic",
+      "type"
+    ]
   }
 }

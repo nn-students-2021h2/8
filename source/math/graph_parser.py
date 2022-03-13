@@ -150,9 +150,10 @@ class GraphParser(Parser):
 
         return False
 
-    def _process_variables(self, function: sy.Function) -> sy.Function:
+    def _process_variables(self, function: sy.Function, lang: str = "en") -> sy.Function:
         """
         Replace all incorrect variables with correct (on 'x' and 'y')
+        :param lang:
         :param function: function to correct
         :return: corrected function
         """
@@ -162,31 +163,32 @@ class GraphParser(Parser):
 
         # First check: expression contains x, a (replace a = y)
         if (x in symbols) and (y not in symbols) and len(var := list(symbols - {x})) == 1:
-            self.push_warning(_("Variable '{}' is replaced by 'y'").format(var[0]))
+            self.push_warning(_("Variable '{}' is replaced by 'y'", locale=lang).format(var[0]))
             return function.replace(var[0], y)
 
         # Second check: expression contains y, a (replace a = x)
         if (y in symbols) and (x not in symbols) and len(var := list(symbols - {y})) == 1:
-            self.push_warning(_("Variable '{}' is replaced by 'x'").format(var[0]))
+            self.push_warning(_("Variable '{}' is replaced by 'x'", locale=lang).format(var[0]))
             return function.replace(var[0], x)
 
         # Third check: expression contains a, b (replace a = x, b = y)
         if (x not in symbols) and (y not in symbols) and len(symbols) == 2:
             variables = list(symbols)
             self.push_warning(_("Variable '{}' is replaced by 'y',\n"
-                                "variable '{}' is replaced by 'x'".format(variables[0], variables[1])))
+                                "variable '{}' is replaced by 'x'", locale=lang).format(variables[0], variables[1]))
             return function.replace(variables[0], y).replace(variables[1], x)
 
         # Fourth check: expression contains a (replace a = x)
         if (x not in symbols) and (y not in symbols) and len(var := list(symbols)) == 1:
-            self.push_warning(_("Variable '{}' is replaced by 'x'").format(var[0]))
+            self.push_warning(_("Variable '{}' is replaced by 'x'", locale=lang).format(var[0]))
             return function.replace(var[0], x)
 
         return function
 
-    def _process_function(self, token: str) -> sy.Function:
+    def _process_function(self, token: str, lang: str = "en") -> sy.Function:
         """
         Converting a string into a sympy function
+        :param lang:
         :param token: string to convert
         :return: sympy simplified function object
         """
@@ -203,7 +205,8 @@ class GraphParser(Parser):
                 if function.free_symbols == {sy.Symbol('y')}:
                     raise ParseError(_("Incorrect expression: {}\n"
                                        "There is only 'y' variable. It's f(y) or f(x) = 0?\n"
-                                       "Please, use 'x' instead of single 'y' variable for f(x) plot.").format(token))
+                                       "Please, use 'x' instead of single 'y' variable for f(x) plot.",
+                                       locale=lang).format(token))
             elif parts_count == 2:
                 # If parsed result always true or false (e.g. it is not a function at all)
                 result = sy.Eq(sy.parse_expr(expr_parts[0], transformations=rules),
@@ -212,15 +215,15 @@ class GraphParser(Parser):
                 # Check if number of variables is less than 2
                 if len(result.free_symbols) > 2:
                     variables = ', '.join(str(var) for var in result.free_symbols)
-                    raise ParseError(("Incorrect expression: {}\n"
-                                      "There are {} variables: {}\n"
-                                      "You can use a maximum of 2 variables.").format(token,
-                                                                                      len(result.free_symbols),
-                                                                                      variables))
+                    raise ParseError(_("Incorrect expression: {}\nThere are {} variables: {}\n"
+                                       "You can use a maximum of 2 variables.",
+                                       locale=lang).format(token,
+                                                           len(result.free_symbols),
+                                                           variables))
 
                 # If it is expressions like 1 = 1 or 1 = 0
                 if result is sy.true or result is sy.false:
-                    raise ParseError(_("Result of expression '{}' is always {}").format(token, result))
+                    raise ParseError(_("Result of expression '{}' is always {}", locale=lang).format(token, result))
 
                 # If expression like 'y = x', then discard left part, else construct expression "y - x = 0"
                 # or if expression is not like 'y = y ** 2' (same variables at the both sides)
@@ -235,13 +238,17 @@ class GraphParser(Parser):
             else:
                 raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
                                    "Your input: {}\n"
-                                   "Please, check your math formula").format(token.strip()))
+                                   "Please, check your math formula", locale=lang).format(token.strip()))
 
             # Change variables
-            function = self._process_variables(function)
-        except (SympifyError, TypeError, ValueError, AttributeError, TokenError, SyntaxError) as err:
+            function = self._process_variables(function, lang)
+        except (SympifyError, TypeError, ValueError, AttributeError, TokenError) as err:
             raise ParseError(_("Mistake in expression.\nYour input: {}\n"
-                               "Please, check your math formula.").format(token.strip())) from err
+                               "Please, check your math formula.", locale=lang).format(token.strip())) from err
+        except SyntaxError as err:
+            raise ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
+                               "such as placing '*' (multiplication) signs and parentheses.",
+                               locale=lang).format(token.strip())) from err
 
         return function
 
@@ -268,7 +275,7 @@ class GraphParser(Parser):
 
             # If it is a function
             try:
-                function = self._process_function(token)
+                function = self._process_function(token, lang)
             except ParseError as err:
                 # If we don't found a pattern, and it is not a function, then try to fix words
                 if self._find_pattern(pattern_dict, token, True, lang):

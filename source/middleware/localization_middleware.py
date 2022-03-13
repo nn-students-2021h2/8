@@ -19,6 +19,7 @@ async def get_language(message: types.Message, mongo):
 
 class LanguageMiddleware(I18nMiddleware):
     """Translation middleware"""
+
     def __init__(self, domain, path, mongo):
         super().__init__(domain, path=path)
         self.mongo = mongo
