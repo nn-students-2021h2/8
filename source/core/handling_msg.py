@@ -1,28 +1,27 @@
 """
 In this module we process events related to bot (such as messages, requests)
 """
-import logging
 import asyncio
+import logging
 from io import BytesIO
 
 import aiohttp
 import sympy as sy
 import telegram
-from pymongo import errors
 from PIL import Image, ImageOps
 from aiogram import types, Bot
 from aiogram.utils.exceptions import BadRequest, TelegramAPIError
+from pymongo import errors
 
 from source.conf import Config
 from source.core.database import MongoDatabase, no_db_message
-from source.extras.translation import _
 from source.extras.status import Status
+from source.extras.translation import _
 from source.extras.utilities import run_asynchronously
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
-
 # We get "USE_LATEX" parameter from settings
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
@@ -122,7 +121,7 @@ class Handler:
 
             text = message.text
             if chat_status == Status.MAIN:
-                if text == _('Draw a graph'):
+                if text == _('Draw graph'):
                     await Handler.mongo.go_graph(message)
                 elif text == _('Analyse function'):
                     await Handler.mongo.go_analyse(message)
@@ -298,7 +297,7 @@ class Handler:
 
             # If USE_LATEX set in True, then send picture to the user. Else, send basic text
             if Handler.SETTINGS.properties["APP"]["USE_LATEX"]:
-                latex = parser.make_latex(result, user_language)
+                latex = parser.make_latex(result)
                 with BytesIO() as latex_picture, BytesIO() as resized_image:
                     await Handler.run_TeX(latex, latex_picture)
                     await Handler.resize_image(latex_picture, resized_image)

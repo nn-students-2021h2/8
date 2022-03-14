@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-14 12:48+0300\n"
+"POT-Creation-Date: 2022-03-14 16:24+0300\n"
 "PO-Revision-Date: 2022-03-09 01:10+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -19,24 +19,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: source/core/database.py:72 source/core/handling_msg.py:125
-msgid "Draw a graph"
+#: source/core/database.py:72 source/core/handling_msg.py:124
+msgid "Draw graph"
 msgstr ""
 
-#: source/core/database.py:73 source/core/handling_msg.py:127
+#: source/core/database.py:73 source/core/handling_msg.py:126
 msgid "Analyse function"
 msgstr ""
 
-#: source/core/database.py:74 source/core/handling_msg.py:134
+#: source/core/database.py:74 source/core/handling_msg.py:133
 msgid "Settings"
 msgstr ""
 
 #: source/core/database.py:75 source/core/database.py:112
-#: source/core/handling_msg.py:129 source/core/handling_msg.py:143
+#: source/core/handling_msg.py:128 source/core/handling_msg.py:142
 msgid "Get help"
 msgstr ""
 
-#: source/core/database.py:77 source/core/handling_msg.py:131
+#: source/core/database.py:77 source/core/handling_msg.py:130
 msgid "Meme"
 msgstr ""
 
@@ -77,9 +77,9 @@ msgstr ""
 
 #: source/core/database.py:95 source/core/database.py:103
 #: source/core/database.py:113 source/core/database.py:129
-#: source/core/database.py:138 source/core/handling_msg.py:139
-#: source/core/handling_msg.py:150 source/core/handling_msg.py:161
-#: source/core/handling_msg.py:168 source/core/handling_msg.py:177
+#: source/core/database.py:138 source/core/handling_msg.py:138
+#: source/core/handling_msg.py:149 source/core/handling_msg.py:160
+#: source/core/handling_msg.py:167 source/core/handling_msg.py:176
 msgid "Main menu"
 msgstr ""
 
@@ -87,11 +87,11 @@ msgstr ""
 msgid "Select the setting you want to apply."
 msgstr ""
 
-#: source/core/database.py:104 source/core/handling_msg.py:173
+#: source/core/database.py:104 source/core/handling_msg.py:172
 msgid "Enter a function you want to draw or go to the main menu"
 msgstr ""
 
-#: source/core/database.py:111 source/core/handling_msg.py:141
+#: source/core/database.py:111 source/core/handling_msg.py:140
 msgid "Options"
 msgstr ""
 
@@ -99,15 +99,16 @@ msgstr ""
 msgid "Choose an option or enter your request or go to the main menu"
 msgstr ""
 
-#: source/core/database.py:121
+#: source/core/database.py:121 source/math/calculus_parser.py:159
+#: source/math/calculus_parser.py:163
 msgid "Derivative"
 msgstr ""
 
-#: source/core/database.py:121
+#: source/core/database.py:121 source/math/calculus_parser.py:168
 msgid "Domain"
 msgstr ""
 
-#: source/core/database.py:121
+#: source/core/database.py:121 source/math/calculus_parser.py:173
 msgid "Range"
 msgstr ""
 
@@ -115,11 +116,11 @@ msgstr ""
 msgid "Stationary points"
 msgstr ""
 
-#: source/core/database.py:122
+#: source/core/database.py:122 source/math/calculus_parser.py:195
 msgid "Periodicity"
 msgstr ""
 
-#: source/core/database.py:123
+#: source/core/database.py:123 source/math/calculus_parser.py:254
 msgid "Monotonicity"
 msgstr ""
 
@@ -167,12 +168,12 @@ msgstr ""
 msgid "Minimum"
 msgstr ""
 
-#: source/core/database.py:128
+#: source/core/database.py:128 source/math/calculus_parser.py:178
 msgid "Zeros"
 msgstr ""
 
 #: source/core/database.py:129 source/core/database.py:137
-#: source/core/handling_msg.py:148 source/core/handling_msg.py:159
+#: source/core/handling_msg.py:147 source/core/handling_msg.py:158
 msgid "Back"
 msgstr ""
 
@@ -184,11 +185,11 @@ msgstr ""
 msgid "Enter a function to analyse or go back"
 msgstr ""
 
-#: source/core/handling_msg.py:76
+#: source/core/handling_msg.py:75
 msgid "Hello, {} {}!"
 msgstr ""
 
-#: source/core/handling_msg.py:84
+#: source/core/handling_msg.py:83
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"
@@ -196,57 +197,57 @@ msgid ""
 "/analyse to go on to investigate the function."
 msgstr ""
 
-#: source/core/handling_msg.py:137 source/core/handling_msg.py:186
+#: source/core/handling_msg.py:136 source/core/handling_msg.py:185
 msgid "I didn't understand what you want"
 msgstr ""
 
-#: source/core/handling_msg.py:166
+#: source/core/handling_msg.py:165
 msgid "Enter a function to explore or go back"
 msgstr ""
 
-#: source/core/handling_msg.py:180
+#: source/core/handling_msg.py:179
 msgid "On meme button"
 msgstr ""
 
-#: source/core/handling_msg.py:180
+#: source/core/handling_msg.py:179
 msgid "Off meme button"
 msgstr ""
 
-#: source/core/handling_msg.py:182
+#: source/core/handling_msg.py:181
 msgid "Set en language"
 msgstr ""
 
-#: source/core/handling_msg.py:182
+#: source/core/handling_msg.py:181
 msgid "Set ru language"
 msgstr ""
 
-#: source/core/handling_msg.py:190
+#: source/core/handling_msg.py:189
 msgid "Settings saved"
 msgstr ""
 
-#: source/core/handling_msg.py:250
+#: source/core/handling_msg.py:249
 msgid "Here a graph of requested functions"
 msgstr ""
 
-#: source/core/handling_msg.py:293
+#: source/core/handling_msg.py:292
 msgid "Couldn't find a suitable template. Check the input."
 msgstr ""
 
-#: source/core/handling_msg.py:314
+#: source/core/handling_msg.py:313
 msgid "Photo size is too large, therefore I send you a file."
 msgstr ""
 
-#: source/core/handling_msg.py:333
+#: source/core/handling_msg.py:332
 msgid "Incorrect input. Please check your function."
 msgstr ""
 
-#: source/core/handling_msg.py:337
+#: source/core/handling_msg.py:336
 msgid ""
 "Sorry, can't solve the problem or the input is invalid. Please check your"
 " function."
 msgstr ""
 
-#: source/core/handling_msg.py:372
+#: source/core/handling_msg.py:371
 msgid "Sorry, something went wrong. Please try again later."
 msgstr ""
 
@@ -278,14 +279,122 @@ msgid ""
 "Incorrect variable: '{}'"
 msgstr ""
 
-#: source/math/calculus_parser.py:217
+#: source/math/calculus_parser.py:159 source/math/calculus_parser.py:163
+#: source/math/calculus_parser.py:168 source/math/calculus_parser.py:173
+#: source/math/calculus_parser.py:178 source/math/calculus_parser.py:195
+#: source/math/calculus_parser.py:210 source/math/calculus_parser.py:215
+#: source/math/calculus_parser.py:220 source/math/calculus_parser.py:225
+#: source/math/calculus_parser.py:227 source/math/calculus_parser.py:229
+#: source/math/calculus_parser.py:244 source/math/calculus_parser.py:249
+#: source/math/calculus_parser.py:254 source/math/calculus_parser.py:259
+msgid "of"
+msgstr ""
+
+#: source/math/calculus_parser.py:159
+msgid "by"
+msgstr ""
+
+#: source/math/calculus_parser.py:183
+msgid "For"
+msgstr ""
+
+#: source/math/calculus_parser.py:183
+msgid "function"
+msgstr ""
+
+#: source/math/calculus_parser.py:185 source/math/calculus_parser.py:189
+msgid "Intersection"
+msgstr ""
+
+#: source/math/calculus_parser.py:185 source/math/calculus_parser.py:189
+msgid "with"
+msgstr ""
+
+#: source/math/calculus_parser.py:185 source/math/calculus_parser.py:189
+msgid "axis"
+msgstr ""
+
+#: source/math/calculus_parser.py:200 source/math/calculus_parser.py:205
+#: source/math/calculus_parser.py:234 source/math/calculus_parser.py:239
+msgid "Is"
+msgstr ""
+
+#: source/math/calculus_parser.py:200
+msgid "convex"
+msgstr ""
+
+#: source/math/calculus_parser.py:205
+msgid "concave"
+msgstr ""
+
+#: source/math/calculus_parser.py:210 source/math/calculus_parser.py:225
+msgid "Vertical"
+msgstr ""
+
+#: source/math/calculus_parser.py:210 source/math/calculus_parser.py:215
+#: source/math/calculus_parser.py:220 source/math/calculus_parser.py:225
+#: source/math/calculus_parser.py:227 source/math/calculus_parser.py:229
+msgid "asymptotes"
+msgstr ""
+
+#: source/math/calculus_parser.py:215 source/math/calculus_parser.py:227
+msgid "Horizontal"
+msgstr ""
+
+#: source/math/calculus_parser.py:220 source/math/calculus_parser.py:229
+msgid "Slant"
+msgstr ""
+
+#: source/math/calculus_parser.py:234
+msgid "even"
+msgstr ""
+
+#: source/math/calculus_parser.py:239
+msgid "odd"
+msgstr ""
+
+#: source/math/calculus_parser.py:244
+msgid "Max"
+msgstr ""
+
+#: source/math/calculus_parser.py:244 source/math/calculus_parser.py:249
+msgid "value"
+msgstr ""
+
+#: source/math/calculus_parser.py:249
+msgid "Min"
+msgstr ""
+
+#: source/math/calculus_parser.py:259
+msgid "Stationary"
+msgstr ""
+
+#: source/math/calculus_parser.py:259
+msgid "points"
+msgstr ""
+
+#: source/math/calculus_parser.py:263
 msgid "Unknown pattern set: {}"
 msgstr ""
 
-#: source/math/calculus_parser.py:246
+#: source/math/calculus_parser.py:292
 msgid ""
 "Variables can only contain letters\n"
 "Incorrect variable: '{}'"
+msgstr ""
+
+#: source/math/calculus_parser.py:324 source/math/calculus_parser.py:328
+#: source/math/calculus_parser.py:346 source/math/calculus_parser.py:350
+msgid "Yes"
+msgstr ""
+
+#: source/math/calculus_parser.py:324 source/math/calculus_parser.py:328
+#: source/math/calculus_parser.py:346 source/math/calculus_parser.py:350
+msgid "No"
+msgstr ""
+
+#: source/math/graph.py:28
+msgid "Plot"
 msgstr ""
 
 #: source/math/graph.py:84 source/math/graph.py:112
@@ -378,6 +487,14 @@ msgid ""
 "{}"
 msgstr ""
 
+#: source/math/math_function.py:142
+msgid "Aperiodic function"
+msgstr ""
+
+#: source/math/math_function.py:144
+msgid "Function is constant (any period)"
+msgstr ""
+
 #: source/math/math_function.py:179
 msgid "Strictly decreasing"
 msgstr ""
@@ -414,5 +531,35 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Off meme"
+#~ msgstr ""
+
+#~ msgid "Derivative\\ of\\ {}\\ by\\ {}:\\\\{}"
+#~ msgstr ""
+
+#~ msgid "Derivative of {} by {}:\\n{}"
+#~ msgstr ""
+
+#~ msgid "of"
+#~ msgstr ""
+
+#~ msgid "by"
+#~ msgstr ""
+
+#~ msgid "For"
+#~ msgstr ""
+
+#~ msgid "function"
+#~ msgstr ""
+
+#~ msgid "Intersection"
+#~ msgstr ""
+
+#~ msgid "with"
+#~ msgstr ""
+
+#~ msgid "point"
+#~ msgstr ""
+
+#~ msgid "Draw a graph"
 #~ msgstr ""
 

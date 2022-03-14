@@ -132,10 +132,9 @@ class CalculusParser(Parser):
 
         return False
 
-    def make_latex(self, expression: list, lang: str = "en") -> str:
+    def make_latex(self, expression: list) -> str:
         """
         Converts the given argument into LaTeX format according to the parser's pattern set
-        :param lang:
         :param expression: list of expressions that should be represented in LaTeX format
         :return: LaTeX representation (string). If is can't find pattern set, then returns empty string
         """
@@ -146,80 +145,128 @@ class CalculusParser(Parser):
         second_result = sy.latex(expression[1]) if len(expression) > 1 else None
         third_result = sy.latex(expression[2]) if len(expression) > 2 else None
 
+        # Aliases
+        NL = r"\\"  # New Line
+        NLC = r":\\"  # New Line with Colon
+        SPACE = r"\ "  # Space in LaTeX format
+        __ = lambda s: sy.latex(_(s))  # Translate and make latex
+
         match pattern_set:
             case "derivative":
                 if len(self.additional_params) > 0:
                     variables = self.additional_params[0].strip()
                     variables = re.sub(" +", " ", variables)
-                    result = fr"Derivative\ of\ {function}\ by\ {variables}:\\{first_result}"
+                    result = SPACE.join(
+                        [__("Derivative"), __("of"), function, __("by"), variables]
+                    ) + NLC + first_result
                 else:
-                    result = fr"Derivative\ of\ {function}:\\{first_result}"
+                    result = SPACE.join(
+                        [__("Derivative"), __("of"), function]
+                    ) + NLC + first_result
 
             case "domain":
-                result = fr"Domain\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Domain"), __("of"), function]
+                ) + NLC + first_result
 
             case "range":
-                result = fr"Range\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Range"), __("of"), function]
+                ) + NLC + first_result
 
             case "zeros":
-                result = fr"Zeros\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Zeros"), __("of"), function]
+                ) + NLC + first_result
 
             case "axes_intersection":
-                result = fr"For\ function\ {function}:\\" \
-                         fr"Intersection\ with\ {symbols[0]}-axis:\\{symbols[0]} = {first_result}\\" \
-                         fr"Intersection\ with\ {symbols[1]}-axis:\\{symbols[1]} = {second_result}"
-
+                result = SPACE.join(
+                    [__("For"), __("function"), function]
+                ) + NLC + SPACE.join(
+                    [__("Intersection"), __("with"), symbols[0], __("axis")]
+                ) + NLC + SPACE.join(
+                    [symbols[0], "=", first_result]
+                ) + NL + SPACE.join(
+                    [__("Intersection"), __("with"), symbols[1], __("axis")]
+                ) + NLC + SPACE.join(
+                    [symbols[1], "=", second_result]
+                )
             case "periodicity":
-                result = fr"Periodicity\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Periodicity"), __("of"), function]
+                ) + NLC + first_result
 
             case "convexity":
-                result = fr"Is\ {function}\ convex?\\{first_result}"
+                result = SPACE.join(
+                    [__("Is"), function, __("convex"), "?"]
+                ) + NL + first_result
 
             case "concavity":
-                result = fr"Is\ {function}\ concave?\\{first_result}"
-
-            case "continuity":
-                result = fr"Continuity\ interval\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Is"), function, __("concave"), "?"]
+                ) + NL + first_result
 
             case "vertical asymptotes":
-                result = fr"Vertical\ asymptotes\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Vertical"), __("asymptotes"), __("of"), function]
+                ) + NLC + first_result
 
             case "horizontal asymptotes":
-                result = fr"Horizontal\ asymptotes\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Horizontal"), __("asymptotes"), __("of"), function]
+                ) + NLC + first_result
 
             case "slant asymptotes":
-                result = fr"Slant\ asymptotes\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Slant"), __("asymptotes"), __("of"), function]
+                ) + NLC + first_result
 
             case "asymptotes":
-                result = fr"Vertical\ asymptotes\ of\ {function}:\\{first_result}\\\\" \
-                         fr"Horizontal\ asymptotes\ of\ {function}:\\{second_result}\\\\" \
-                         fr"Slant\ asymptotes\ of\ {function}:\\{third_result}"
+                result = SPACE.join(
+                    [__("Vertical"), __("asymptotes"), __("of"), function]
+                ) + NLC + first_result + NL + SPACE.join(
+                    [__("Horizontal"), __("asymptotes"), __("of"), function]
+                ) + NLC + second_result + NL + SPACE.join(
+                    [__("Slant"), __("asymptotes"), __("of"), function]
+                ) + NLC + third_result
 
             case "evenness":
-                result = fr"Is\ {function}\ even?\\{first_result}"
+                result = SPACE.join(
+                    [__("Is"), function, __("even"), "?"]
+                ) + NL + first_result
 
             case "oddness":
-                result = fr"Is\ {function}\ odd?\\{first_result}"
+                result = SPACE.join(
+                    [__("Is"), function, __("odd"), "?"]
+                ) + NL + first_result
 
             case "maximum":
-                result = fr"Max\ value\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Max"), __("value"), __("of"), function]
+                ) + NLC + first_result
 
             case "minimum":
-                result = fr"Min\ value\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Min"), __("value"), __("of"), function]
+                ) + NLC + first_result
 
             case "monotonicity":
-                result = fr"Monotonicity\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Monotonicity"), __("of"), function]
+                ) + NLC + first_result
 
             case "stationary points":
-                result = fr"Stationary\ points\ of\ {function}:\\{first_result}"
+                result = SPACE.join(
+                    [__("Stationary"), __("points"), __("of"), function]
+                ) + NLC + first_result
 
             case _:
-                raise ParseError(_("Unknown pattern set: {}", lang).format(pattern_set))
+                raise ParseError(_("Unknown pattern set: {}").format(pattern_set))
 
         return result
 
     @run_asynchronously
-    def process_query(self, lang="en") -> list:
+    def process_query(self, lang: str = "en") -> list:
         """
         Tries to calculate the requested function
         :param lang:
@@ -243,8 +290,7 @@ class CalculusParser(Parser):
                     # Check if listed variables are correct
                     for var in symbols:
                         if not str(var).isalpha():
-                            raise ParseError(_("Variables can only contain letters\nIncorrect variable: '{}'",
-                                               locale=lang)
+                            raise ParseError(_("Variables can only contain letters\nIncorrect variable: '{}'")
                                              .format(var))
 
                 result.append(m_func.derivative(*symbols))
@@ -271,16 +317,16 @@ class CalculusParser(Parser):
                 result.append(m_func.axis_intersection(symbols[1], symbols[0]))
 
             case "periodicity":
-                result.append(m_func.periodicity(symbols[0]))
+                ans = _(m_func.periodicity(symbols[0]), locale=lang)
+                result.append(ans)
 
             case "convexity":
-                result.append(m_func.convexity(symbols[0]))
+                ans = m_func.convexity(symbols[0])
+                result.append(_("Yes", locale=lang) if ans else _("No", locale=lang))
 
             case "concavity":
-                result.append(m_func.concavity(symbols[0]))
-
-            case "continuity":
-                result.append(m_func.continuity(symbols[0]))
+                ans = m_func.concavity(symbols[0])
+                result.append(_("Yes", locale=lang) if ans else _("No", locale=lang))
 
             case "vertical asymptotes":
                 result.append(m_func.vertical_asymptotes(symbols[0]))
@@ -297,10 +343,12 @@ class CalculusParser(Parser):
                 result.append(m_func.slant_asymptotes(symbols[0]))
 
             case "evenness":
-                result.append(m_func.is_even(*symbols))
+                ans = m_func.is_even(*symbols)
+                result.append(_("Yes", locale=lang) if ans else _("No", locale=lang))
 
             case "oddness":
-                result.append(m_func.is_odd(*symbols))
+                ans = m_func.is_odd(*symbols)
+                result.append(_("Yes", locale=lang) if ans else _("No", locale=lang))
 
             case "maximum":
                 result.append(m_func.maximum(symbols[0]))

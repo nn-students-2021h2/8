@@ -139,9 +139,9 @@ class MathFunction:
         """
         result = calculus.periodicity(self.simplified_expr, symbol)
         if result is None:
-            result = "Aperiodic function"
+            result = _("Aperiodic function")
         if result == 0:
-            result = "Function is constant (any period)"
+            result = _("Function is constant (any period)")
         return result
 
     def convexity(self, symbol: sy.Symbol) -> bool:

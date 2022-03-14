@@ -14,6 +14,7 @@ no_db_message = "There were problems, the functionality is limited.\nYou can onl
 
 class MongoDatabase:
     """Mongo database"""
+
     def __init__(self, logger, bot):
         """Initialise connection to mongo database"""
         conf = Config()
@@ -69,7 +70,7 @@ class MongoDatabase:
         except errors.PyMongoError:
             await self.bot.send_message(message.chat.id, _(no_db_message))
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Draw a graph"))
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Draw graph"))
         reply_markup.add(_("Analyse function"))
         reply_markup.add(_("Settings"))
         reply_markup.add(_("Get help"))

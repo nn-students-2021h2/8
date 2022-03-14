@@ -25,7 +25,7 @@ class Graph:
     IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["STYLE"]["implicit_function_points"]
 
     def __init__(self):
-        self.plot = sy.plot(show=False, title="Plot", legend=True)
+        self.plot = sy.plot(show=False, title=_("Plot"), legend=True)
 
     @staticmethod
     def setup_plot_style():
