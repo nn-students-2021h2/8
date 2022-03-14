@@ -25,7 +25,7 @@ class Graph:
     IMPLICIT_FUNCTION_POINTS = Config().properties["PLOT_APPEARANCE"]["STYLE"]["implicit_function_points"]
 
     def __init__(self):
-        self.plot = sy.plot(show=False, title="Plot", legend=True)
+        self.plot = sy.plot(show=False, title=_("Plot"), legend=True)
 
     @staticmethod
     def setup_plot_style():
@@ -135,7 +135,7 @@ class Graph:
             counter += 1
 
         buf = BytesIO()
-        backend.fig.savefig(buf, format="png", dpi=250, bbox_inches='tight')
+        backend.fig.savefig(buf, format="png", dpi=300, bbox_inches='tight')
         buf.seek(0)
         plt.close("all")
 

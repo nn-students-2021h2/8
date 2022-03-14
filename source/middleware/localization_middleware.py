@@ -7,18 +7,22 @@ from aiogram import types
 from aiogram.contrib.middlewares.i18n import I18nMiddleware
 
 
-# TODO move function in database.py (sql.py)
-async def get_language(user_id):
+async def get_language(message: types.Message, mongo):
     """
     Pull user's language code from database
-    :param user_id: id of requested user
+    :param message: requested user
+    :param mongo: database
     :return: language code (e.g. "en", "ru")
     """
-    return "ru"
+    return await mongo.user_language(message)
 
 
 class LanguageMiddleware(I18nMiddleware):
     """Translation middleware"""
+
+    def __init__(self, domain, path, mongo):
+        super().__init__(domain, path=path)
+        self.mongo = mongo
 
     # pylint: disable=no-self-use
     async def get_user_locale(self, action: str, args: Tuple[Any]) -> Optional[str]:
@@ -28,5 +32,5 @@ class LanguageMiddleware(I18nMiddleware):
         :param args: event args
         :return: language code
         """
-        user = types.User.get_current()
-        return await get_language(user.id) or "en"
+        message = types.Message.get_current()
+        return await get_language(message, self.mongo)
