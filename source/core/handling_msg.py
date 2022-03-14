@@ -90,8 +90,7 @@ class Handler:
             if message.text == '/graph':
                 await Handler.mongo.go_graph(message)
             else:
-                # await hmsg.send_graph(message)
-                asyncio.create_task(Handler.send_graph(message, ))
+                await Handler.send_graph(message)
 
         @dispatcher.message_handler(commands=["analyse"])
         @rate_limit(limit=2)
