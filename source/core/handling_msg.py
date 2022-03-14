@@ -33,6 +33,7 @@ class Handler:
     mongo: MongoDatabase = None
     logger: logging.Logger = None
     status_dict: dict = None
+    # We get "USE_LATEX" parameter from settings
     SETTINGS: Config = None
 
     # A number of dots per inch for TeX pictures
