@@ -22,7 +22,6 @@ from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
-# We get "USE_LATEX" parameter from settings
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
 
