@@ -1,7 +1,6 @@
 """
 In this module we process events related to bot (such as messages, requests)
 """
-import asyncio
 import logging
 from io import BytesIO
 
