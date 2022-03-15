@@ -14,7 +14,11 @@ async def get_language(message: types.Message, mongo):
     :param mongo: database
     :return: language code (e.g. "en", "ru")
     """
-    return await mongo.user_language(message)
+    try:
+        return await mongo.user_language(message)
+    except Exception as exc:
+        mongo.logger.warning(exc)
+        return "en"
 
 
 class LanguageMiddleware(I18nMiddleware):

@@ -1,9 +1,12 @@
 """
 Database module
 """
-from aiogram import types
+import logging
+
+from aiogram import types, Bot
 from aiogram.types import ReplyKeyboardMarkup
-from pymongo import MongoClient, errors
+from motor.motor_asyncio import AsyncIOMotorClient
+
 
 from source.conf.config import Config
 from source.extras.status import Status
@@ -13,52 +16,64 @@ no_db_message = "There were problems, the functionality is limited.\nYou can onl
 
 
 class MongoDatabase:
-    """Mongo database"""
 
-    def __init__(self, logger, bot):
+    """Mongo database"""
+    def __init__(self, logger_, bot_):
+        self.conf = Config()
+        self.logger: logging.Logger = logger_
+        self.bot: Bot = bot_
+        self.client = AsyncIOMotorClient(
+            f"mongodb://{self.conf.properties['DB_PARAMS']['ip']}:{self.conf.properties['DB_PARAMS']['port']}/",
+            serverSelectionTimeoutMS=3000)
+        self.db = None
+        self.chat_status_table = None
+
+    async def init(self):
         """Initialise connection to mongo database"""
-        conf = Config()
-        client = MongoClient(conf.properties["DB_PARAMS"]["ip"], conf.properties["DB_PARAMS"]["port"],
-                             serverSelectionTimeoutMS=5000)
         try:
-            logger.debug(client.server_info())
-        except errors.PyMongoError:
-            logger.critical("Unable to connect to the MongoDB server.")
-        db = client[conf.properties["DB_PARAMS"]["database_name"]]
-        self.chat_status_table = db["chat_status"]
-        self.chat_status_table.create_index("chat_id", unique=True)
-        self.bot = bot
+            self.db = self.client[self.conf.properties["DB_PARAMS"]["database_name"]]
+            self.chat_status_table = self.db["chat_status"]
+            await self.chat_status_table.create_index("chat_id", unique=True)
+            self.logger.debug(await self.client.server_info())
+            self.logger.debug("Database connection installed")
+        except Exception as exc:
+            self.logger.warning("Unable to connect to the MongoDB server")
+            self.logger.warning(exc)
 
     async def change_user_status(self, message: types.Message, status: Status) -> int:
         """Update user status in mongo database. It returns 1 if the connection is lost and 0 if all ok"""
         try:
-            if self.chat_status_table.find_one({"chat_id": message.chat.id}) is None:
-                self.chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value,
-                                                   "lang": message.from_user.language_code,
-                                                   "meme": False})
+            if (await self.chat_status_table.find_one({"chat_id": message.chat.id})) is None:
+                await self.chat_status_table.insert_one({"chat_id": message.chat.id, "status": status.value,
+                                                         "lang": message.from_user.language_code,
+                                                         "meme": False})
             else:
-                self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"status": status.value}})
+                await self.chat_status_table.update_one({"chat_id": message.chat.id},
+                                                        {"$set": {"status": status.value}})
             return 0
-        except errors.PyMongoError:
+        except Exception as exc:
             await self.bot.send_message(message.chat.id, _(no_db_message))
+            self.logger.warning(exc)
             return 1
 
     async def set_meme(self, message: types.Message, switcher: bool):
         """Turn on/off the meme button"""
         try:
-            self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": switcher}})
-        except errors.PyMongoError:
+            await self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"meme": switcher}})
+        except Exception as exc:
             await self.bot.send_message(message.chat.id, _(no_db_message))
+            self.logger.warning(exc)
             return 1
 
     async def set_language(self, message: types.Message, language: str):
         """Set the language of the user"""
         try:
-            self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": language}})
+            await self.chat_status_table.update_one({"chat_id": message.chat.id}, {"$set": {"lang": language}})
             message.from_user.language_code = language
             await i18n.trigger("pre_process_message", (message, {}))  # Trigger i18n middleware to change the language
-        except errors.PyMongoError:
+        except Exception as exc:
             await self.bot.send_message(message.chat.id, _(no_db_message))
+            self.logger.warning(exc)
             return 1
 
     async def go_main(self, message: types.Message):
@@ -66,9 +81,10 @@ class MongoDatabase:
         if await self.change_user_status(message, Status.MAIN):
             return
         try:
-            meme_is_active = self.chat_status_table.find_one({"chat_id": message.chat.id})['meme']
-        except errors.PyMongoError:
+            meme_is_active = (await self.chat_status_table.find_one({"chat_id": message.chat.id}))['meme']
+        except Exception as exc:
             await self.bot.send_message(message.chat.id, _(no_db_message))
+            self.logger.warning(exc)
             return
         reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Draw graph"))
         reply_markup.add(_("Analyse function"))
@@ -83,9 +99,10 @@ class MongoDatabase:
         if await self.change_user_status(message, Status.SETTINGS):
             return
         try:
-            user_settings = self.chat_status_table.find_one({"chat_id": message.chat.id})
-        except errors.PyMongoError:
+            user_settings = await self.chat_status_table.find_one({"chat_id": message.chat.id})
+        except Exception as exc:
             await self.bot.send_message(message.chat.id, _(no_db_message))
+            self.logger.warning(exc)
             return
         await self.bot.send_message(message.chat.id,
                                     _("Your settings\nLanguage: {}\nMeme: {}")
@@ -143,8 +160,9 @@ class MongoDatabase:
     async def user_language(self, message: types.Message) -> str:
         """Return language of user"""
         try:
-            return self.chat_status_table.find_one({"chat_id": message.chat.id})['lang']
-        except errors.PyMongoError:
-            await self.bot.send_message(message.chat.id, _(no_db_message))
+            return (await self.chat_status_table.find_one({"chat_id": message.chat.id}))['lang']
         except TypeError:  # if user not in database
             return message.from_user.language_code
+        except Exception as exc:
+            await self.bot.send_message(message.chat.id, _(no_db_message))
+            self.logger.warning(exc)

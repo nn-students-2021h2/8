@@ -112,9 +112,11 @@ class Handler:
         async def default_handler(message: types.Message):
             """Checks user status and direct his message to suitable function."""
             try:
-                chat_status = Status(Handler.mongo.chat_status_table.find_one({"chat_id": message.chat.id})['status'])
-            except errors.PyMongoError:
+                chat_status = Status((await
+                                      Handler.mongo.chat_status_table.find_one({"chat_id": message.chat.id}))['status'])
+            except Exception as exc:
                 await Handler.bot.send_message(message.chat.id, _(no_db_message))
+                Handler.logger.warning(exc)
                 return
 
             text = message.text
