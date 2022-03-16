@@ -28,6 +28,9 @@
     "x cos x, for x in (-100, 100)"
   ],
   "analysis": [
+    "diff 2xy by x",
+    "differentiate function 2x^2 * y^3 - 5y^4 * 7x^7 by x, y",
+    "derivative of abcdef by a, b, c, d, e",
     "diff of 1 / sin x",
     "diff sqrt(1/ sin x)",
     "derivative of (x - 1)(2x + 3) / ((sqrt x + 2)(4x - 5))",
