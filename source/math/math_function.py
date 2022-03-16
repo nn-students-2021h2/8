@@ -174,17 +174,15 @@ class MathFunction:
         :param symbol: the argument of the function ('x')
         :return: type of function as string
         """
-        if sy.is_monotonic(self.simplified_expr, symbol=symbol):
-            types = {
-                sy.is_strictly_decreasing: _("Strictly decreasing", locale=lang),
-                sy.is_strictly_increasing: _("Strictly increasing", locale=lang),
-                sy.is_increasing: _("Increasing", locale=lang),
-                sy.is_decreasing: _("Decreasing", locale=lang)
-            }
-            for func, value in types.items():
-                if func(self.simplified_expr, symbol=symbol):
-                    return value
-            raise MathError(_("Can't determine type of the function", locale=lang))
+        types = {
+            sy.is_strictly_decreasing: _("Strictly decreasing", locale=lang),
+            sy.is_strictly_increasing: _("Strictly increasing", locale=lang),
+            sy.is_increasing: _("Increasing", locale=lang),
+            sy.is_decreasing: _("Decreasing", locale=lang)
+        }
+        for func, value in types.items():
+            if func(self.simplified_expr, symbol=symbol):
+                return value
         return _("Non-monotonic", locale=lang)
 
     def is_even(self, *symbols: sy.Symbol) -> bool:
@@ -200,7 +198,7 @@ class MathFunction:
         x = symbols[0]
         even_func = function.subs(x, -x)
 
-        return even_func == function
+        return sy.simplify(even_func) == function
 
     def is_odd(self, *symbols: sy.Symbol) -> bool:
         """
@@ -219,7 +217,7 @@ class MathFunction:
             odd_func = function.subs(y, (-1) * y)
             return even_func in (odd_func, -odd_func)
 
-        return even_func == sy.simplify(function * (-1))
+        return sy.simplify(even_func) == sy.simplify(-function)
 
     def _check_v_asymptote(self, symbol, point) -> bool:
         left_limit = sy.limit(self.simplified_expr, symbol, point, '+')
@@ -297,13 +295,13 @@ class MathFunction:
         k = sy.limit(self.simplified_expr / symbol, symbol, sy.oo)
         if k.is_number and k.is_finite:
             b = sy.limit(self.simplified_expr - k * symbol, symbol, sy.oo)
-            if b.is_number:
+            if b.is_number and b.is_finite:
                 ans.add(k * symbol + b)
 
         k = sy.limit(self.simplified_expr / symbol, symbol, -sy.oo)
         if k.is_number and k.is_finite:
             b = sy.limit(self.simplified_expr - k * symbol, symbol, -sy.oo)
-            if b.is_number:
+            if b.is_number and b.is_finite:
                 ans.add(k * symbol + b)
 
         # If given function is line, then it is its own asymptote, so we should remove it from set

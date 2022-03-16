@@ -1,6 +1,3 @@
-resources/*
-!resources/analysis_patterns.md
-!resources/graph_patterns.md
 source/conf/token.txt
 __pycache__
 *.pyc
