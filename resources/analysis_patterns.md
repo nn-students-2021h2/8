@@ -24,8 +24,10 @@ You can also use any number of spaces between words. The case is not important
     - period | periodicity (of)? (a | the)? (function)? _func_
 7) **Convexity**:
     - convex | convexity (of)? (a | the)? (function)? _func_
+    - is (a | the)? (function)? _func_ convex (function)?(?)?
 8) **Concavity**:
     - concave | concavity (of)? (a | the)? (function)? _func_
+    - is (a | the)? (function)? _func_ concave (function)?(?)?
 9) **Continuity**:
     - continuity | continuous (of)? (a | the)? (function)? _func_
 10) **Vertical asymptotes**:
@@ -33,7 +35,7 @@ You can also use any number of spaces between words. The case is not important
 11) **Horizontal asymptotes**:
     - Horizontal | h asymptote(s)? (of)? (a | the)? (function)? _func_
 12) **Slant asymptotes**:
-    - slant | s asymptote(s)? (of)? (a | the)? (function)? _func_
+    - slant | s | oblique asymptote(s)? (of)? (a | the)? (function)? _func_
 13) **Asymptotes**:
     - asymptote(s)? (of)? (a | the)? (function)? _func_
 14) **Evenness**:

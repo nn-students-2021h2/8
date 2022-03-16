@@ -321,10 +321,10 @@ class Handler:
                 )
             parser.clear_warnings()
         except ParseError as err:
-            await message.reply(str(err))
+            await message.reply(_(str(err)))
             Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
         except MathError as err:
-            await message.reply(str(err))
+            await message.reply(_(str(err)))
             Handler.logger.info("MathError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
         except RecursionError:
             await message.reply(_("Incorrect input. Please check your function."))
