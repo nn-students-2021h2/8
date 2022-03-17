@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 13:16+0300\n"
+"POT-Creation-Date: 2022-03-18 00:04+0300\n"
 "PO-Revision-Date: 2022-03-09 01:10+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -19,268 +19,380 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: source/core/database.py:89 source/core/handling_msg.py:125
-msgid "Draw graph"
-msgstr ""
-
-#: source/core/database.py:90 source/core/handling_msg.py:127
-msgid "Analyse function"
-msgstr ""
-
-#: source/core/database.py:91 source/core/handling_msg.py:134
-msgid "Settings"
-msgstr ""
-
-#: source/core/database.py:92 source/core/handling_msg.py:129
-msgid "Get help"
-msgstr ""
-
-#: source/core/database.py:94 source/core/handling_msg.py:131
-msgid "Meme"
-msgstr ""
-
-#: source/core/database.py:95
+#: source/core/database.py:89
 msgid "Choose an action"
 msgstr ""
 
-#: source/core/database.py:108
+#: source/core/database.py:103
 msgid ""
 "Your settings\n"
 "Language: {}\n"
 "Meme: {}"
 msgstr ""
 
-#: source/core/database.py:109
+#: source/core/database.py:104
 msgid "on"
 msgstr ""
 
-#: source/core/database.py:109
+#: source/core/database.py:104
 msgid "off"
 msgstr ""
 
-#: source/core/database.py:111
-msgid "Set {} language"
-msgstr ""
-
-#: source/core/database.py:112
-msgid "{} meme button"
-msgstr ""
-
-#: source/core/database.py:112
-msgid "Off"
-msgstr ""
-
-#: source/core/database.py:112
-msgid "On"
-msgstr ""
-
-#: source/core/database.py:113 source/core/database.py:122
-#: source/core/database.py:133 source/core/database.py:148
-#: source/core/database.py:158 source/core/handling_msg.py:139
-#: source/core/handling_msg.py:151 source/core/handling_msg.py:162
-#: source/core/handling_msg.py:169 source/core/handling_msg.py:181
-msgid "Main menu"
-msgstr ""
-
-#: source/core/database.py:114
+#: source/core/database.py:106
 msgid "Select the setting you want to apply."
 msgstr ""
 
-#: source/core/database.py:123 source/core/database.py:132
-#: source/core/handling_msg.py:143 source/core/handling_msg.py:171
-msgid "Examples"
-msgstr ""
-
-#: source/core/database.py:124 source/core/handling_msg.py:177
+#: source/core/database.py:113 source/core/handling_msg.py:173
 msgid "Enter a function you want to draw or go to the main menu"
 msgstr ""
 
-#: source/core/database.py:131 source/core/handling_msg.py:141
-msgid "Options"
-msgstr ""
-
-#: source/core/database.py:134
+#: source/core/database.py:120
 msgid "Choose an option or enter your request or go to the main menu"
 msgstr ""
 
-#: source/core/database.py:142 source/math/calculus_parser.py:160
-#: source/math/calculus_parser.py:164
-msgid "Derivative"
-msgstr ""
-
-#: source/core/database.py:142 source/math/calculus_parser.py:169
-msgid "Domain"
-msgstr ""
-
-#: source/core/database.py:142 source/math/calculus_parser.py:174
-msgid "Range"
-msgstr ""
-
-#: source/core/database.py:143
-msgid "Stationary points"
-msgstr ""
-
-#: source/core/database.py:143 source/math/calculus_parser.py:196
-msgid "Periodicity"
-msgstr ""
-
-#: source/core/database.py:143 source/math/calculus_parser.py:255
-msgid "Monotonicity"
-msgstr ""
-
-#: source/core/database.py:144
-msgid "Convexity"
-msgstr ""
-
-#: source/core/database.py:144
-msgid "Concavity"
-msgstr ""
-
-#: source/core/database.py:144
-msgid "Asymptotes"
-msgstr ""
-
-#: source/core/database.py:145
-msgid "Vertical asymptotes"
-msgstr ""
-
-#: source/core/database.py:145
-msgid "Slant asymptotes"
-msgstr ""
-
-#: source/core/database.py:145
-msgid "Horizontal asymptotes"
-msgstr ""
-
-#: source/core/database.py:146
-msgid "Oddness"
-msgstr ""
-
-#: source/core/database.py:146
-msgid "Axes intersection"
-msgstr ""
-
-#: source/core/database.py:146
-msgid "Evenness"
-msgstr ""
-
-#: source/core/database.py:147
-msgid "Maximum"
-msgstr ""
-
-#: source/core/database.py:147
-msgid "Minimum"
-msgstr ""
-
-#: source/core/database.py:147 source/math/calculus_parser.py:179
-msgid "Zeros"
-msgstr ""
-
-#: source/core/database.py:148 source/core/database.py:157
-#: source/core/handling_msg.py:149 source/core/handling_msg.py:160
-msgid "Back"
-msgstr ""
-
-#: source/core/database.py:150
+#: source/core/database.py:127
 msgid "Choose option to analyse or go back"
 msgstr ""
 
-#: source/core/database.py:159
+#: source/core/database.py:134
 msgid "Enter a function to analyse or go back"
 msgstr ""
 
-#: source/core/handling_msg.py:72
+#: source/core/handling_msg.py:73
 msgid "Hello, {} {}!"
 msgstr ""
 
-#: source/core/handling_msg.py:80 source/math/help_functions.py:27
-msgid "Graph guide"
+#: source/core/handling_msg.py:121 source/keyboards/reply_keyboards.py:10
+msgid "Draw graph"
 msgstr ""
 
-#: source/core/handling_msg.py:81
-msgid "Graph examples"
+#: source/core/handling_msg.py:123 source/keyboards/reply_keyboards.py:11
+msgid "Analyse function"
 msgstr ""
 
-#: source/core/handling_msg.py:82 source/math/help_functions.py:39
-msgid "Analysis guide"
+#: source/core/handling_msg.py:125 source/keyboards/reply_keyboards.py:13
+msgid "Get help"
 msgstr ""
 
-#: source/core/handling_msg.py:83
-msgid "Analysis examples"
+#: source/core/handling_msg.py:127 source/keyboards/reply_keyboards.py:15
+msgid "Meme"
 msgstr ""
 
-#: source/core/handling_msg.py:137 source/core/handling_msg.py:190
+#: source/core/handling_msg.py:130 source/keyboards/reply_keyboards.py:12
+msgid "Settings"
+msgstr ""
+
+#: source/core/handling_msg.py:133 source/core/handling_msg.py:186
 msgid "I didn't understand what you want"
 msgstr ""
 
-#: source/core/handling_msg.py:144
+#: source/core/handling_msg.py:135 source/core/handling_msg.py:147
+#: source/core/handling_msg.py:158 source/core/handling_msg.py:165
+#: source/core/handling_msg.py:177 source/keyboards/reply_keyboards.py:24
+#: source/keyboards/reply_keyboards.py:31
+#: source/keyboards/reply_keyboards.py:40
+#: source/keyboards/reply_keyboards.py:53
+#: source/keyboards/reply_keyboards.py:61
+msgid "Main menu"
+msgstr ""
+
+#: source/core/handling_msg.py:137 source/keyboards/reply_keyboards.py:38
+msgid "Options"
+msgstr ""
+
+#: source/core/handling_msg.py:139 source/core/handling_msg.py:167
+#: source/keyboards/reply_keyboards.py:32
+#: source/keyboards/reply_keyboards.py:39
+msgid "Examples"
+msgstr ""
+
+#: source/core/handling_msg.py:140
 msgid "Choose analysis example"
 msgstr ""
 
-#: source/core/handling_msg.py:167
+#: source/core/handling_msg.py:145 source/core/handling_msg.py:156
+#: source/keyboards/reply_keyboards.py:53
+#: source/keyboards/reply_keyboards.py:60
+msgid "Back"
+msgstr ""
+
+#: source/core/handling_msg.py:163
 msgid "Enter a function to explore or go back"
 msgstr ""
 
-#: source/core/handling_msg.py:172
+#: source/core/handling_msg.py:168
 msgid "Choose graph example"
 msgstr ""
 
-#: source/core/handling_msg.py:184
+#: source/core/handling_msg.py:180
 msgid "On meme button"
 msgstr ""
 
-#: source/core/handling_msg.py:184
+#: source/core/handling_msg.py:180
 msgid "Off meme button"
 msgstr ""
 
-#: source/core/handling_msg.py:186
+#: source/core/handling_msg.py:182
 msgid "Set en language"
 msgstr ""
 
-#: source/core/handling_msg.py:186
+#: source/core/handling_msg.py:182
 msgid "Set ru language"
 msgstr ""
 
-#: source/core/handling_msg.py:194
+#: source/core/handling_msg.py:190
 msgid "Settings saved"
 msgstr ""
 
-#: source/core/handling_msg.py:204
+#: source/core/handling_msg.py:200
 msgid "Choose graph examples"
 msgstr ""
 
-#: source/core/handling_msg.py:210
+#: source/core/handling_msg.py:206
 msgid "Choose analysis examples"
 msgstr ""
 
-#: source/core/handling_msg.py:226 source/core/handling_msg.py:231
+#: source/core/handling_msg.py:224 source/core/handling_msg.py:234
 msgid "Task in work..."
 msgstr ""
 
-#: source/core/handling_msg.py:267
+#: source/core/handling_msg.py:269
 msgid "Here a graph of requested functions"
 msgstr ""
 
-#: source/core/handling_msg.py:302
+#: source/core/handling_msg.py:298
 msgid "Couldn't find a suitable template. Check the input."
 msgstr ""
 
-#: source/core/handling_msg.py:323
+#: source/core/handling_msg.py:319
 msgid "Photo size is too large, therefore I send you a file."
 msgstr ""
 
-#: source/core/handling_msg.py:342
+#: source/core/handling_msg.py:338
 msgid "Incorrect input. Please check your function."
 msgstr ""
 
-#: source/core/handling_msg.py:346
+#: source/core/handling_msg.py:342
 msgid ""
 "Sorry, can't solve the problem or the input is invalid. Please check your"
 " function."
 msgstr ""
 
-#: source/core/handling_msg.py:381
+#: source/core/handling_msg.py:377
 msgid "Sorry, something went wrong. Please try again later."
+msgstr ""
+
+#: source/extras/translation.py:12
+msgid ""
+"\n"
+"*General information:*\n"
+"Our bot knows how to draw graphs based on a given expression, with the "
+"ability to specify parameters such as area of definition (domain), area "
+"of value (range), and aspect ratio.\n"
+"\n"
+"If you don't want to read the tons of words, you can use the \"Examples\""
+" button to figure out for yourself how the bot works.\n"
+"\n"
+"You can use buttons to interact with the bot, or you can use commands "
+"that work everywhere and always.\n"
+msgstr ""
+
+#: source/extras/translation.py:21
+msgid ""
+"\n"
+"*Quick start:* \n"
+"`/graph function1, function2, ..., parameter1, parameter2, ...` — draws "
+"the functions f(x) or y = f(x), or f(x, y) = const on a single graph with"
+" the given parameters listed separated by commas. Functions are given in "
+"mathematical form. Sometimes functions can have brackets and "
+"multiplication omitted. Example:\n"
+"`/graph y = 2x, x^2 + y^2 = 16, sin x, sqrt x, x = (-20, 20), y = (-10, "
+"10)`\n"
+"\n"
+"The bot may not always accurately draw the graph or define its area of "
+"definition and range, so you can specify them manually via parameters.\n"
+msgstr ""
+
+#: source/extras/translation.py:30
+msgid ""
+"*Parameters:*\n"
+"— `Domain` — you can specify the values of the argument (the 'x' "
+"variable), for example:\n"
+"`x from -5 to 10, x in [0, 24.5], for x = (10, 20)`, etc.\n"
+"\n"
+"— `Range` — you can specify the values of the function (variable 'y') in "
+"the same way as the area of definition, for example:\n"
+"`for y from -5 to 0, y in (0, 1.2), y=(10, 20)`, etc.\n"
+"\n"
+"— `Aspect ratio` — it is allowed to set the ratio of the chart's width to"
+" its height, for example:\n"
+"`aspect ratio = 1, ratio=1, ratio = 0.5` и т.д. Can be useful for drawing"
+" circles.\n"
+msgstr ""
+
+#: source/extras/translation.py:42
+msgid ""
+"\n"
+"*General information:*\n"
+"Our bot knows how to analyse functions by a query written in English.\n"
+"\n"
+"If you don't want to read the tons of words, you can use the \"Examples\""
+" button to figure out for yourself how the bot works.\n"
+"\n"
+"You can use buttons to interact with the bot, or you can use commands "
+"that work everywhere and always.\n"
+msgstr ""
+
+#: source/extras/translation.py:50
+msgid ""
+"\n"
+"*Quick start:*\n"
+"`/analyse option` —  tries to understand the query and output an answer "
+"for the function specified in the query.\n"
+"Queries have their own patterns, but in general natural English is "
+"implied. The function must be in mathematical form. Sometimes functions "
+"can have brackets and multiplication omitted. Examples:\n"
+"`/analyse domain of 2 sqrt x`\n"
+"`/analyse diff 2 a^4 b c^2 by b, a`\n"
+"`/analyse is function sin 4x even?`\n"
+"etc.\n"
+"\n"
+"Due to the fact that it is quite difficult to give an exact answer to any"
+" problem, the bot may make a mistake or not even solve the problem. Be "
+"tolerant of the handicapped.\n"
+"\n"
+"See \"Examples\" for clarity.\n"
+msgstr ""
+
+#: source/extras/translation.py:64
+msgid ""
+"\n"
+"*Options:*\n"
+"Available options for function analysis. Some words can be abbreviated or"
+" replaced with synonyms - the bot will try to understand you:\n"
+"- Derivative\n"
+"- Domain\n"
+"- Range\n"
+"- Function zeros\n"
+"- Intersection with axes\n"
+"- Periodicity\n"
+"- Convexity\n"
+"- Concavity\n"
+"- Vertical asymptotes\n"
+"- Horizontal asymptotes\n"
+"- Slant asymptotes\n"
+"- All Asymptotes\n"
+"- Evenness\n"
+"- oddness\n"
+"- Maximum\n"
+"- Minimum\n"
+"- Critical points\n"
+"- Monotonicity\n"
+msgstr ""
+
+#: source/keyboards/inline_keyboards.py:11
+msgid "Graph guide"
+msgstr ""
+
+#: source/keyboards/inline_keyboards.py:12
+msgid "Graph examples"
+msgstr ""
+
+#: source/keyboards/inline_keyboards.py:13 source/math/help_functions.py:32
+msgid "Analysis guide"
+msgstr ""
+
+#: source/keyboards/inline_keyboards.py:14
+msgid "Analysis examples"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:22
+msgid "Set {} language"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:23
+msgid "{} meme button"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:23
+msgid "Off"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:23
+msgid "On"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:160
+#: source/math/calculus_parser.py:164
+msgid "Derivative"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:169
+msgid "Domain"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:174
+msgid "Range"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:48
+msgid "Stationary points"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:48 source/math/calculus_parser.py:196
+msgid "Periodicity"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:48 source/math/calculus_parser.py:255
+msgid "Monotonicity"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:49
+msgid "Convexity"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:49
+msgid "Concavity"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:49
+msgid "Asymptotes"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:50
+msgid "Vertical asymptotes"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:50
+msgid "Slant asymptotes"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:50
+msgid "Horizontal asymptotes"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:51
+msgid "Oddness"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:51
+msgid "Axes intersection"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:51
+msgid "Evenness"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:52
+msgid "Maximum"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:52
+msgid "Minimum"
+msgstr ""
+
+#: source/keyboards/reply_keyboards.py:52 source/math/calculus_parser.py:179
+msgid "Zeros"
 msgstr ""
 
 #: source/math/calculus_parser.py:45
@@ -512,7 +624,7 @@ msgstr ""
 msgid "Too many functions requested ({}). The limit is {} functions."
 msgstr ""
 
-#: source/math/help_functions.py:13
+#: source/math/help_functions.py:14
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"
@@ -558,65 +670,6 @@ msgstr ""
 msgid "Interpreting '{}' as '{}'"
 msgstr ""
 
-#: source/middleware/anti_flood_middleware.py:83
+#: source/middleware/anti_flood_middleware.py:91
 msgid "Flood is not allowed! You should wait {} seconds to repeat this action."
 msgstr ""
-
-#~ msgid "On meme"
-#~ msgstr ""
-
-#~ msgid "Off meme"
-#~ msgstr ""
-
-#~ msgid "Derivative\\ of\\ {}\\ by\\ {}:\\\\{}"
-#~ msgstr ""
-
-#~ msgid "Derivative of {} by {}:\\n{}"
-#~ msgstr ""
-
-#~ msgid "of"
-#~ msgstr ""
-
-#~ msgid "by"
-#~ msgstr ""
-
-#~ msgid "For"
-#~ msgstr ""
-
-#~ msgid "function"
-#~ msgstr ""
-
-#~ msgid "Intersection"
-#~ msgstr ""
-
-#~ msgid "with"
-#~ msgstr ""
-
-#~ msgid "point"
-#~ msgstr ""
-
-#~ msgid "Draw a graph"
-#~ msgstr ""
-
-#~ msgid "Examples"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Enter:\n"
-#~ "/start to restart bot.\n"
-#~ "/graph to draw a graph.\n"
-#~ "/analyse to go on to investigate the function."
-#~ msgstr ""
-
-#~ msgid "Pressed examples button!"
-#~ msgstr ""
-
-#~ msgid "Pressed graph guide button!"
-#~ msgstr ""
-
-#~ msgid "Pressed analysis guide button!"
-#~ msgstr ""
-
-#~ msgid "Task in work"
-#~ msgstr ""
-

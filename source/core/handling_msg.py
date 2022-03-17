@@ -6,22 +6,22 @@ from io import BytesIO
 
 import aiohttp
 import telegram
-
 from aiogram import types, Bot
+from aiogram.types import ParseMode
 from aiogram.utils.exceptions import BadRequest, TelegramAPIError
 from pymongo import errors
 
+import source.math.help_functions as hlp
 from source.conf import Config
 from source.core.database import MongoDatabase, no_db_message
 from source.extras.status import Status
-from source.extras.translation import _
+from source.extras.translation import _, graph_guide_texts, analysis_guide_texts
+from source.extras.utilities import run_TeX, resize_image
+from source.keyboards.inline_keyboards import chat_help_markup, reply_markup_graph, reply_markup_analysis
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
-from source.extras.utilities import run_TeX, resize_image
-from source.keyboards.inline_keyboards import chat_help_markup, reply_markup_graph, reply_markup_analysis
-import source.math.help_functions as hlp
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
 
@@ -209,12 +209,14 @@ class Handler:
         @dispatcher.callback_query_handler(lambda c: c.data == 'graph_guide')
         async def graph_guide(callback_query: types.CallbackQuery):
             await Handler.bot.answer_callback_query(callback_query.id)
-            await Handler.bot.send_message(callback_query.from_user.id, _(hlp.graph_guide()))
+            for part in graph_guide_texts:
+                await Handler.bot.send_message(callback_query.from_user.id, _(part), parse_mode=ParseMode.MARKDOWN)
 
         @dispatcher.callback_query_handler(lambda c: c.data == 'analysis_guide')
         async def analysis_guide(callback_query: types.CallbackQuery):
             await Handler.bot.answer_callback_query(callback_query.id)
-            await Handler.bot.send_message(callback_query.from_user.id, _(hlp.analysis_guide()))
+            for part in analysis_guide_texts:
+                await Handler.bot.send_message(callback_query.from_user.id, _(part), parse_mode=ParseMode.MARKDOWN)
 
         @dispatcher.callback_query_handler(lambda c: c.data and c.data.startswith('example_graph_'))
         async def example_graph(callback_query: types.CallbackQuery):
