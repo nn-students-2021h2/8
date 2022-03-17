@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 12:02+0300\n"
+"POT-Creation-Date: 2022-03-17 12:35+0300\n"
 "PO-Revision-Date: 2022-03-09 01:10+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -253,29 +253,29 @@ msgstr ""
 msgid "Choose analysis examples"
 msgstr ""
 
-#: source/core/handling_msg.py:265
+#: source/core/handling_msg.py:267
 msgid "Here a graph of requested functions"
 msgstr ""
 
-#: source/core/handling_msg.py:298
+#: source/core/handling_msg.py:302
 msgid "Couldn't find a suitable template. Check the input."
 msgstr ""
 
-#: source/core/handling_msg.py:319
+#: source/core/handling_msg.py:323
 msgid "Photo size is too large, therefore I send you a file."
 msgstr ""
 
-#: source/core/handling_msg.py:338
+#: source/core/handling_msg.py:342
 msgid "Incorrect input. Please check your function."
 msgstr ""
 
-#: source/core/handling_msg.py:342
+#: source/core/handling_msg.py:346
 msgid ""
 "Sorry, can't solve the problem or the input is invalid. Please check your"
 " function."
 msgstr ""
 
-#: source/core/handling_msg.py:377
+#: source/core/handling_msg.py:381
 msgid "Sorry, something went wrong. Please try again later."
 msgstr ""
 
@@ -519,8 +519,7 @@ msgstr ""
 #: source/math/math_function.py:84
 msgid ""
 "Since there is more than one variable in the expression, the variable(s) "
-"of differentiation must be supplied to differentiate:\n"
-"{}"
+"of differentiation must be supplied to differentiate"
 msgstr ""
 
 #: source/math/math_function.py:142
@@ -531,27 +530,23 @@ msgstr ""
 msgid "Function is constant (any period)"
 msgstr ""
 
-#: source/math/math_function.py:179
+#: source/math/math_function.py:178
 msgid "Strictly decreasing"
 msgstr ""
 
-#: source/math/math_function.py:180
+#: source/math/math_function.py:179
 msgid "Strictly increasing"
 msgstr ""
 
-#: source/math/math_function.py:181
+#: source/math/math_function.py:180
 msgid "Increasing"
 msgstr ""
 
-#: source/math/math_function.py:182
+#: source/math/math_function.py:181
 msgid "Decreasing"
 msgstr ""
 
-#: source/math/math_function.py:187
-msgid "Can't determine type of the function"
-msgstr ""
-
-#: source/math/math_function.py:188
+#: source/math/math_function.py:186
 msgid "Non-monotonic"
 msgstr ""
 

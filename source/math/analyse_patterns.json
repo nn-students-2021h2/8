@@ -94,6 +94,9 @@
     "patterns": {
       "^convex(ity)?[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
         "6"
+      ],
+      "^is[ ]+((a|the)[ ]+)?(function[ ]+)?(.+)[ ]+convex([ ]+function)?([ ]*[?])?$": [
+        "4"
       ]
     },
     "keywords": [
@@ -107,6 +110,9 @@
     "patterns": {
       "^concav(e|ity)[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
         "6"
+      ],
+      "^is[ ]+((a|the)[ ]+)?(function[ ]+)?(.+)[ ]+concave([ ]+function)?([ ]*[?])?$": [
+        "4"
       ]
     },
     "keywords": [
@@ -155,7 +161,7 @@
   },
   "slant asymptotes": {
     "patterns": {
-      "^(slant|s)[ ]+asymptote(s)?[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
+      "^(slant|s|oblique)[ ]+asymptote(s)?[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
         "7"
       ]
     },
@@ -201,7 +207,7 @@
       "^odd(ness)?[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
         "6"
       ],
-      "^is[ ]+((a|the)[ ]+)?(function[ ]+)?(.+)[ ]+щвв([ ]+function)?([ ]*[?])?$": [
+      "^is[ ]+((a|the)[ ]+)?(function[ ]+)?(.+)[ ]+odd([ ]+function)?([ ]*[?])?$": [
         "4"
       ]
     },
