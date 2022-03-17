@@ -11,6 +11,7 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install texlive -y
 RUN apt-get install texlive-latex-extra -y
 RUN apt-get install dvipng -y
+RUN apt-get install texlive-lang-cyrillic
 
 # Create working directory
 RUN mkdir -p /usr/src/app/
@@ -22,6 +23,7 @@ ADD ./requirements.txt /usr/src/app/
 RUN pip install -r requirements.txt
 ADD . /usr/src/app/
 RUN rm ~/.cache/matplotlib -fr
+RUN pybabel compile -d locales -D bot
 
 # Run bot
 CMD [ "python", "source/core/bot.py" ]
