@@ -10,7 +10,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from source.conf.config import Config
 from source.extras.status import Status
 from source.extras.translation import _, i18n
-from source.keyboards.reply_keyboards import *
+from source.keyboards.reply_keyboards import go_analyse_menu_markup, go_main_markup, go_graph_markup, \
+    go_analyse_option, go_analyse_markup, go_settings_markup
 
 no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 

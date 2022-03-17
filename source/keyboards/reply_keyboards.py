@@ -1,9 +1,11 @@
+"""Module with default keyboards"""
 from aiogram.types import ReplyKeyboardMarkup
 
 from source.extras.translation import _
 
 
 async def go_main_markup(meme_is_active: bool) -> ReplyKeyboardMarkup:
+    """Go main keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
     reply_markup.add(_("Draw graph"))
     reply_markup.add(_("Analyse function"))
@@ -15,6 +17,7 @@ async def go_main_markup(meme_is_active: bool) -> ReplyKeyboardMarkup:
 
 
 async def go_settings_markup(user_settings) -> ReplyKeyboardMarkup:
+    """Go settings keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
     reply_markup.add(_("Set {} language").format('ru' if user_settings['lang'] == 'en' else 'en'))
     reply_markup.add(_("{} meme button").format(_('Off') if user_settings['meme'] else _('On')))
@@ -23,6 +26,7 @@ async def go_settings_markup(user_settings) -> ReplyKeyboardMarkup:
 
 
 async def go_graph_markup() -> ReplyKeyboardMarkup:
+    """Go graph keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
     reply_markup.add(_("Main menu"))
     reply_markup.add(_("Examples"))
@@ -30,6 +34,7 @@ async def go_graph_markup() -> ReplyKeyboardMarkup:
 
 
 async def go_analyse_markup() -> ReplyKeyboardMarkup:
+    """Go analyse keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Options"))
     reply_markup.add(_("Examples"))
     reply_markup.add(_("Main menu"))
@@ -37,6 +42,7 @@ async def go_analyse_markup() -> ReplyKeyboardMarkup:
 
 
 async def go_analyse_menu_markup() -> ReplyKeyboardMarkup:
+    """Go analyse menu keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
     reply_markup.add(_('Derivative'), _('Domain'), _('Range'))
     reply_markup.add(_('Stationary points'), _('Periodicity'), _('Monotonicity'))
@@ -49,9 +55,8 @@ async def go_analyse_menu_markup() -> ReplyKeyboardMarkup:
 
 
 async def go_analyse_option() -> ReplyKeyboardMarkup:
+    """Go analyse option keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
     reply_markup.add(_("Back"))
     reply_markup.add(_("Main menu"))
     return reply_markup
-
-

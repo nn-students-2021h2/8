@@ -20,7 +20,8 @@ from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
 from source.extras.utilities import run_TeX, resize_image
-from source.keyboards.inline_keyboards import *
+from source.keyboards.inline_keyboards import chat_help_markup, reply_markup_graph, reply_markup_analysis
+import source.math.help_functions as hlp
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
 

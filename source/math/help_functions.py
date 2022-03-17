@@ -5,7 +5,8 @@ from pathlib import Path
 from source.extras.translation import _
 import json
 
-examples = json.load(open(Path(__file__).resolve().parent.parent.parent / "resources/examples.json"))
+with open(Path(__file__).resolve().parent.parent.parent / "resources/examples.json", encoding="utf-8") as f:
+    examples = json.load(f)
 
 
 def main_help() -> str:
@@ -16,9 +17,7 @@ def main_help() -> str:
 def graph_examples() -> list:
     """Return 10 examples for graphs"""
     shuffle(examples['graph'])
-    print(examples)
     res = examples['graph'][0:5]
-    print(res)
     return res
 
 

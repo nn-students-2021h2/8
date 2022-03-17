@@ -41,6 +41,11 @@ class ThrottlingMiddleware(BaseMiddleware):
         super().__init__()
 
     async def on_pre_process_callback_query(self, callback_query: types.CallbackQuery, data: dict):
+        """
+        This handler is called when dispatcher receives a callback
+        :param callback_query: received callback from user
+        :param data: additional data
+        """
         await self.on_process_message(callback_query.message, data)
 
     async def on_process_message(self, message: types.Message, data: dict):
