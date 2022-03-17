@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FunctionExplorerBot 1.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 12:35+0300\n"
+"POT-Creation-Date: 2022-03-17 13:16+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -192,7 +192,7 @@ msgstr ""
 msgid "Hello, {} {}!"
 msgstr ""
 
-#: source/core/handling_msg.py:80 source/math/help_functions.py:19
+#: source/core/handling_msg.py:80 source/math/help_functions.py:27
 msgid "Graph guide"
 msgstr ""
 
@@ -200,7 +200,7 @@ msgstr ""
 msgid "Graph examples"
 msgstr ""
 
-#: source/core/handling_msg.py:82 source/math/help_functions.py:32
+#: source/core/handling_msg.py:82 source/math/help_functions.py:39
 msgid "Analysis guide"
 msgstr ""
 
@@ -250,6 +250,10 @@ msgstr ""
 
 #: source/core/handling_msg.py:210
 msgid "Choose analysis examples"
+msgstr ""
+
+#: source/core/handling_msg.py:226 source/core/handling_msg.py:231
+msgid "Task in work..."
 msgstr ""
 
 #: source/core/handling_msg.py:267
@@ -507,7 +511,7 @@ msgstr ""
 msgid "Too many functions requested ({}). The limit is {} functions."
 msgstr ""
 
-#: source/math/help_functions.py:7
+#: source/math/help_functions.py:13
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"

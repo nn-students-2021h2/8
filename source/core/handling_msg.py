@@ -223,27 +223,31 @@ class Handler:
 
         @dispatcher.callback_query_handler(lambda c: c.data and c.data.startswith('example_graph_'))
         async def example_graph(callback_query: types.CallbackQuery):
-            await Handler.send_graph(callback_query)
-            await Handler.bot.answer_callback_query(callback_query.id)
+            await Handler.bot.answer_callback_query(callback_query.id, text=_('Task in work...'))
+            expr = callback_query.message.reply_markup.inline_keyboard[int(callback_query.data[-1])][0].text
+            message = callback_query.message
+            if expr[0] == '/':
+                expr = expr[len('/graph') + 1:]
+            message.text = expr
+            await Handler.send_graph(message)
 
         @dispatcher.callback_query_handler(lambda c: c.data and c.data.startswith('example_analysis_'))
         async def example_analysis(callback_query: types.CallbackQuery):
-            await Handler.send_analyse(callback_query)
-            await Handler.bot.answer_callback_query(callback_query.id)
+            await Handler.bot.answer_callback_query(callback_query.id, text=_('Task in work...'))
+            expr = callback_query.message.reply_markup.inline_keyboard[int(callback_query.data[-1])][0].text
+            message = callback_query.message
+            if expr[0] == '/':
+                expr = expr[len('/analyse') + 1:]
+            message.text = expr
+            await Handler.send_analyse(message)
 
     @staticmethod
     async def send_graph(message: types.Message):
         """User requested to draw a plot"""
-        if isinstance(message, types.callback_query.CallbackQuery):
-            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text
-            if expr[0] == '/':
-                expr = expr[len('/graph')+1:]
-            message = message.message
+        if message.get_command():
+            expr = message.get_args().lower()
         else:
-            if message.get_command():
-                expr = message.get_args().lower()
-            else:
-                expr = message.text.lower()
+            expr = message.text.lower()
         chat_id = message.chat.id
         user_language = await get_language(message, Handler.mongo)
 
@@ -277,16 +281,10 @@ class Handler:
     @staticmethod
     async def send_analyse(message: types.Message):
         """User requested some function analysis"""
-        if isinstance(message, types.callback_query.CallbackQuery):
-            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text
-            if expr[0] == '/':
-                expr = expr[len('/analyse') + 1:]
-            message = message.message
+        if message.get_command():
+            expr = message.get_args().lower()
         else:
-            if message.get_command():
-                expr = message.get_args().lower()
-            else:
-                expr = message.text.lower()
+            expr = message.text.lower()
         chat_id = message.chat.id
         user_language = await get_language(message, Handler.mongo)
 

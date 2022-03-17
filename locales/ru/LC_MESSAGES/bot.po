@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 12:35+0300\n"
+"POT-Creation-Date: 2022-03-17 13:16+0300\n"
 "PO-Revision-Date: 2022-03-09 01:10+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -199,7 +199,7 @@ msgstr "Введите функцию, которую хотите проана�
 msgid "Hello, {} {}!"
 msgstr "Здравствуйте, {} {}!"
 
-#: source/core/handling_msg.py:80 source/math/help_functions.py:19
+#: source/core/handling_msg.py:80 source/math/help_functions.py:27
 msgid "Graph guide"
 msgstr "Гайд по графикам"
 
@@ -207,7 +207,7 @@ msgstr "Гайд по графикам"
 msgid "Graph examples"
 msgstr "Примеры графиков"
 
-#: source/core/handling_msg.py:82 source/math/help_functions.py:32
+#: source/core/handling_msg.py:82 source/math/help_functions.py:39
 msgid "Analysis guide"
 msgstr "Гайд по анализу"
 
@@ -258,6 +258,10 @@ msgstr "Выберите пример графика"
 #: source/core/handling_msg.py:210
 msgid "Choose analysis examples"
 msgstr "Выберите пример анализа"
+
+#: source/core/handling_msg.py:226 source/core/handling_msg.py:231
+msgid "Task in work..."
+msgstr "Решаю задачу..."
 
 #: source/core/handling_msg.py:267
 msgid "Here a graph of requested functions"
@@ -554,7 +558,7 @@ msgstr "Не удалось разобрать выражение: {}"
 msgid "Too many functions requested ({}). The limit is {} functions."
 msgstr "Запрошено слишком много функций ({}). Ограничение - {} функций."
 
-#: source/math/help_functions.py:7
+#: source/math/help_functions.py:13
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"

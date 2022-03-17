@@ -1,5 +1,11 @@
 """Module with functions for help"""
+from random import shuffle
+from pathlib import Path
+
 from source.extras.translation import _
+import json
+
+examples = json.load(open(Path(__file__).resolve().parent.parent.parent / "resources/examples.json"))
 
 
 def main_help() -> str:
@@ -9,8 +15,10 @@ def main_help() -> str:
 
 def graph_examples() -> list:
     """Return 10 examples for graphs"""
-    res = ["/graph x+2", "/graph sin x", "/graph x**2", "/graph log x", "/graph x^3+2*x^2-12x",
-           "/graph y=1/x", "/graph tg(sin(x))", "/graph 21*2**x", "/graph 12-x*2", "/graph y=3"]
+    shuffle(examples['graph'])
+    print(examples)
+    res = examples['graph'][0:5]
+    print(res)
     return res
 
 
@@ -21,9 +29,8 @@ def graph_guide() -> str:
 
 def analysis_examples() -> list:
     """Return 10 examples for analysis"""
-    res = ["/analyse diff x^4+12x^2-7x", "/analyse range sin(3x)", "/analyse period tan(3x)",
-           "/analyse diff x^4+12x^2-7x", "/analyse range sin(3x)", "/analyse diff x^4+12x^2-7x",
-           "/analyse range sin(3x)", "/analyse period tan(3x)", "/analyse zeros x**2-10", "/analyse max sin(x)"]
+    shuffle(examples['analysis'])
+    res = examples['analysis'][0:5]
     return res
 
 
