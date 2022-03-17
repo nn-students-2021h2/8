@@ -253,18 +253,18 @@ class GraphParser(Parser):
         return function
 
     @run_asynchronously
-    def parse(self, expr: str, lang: str = "en"):
+    def parse(self, query: str, lang: str = "en"):
         """
         This method get string and tries to parse it in several groups (see 'tokens' variable)
 
         Parameters:
         :param lang:
-        :param expr: user input string to parse
+        :param query: user input string to parse
         :return: true on successfully found patterns, false otherwise
         """
         pattern_dict = Config.graph_patterns
 
-        parts = _split_query(expr, lang)
+        parts = _split_query(query, lang)
 
         for token in parts:
             token = token.strip()

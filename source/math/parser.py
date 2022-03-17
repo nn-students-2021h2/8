@@ -27,7 +27,7 @@ class Parser(ABC):
         self._warnings = []
 
     @abstractmethod
-    def parse(self, expression: str):
+    def parse(self, query: str, lang: str = 'en'):
         """Function that parses user input. Should be redefined in children classes"""
 
     @staticmethod

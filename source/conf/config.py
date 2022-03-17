@@ -44,6 +44,12 @@ class Config:
 
         for name, value in self._json_data.items():
             Config._properties[name] = value
+        try:
+            with open(Path(__file__).resolve().parent / "token", encoding="utf-8") as t:
+                if tkn := t.readline():
+                    Config._properties['APP']['TOKEN'] = tkn
+        except FileNotFoundError:
+            pass
 
     @staticmethod
     def _open_patterns_files() -> tuple:

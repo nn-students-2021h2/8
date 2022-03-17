@@ -9,7 +9,7 @@ from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
-from handling_msg import Handler
+from source.core.handling_msg import Handler
 from source.conf.config import Config
 from source.core.database import MongoDatabase
 from source.extras.custom_logger import setup_logging

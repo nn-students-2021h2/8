@@ -1,4 +1,4 @@
-source/conf/token.txt
+source/conf/token
 __pycache__
 *.pyc
 tmp
