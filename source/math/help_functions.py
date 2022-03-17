@@ -5,7 +5,7 @@ from pathlib import Path
 from source.extras.translation import _
 import json
 
-with open(Path(__file__).resolve().parent.parent.parent / "resources/examples.json", encoding="utf-8") as f:
+with open(Path(__file__).resolve().parents[2] / "resources/examples.json", encoding="utf-8") as f:
     examples = json.load(f)
 
 
