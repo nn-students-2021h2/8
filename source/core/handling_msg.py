@@ -8,7 +8,6 @@ import aiohttp
 import telegram
 
 from aiogram import types, Bot
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.exceptions import BadRequest, TelegramAPIError
 from pymongo import errors
 
@@ -20,8 +19,8 @@ from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
-from source.extras.utilities import run_TeX, resize_image, reply_markup_analysis, reply_markup_graph
-import source.math.help_functions as hlp
+from source.extras.utilities import run_TeX, resize_image
+from source.keyboards.inline_keyboards import *
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
 
@@ -76,12 +75,7 @@ class Handler:
         @rate_limit(limit=1)
         async def chat_help(message: types.Message):
             """Send a message when the command /help is issued."""
-            reply_markup = InlineKeyboardMarkup()
-            reply_markup.add(InlineKeyboardButton(_("Graph guide"), callback_data='graph_guide'))
-            reply_markup.add(InlineKeyboardButton(_("Graph examples"), callback_data='graph_examples'))
-            reply_markup.add(InlineKeyboardButton(_("Analysis guide"), callback_data='analysis_guide'))
-            reply_markup.add(InlineKeyboardButton(_("Analysis examples"), callback_data='analysis_examples'))
-            await Handler.bot.send_message(message.chat.id, _(hlp.main_help()), reply_markup=reply_markup)
+            await Handler.bot.send_message(message.chat.id, _(hlp.main_help()), reply_markup=(await chat_help_markup()))
 
         @dispatcher.message_handler(commands=["graph"])
         @rate_limit(limit=2)

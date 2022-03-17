@@ -4,9 +4,6 @@ import functools
 import sympy as sy
 from io import BytesIO
 from PIL import Image, ImageOps
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-import source.math.help_functions as hlp
 
 # A number of dots per inch for TeX pictures
 DPI = '500'
@@ -60,21 +57,3 @@ def resize_image(image_to_resize: BytesIO, output_buffer: BytesIO):
     # noinspection PyTypeChecker
     ImageOps.expand(image, border=100, fill="white").save(output_buffer, format="PNG")
     output_buffer.seek(0)
-
-
-async def reply_markup_analysis(in_analysis: bool):
-    reply_markup = InlineKeyboardMarkup()
-    ex = hlp.analysis_examples()
-    for i in range(len(ex)):
-        reply_markup.add(InlineKeyboardButton(ex[i] if in_analysis else '/analyse ' + ex[i],
-                                              callback_data=f'example_analysis_{i}'))
-    return reply_markup
-
-
-async def reply_markup_graph(in_graph: bool):
-    reply_markup = InlineKeyboardMarkup()
-    ex = hlp.graph_examples()
-    for i in range(len(ex)):
-        reply_markup.add(InlineKeyboardButton(ex[i] if in_graph else '/graph ' + ex[i],
-                                              callback_data=f'example_graph_{i}'))
-    return reply_markup

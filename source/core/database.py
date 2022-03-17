@@ -4,13 +4,13 @@ Database module
 import logging
 
 from aiogram import types, Bot
-from aiogram.types import ReplyKeyboardMarkup
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
 from source.conf.config import Config
 from source.extras.status import Status
 from source.extras.translation import _, i18n
+from source.keyboards.reply_keyboards import *
 
 no_db_message = "There were problems, the functionality is limited.\nYou can only use the bot with commands."
 
@@ -86,13 +86,8 @@ class MongoDatabase:
             await self.bot.send_message(message.chat.id, _(no_db_message))
             self.logger.warning(exc)
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Draw graph"))
-        reply_markup.add(_("Analyse function"))
-        reply_markup.add(_("Settings"))
-        reply_markup.add(_("Get help"))
-        if meme_is_active:
-            reply_markup.add(_("Meme"))
-        await self.bot.send_message(message.chat.id, _('Choose an action'), reply_markup=reply_markup)
+        await self.bot.send_message(message.chat.id, _('Choose an action'),
+                                    reply_markup=(await go_main_markup(meme_is_active)))
 
     async def go_settings(self, message: types.Message):
         """Change status of user and send settings menu to user."""
@@ -107,57 +102,37 @@ class MongoDatabase:
         await self.bot.send_message(message.chat.id,
                                     _("Your settings\nLanguage: {}\nMeme: {}")
                                     .format(user_settings['lang'], _('on') if user_settings['meme'] else _('off')))
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        reply_markup.add(_("Set {} language").format('ru' if user_settings['lang'] == 'en' else 'en'))
-        reply_markup.add(_("{} meme button").format(_('Off') if user_settings['meme'] else _('On')))
-        reply_markup.add(_("Main menu"))
+
         await self.bot.send_message(message.chat.id, _("Select the setting you want to apply."),
-                                    reply_markup=reply_markup)
+                                    reply_markup=(await go_settings_markup(user_settings)))
 
     async def go_graph(self, message: types.Message):
         """Change status of user and send draw graph menu to user."""
         if await self.change_user_status(message, Status.GRAPH):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        reply_markup.add(_("Main menu"))
-        reply_markup.add(_("Examples"))
         await self.bot.send_message(message.chat.id, _("Enter a function you want to draw or go to the main menu"),
-                                    reply_markup=reply_markup)
+                                    reply_markup=(await go_graph_markup()))
 
     async def go_analyse(self, message: types.Message):
         """Change status of user to 'analyse' and send analyse menu"""
         if await self.change_user_status(message, Status.ANALYSE):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Options"))
-        reply_markup.add(_("Examples"))
-        reply_markup.add(_("Main menu"))
         await self.bot.send_message(message.chat.id, _("Choose an option or enter your request or go to the main menu"),
-                                    reply_markup=reply_markup)
+                                    reply_markup=(await go_analyse_markup()))
 
     async def go_analyse_menu(self, message: types.Message):
         """Change status of user to 'analyze menu' and send options to analyze menu'"""
         if await self.change_user_status(message, Status.ANALYSE_MENU):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        reply_markup.add(_('Derivative'),           _('Domain'),            _('Range'))
-        reply_markup.add(_('Stationary points'),    _('Periodicity'),       _('Monotonicity'))
-        reply_markup.add(_('Convexity'),            _('Concavity'),         _('Asymptotes'))
-        reply_markup.add(_('Vertical asymptotes'),  _('Slant asymptotes'),  _('Horizontal asymptotes'))
-        reply_markup.add(_('Oddness'),              _('Axes intersection'), _('Evenness'))
-        reply_markup.add(_('Maximum'),              _('Minimum'),           _('Zeros'))
-        reply_markup.add(_('Main menu'), _('Back'))
-
         await self.bot.send_message(message.chat.id, _("Choose option to analyse or go back"),
-                                    reply_markup=reply_markup)
+                                    reply_markup=(await go_analyse_menu_markup()))
 
     async def go_analyse_option(self, message: types.Message, option: Status):
         """Change status of user to option and send 'go back' menu'"""
         if await self.change_user_status(message, option):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Back"))
-        reply_markup.add(_("Main menu"))
         await self.bot.send_message(message.chat.id, _("Enter a function to analyse or go back"),
-                                    reply_markup=reply_markup)
+                                    reply_markup=(await go_analyse_option()))
 
     async def user_language(self, message: types.Message) -> str:
         """Return language of user"""
