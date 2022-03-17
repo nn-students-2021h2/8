@@ -27,7 +27,7 @@ def graph_guide() -> str:
 
 
 def analysis_examples() -> list:
-    """Return 10 examples for analysis"""
+    """Return 5 examples for analysis"""
     shuffle(examples['analysis'])
     res = examples['analysis'][0:5]
     return res
