@@ -7,14 +7,18 @@ from aiogram import types
 from aiogram.contrib.middlewares.i18n import I18nMiddleware
 
 
-async def get_language(message: types.Message, mongo):
+async def get_language(user: types.User, mongo):
     """
     Pull user's language code from database
-    :param message: requested user
+    :param user: requested user
     :param mongo: database
     :return: language code (e.g. "en", "ru")
     """
-    return await mongo.user_language(message)
+    try:
+        return await mongo.user_language(user)
+    except Exception as exc:
+        mongo.logger.warning(exc)
+        return "en"
 
 
 class LanguageMiddleware(I18nMiddleware):
@@ -32,5 +36,5 @@ class LanguageMiddleware(I18nMiddleware):
         :param args: event args
         :return: language code
         """
-        message = types.Message.get_current()
-        return await get_language(message, self.mongo)
+        user = types.User.get_current()
+        return await get_language(user, self.mongo) or "en"
