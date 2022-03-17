@@ -46,13 +46,14 @@ class ThrottlingMiddleware(BaseMiddleware):
         :param callback_query: received callback from user
         :param data: additional data
         """
-        await self.on_process_message(callback_query.message, data)
+        await self.on_process_message(callback_query.message, data, callback_query)
 
-    async def on_process_message(self, message: types.Message, data: dict):
+    async def on_process_message(self, message: types.Message, data: dict, callback_query: types.CallbackQuery = None):
         """
         This handler is called when dispatcher receives a message
         :param message: received message from user
         :param data: additional data
+        :param callback_query: user callback if exists
         """
         handler = current_handler.get()
         dispatcher = Dispatcher.get_current()
@@ -69,17 +70,19 @@ class ThrottlingMiddleware(BaseMiddleware):
             await dispatcher.throttle(key, rate=limit)
         except Throttled as t:
             # Execute action
-            await self.message_throttled(message, t)
+            await self.message_throttled(message, t, callback_query)
 
             # Cancel current handler
             raise CancelHandler() from t
 
     @staticmethod
-    async def message_throttled(message: types.Message, throttled: Throttled):
+    async def message_throttled(message: types.Message, throttled: Throttled,
+                                callback_query: types.CallbackQuery = None):
         """
         Notify user only on first exceed and notify about unlocking only on last exceed
         :param message: throttled message
         :param throttled: information about throttled message and user
+        :param callback_query: user callback if exists
         """
         # Calculate how many times is left till the block ends
         delta = throttled.rate - throttled.delta
@@ -87,8 +90,12 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Prevent flooding
         # User can send only 3 requests before locking (bot will not answer further requests until unlocking)
         if throttled.exceeded_count <= 3:
-            await message.reply(
-                _("Flood is not allowed! You should wait {} seconds to repeat this action.").format(throttled.rate))
+            if callback_query:
+                await callback_query.answer(
+                    _("Flood is not allowed! You should wait {} seconds to repeat this action.").format(throttled.rate))
+            else:
+                await message.reply(
+                    _("Flood is not allowed! You should wait {} seconds to repeat this action.").format(throttled.rate))
 
         # Sleep.
         await asyncio.sleep(delta)
