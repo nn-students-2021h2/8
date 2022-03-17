@@ -38,8 +38,7 @@ class MongoDatabase:
             self.logger.debug(await self.client.server_info())
             self.logger.debug("Database connection installed")
         except Exception as exc:
-            self.logger.warning("Unable to connect to the MongoDB server")
-            self.logger.warning(exc)
+            self.logger.warning(f"Unable to connect to the MongoDB server:\n{exc}")
 
     async def change_user_status(self, message: types.Message, status: Status) -> int:
         """Update user status in mongo database. It returns 1 if the connection is lost and 0 if all ok"""
