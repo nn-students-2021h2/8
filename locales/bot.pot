@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FunctionExplorerBot 1.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 09:50+0300\n"
+"POT-Creation-Date: 2022-03-17 12:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: source/core/database.py:89 source/core/handling_msg.py:129
+#: source/core/database.py:89 source/core/handling_msg.py:125
 msgid "Draw graph"
 msgstr ""
 
-#: source/core/database.py:90 source/core/handling_msg.py:131
+#: source/core/database.py:90 source/core/handling_msg.py:127
 msgid "Analyse function"
 msgstr ""
 
-#: source/core/database.py:91 source/core/handling_msg.py:138
+#: source/core/database.py:91 source/core/handling_msg.py:134
 msgid "Settings"
 msgstr ""
 
-#: source/core/database.py:92 source/core/database.py:130
-#: source/core/handling_msg.py:133 source/core/handling_msg.py:147
+#: source/core/database.py:92 source/core/handling_msg.py:129
 msgid "Get help"
 msgstr ""
 
-#: source/core/database.py:94 source/core/handling_msg.py:135
+#: source/core/database.py:94 source/core/handling_msg.py:131
 msgid "Meme"
 msgstr ""
 
@@ -74,11 +73,11 @@ msgstr ""
 msgid "On"
 msgstr ""
 
-#: source/core/database.py:113 source/core/database.py:121
-#: source/core/database.py:131 source/core/database.py:147
-#: source/core/database.py:156 source/core/handling_msg.py:143
-#: source/core/handling_msg.py:154 source/core/handling_msg.py:165
-#: source/core/handling_msg.py:172 source/core/handling_msg.py:181
+#: source/core/database.py:113 source/core/database.py:122
+#: source/core/database.py:133 source/core/database.py:148
+#: source/core/database.py:158 source/core/handling_msg.py:139
+#: source/core/handling_msg.py:151 source/core/handling_msg.py:162
+#: source/core/handling_msg.py:169 source/core/handling_msg.py:181
 msgid "Main menu"
 msgstr ""
 
@@ -86,130 +85,143 @@ msgstr ""
 msgid "Select the setting you want to apply."
 msgstr ""
 
-#: source/core/database.py:122 source/core/handling_msg.py:177
+#: source/core/database.py:123 source/core/database.py:132
+#: source/core/handling_msg.py:143 source/core/handling_msg.py:171
+msgid "Examples"
+msgstr ""
+
+#: source/core/database.py:124 source/core/handling_msg.py:177
 msgid "Enter a function you want to draw or go to the main menu"
 msgstr ""
 
-#: source/core/database.py:129 source/core/handling_msg.py:145
+#: source/core/database.py:131 source/core/handling_msg.py:141
 msgid "Options"
 msgstr ""
 
-#: source/core/database.py:132
+#: source/core/database.py:134
 msgid "Choose an option or enter your request or go to the main menu"
 msgstr ""
 
-#: source/core/database.py:139 source/math/calculus_parser.py:160
+#: source/core/database.py:142 source/math/calculus_parser.py:160
 #: source/math/calculus_parser.py:164
 msgid "Derivative"
 msgstr ""
 
-#: source/core/database.py:139 source/math/calculus_parser.py:169
+#: source/core/database.py:142 source/math/calculus_parser.py:169
 msgid "Domain"
 msgstr ""
 
-#: source/core/database.py:139 source/math/calculus_parser.py:174
+#: source/core/database.py:142 source/math/calculus_parser.py:174
 msgid "Range"
 msgstr ""
 
-#: source/core/database.py:140
+#: source/core/database.py:143
 msgid "Stationary points"
 msgstr ""
 
-#: source/core/database.py:140 source/math/calculus_parser.py:196
+#: source/core/database.py:143 source/math/calculus_parser.py:196
 msgid "Periodicity"
 msgstr ""
 
-#: source/core/database.py:141 source/math/calculus_parser.py:255
+#: source/core/database.py:143 source/math/calculus_parser.py:255
 msgid "Monotonicity"
 msgstr ""
 
-#: source/core/database.py:141
+#: source/core/database.py:144
 msgid "Convexity"
 msgstr ""
 
-#: source/core/database.py:141
+#: source/core/database.py:144
 msgid "Concavity"
-msgstr ""
-
-#: source/core/database.py:142
-msgid "Horizontal asymptotes"
-msgstr ""
-
-#: source/core/database.py:143
-msgid "Vertical asymptotes"
 msgstr ""
 
 #: source/core/database.py:144
 msgid "Asymptotes"
 msgstr ""
 
-#: source/core/database.py:144
-msgid "Evenness"
-msgstr ""
-
-#: source/core/database.py:144
-msgid "Oddness"
-msgstr ""
-
 #: source/core/database.py:145
-msgid "Axes intersection"
+msgid "Vertical asymptotes"
 msgstr ""
 
 #: source/core/database.py:145
 msgid "Slant asymptotes"
 msgstr ""
 
+#: source/core/database.py:145
+msgid "Horizontal asymptotes"
+msgstr ""
+
 #: source/core/database.py:146
+msgid "Oddness"
+msgstr ""
+
+#: source/core/database.py:146
+msgid "Axes intersection"
+msgstr ""
+
+#: source/core/database.py:146
+msgid "Evenness"
+msgstr ""
+
+#: source/core/database.py:147
 msgid "Maximum"
 msgstr ""
 
-#: source/core/database.py:146
+#: source/core/database.py:147
 msgid "Minimum"
 msgstr ""
 
-#: source/core/database.py:146 source/math/calculus_parser.py:179
+#: source/core/database.py:147 source/math/calculus_parser.py:179
 msgid "Zeros"
 msgstr ""
 
-#: source/core/database.py:147 source/core/database.py:155
-#: source/core/handling_msg.py:152 source/core/handling_msg.py:163
+#: source/core/database.py:148 source/core/database.py:157
+#: source/core/handling_msg.py:149 source/core/handling_msg.py:160
 msgid "Back"
 msgstr ""
 
-#: source/core/database.py:148
+#: source/core/database.py:150
 msgid "Choose option to analyse or go back"
 msgstr ""
 
-#: source/core/database.py:157
+#: source/core/database.py:159
 msgid "Enter a function to analyse or go back"
 msgstr ""
 
-#: source/core/handling_msg.py:76
+#: source/core/handling_msg.py:72
 msgid "Hello, {} {}!"
 msgstr ""
 
-#: source/core/handling_msg.py:84 source/math/help_functions.py:16
+#: source/core/handling_msg.py:80 source/math/help_functions.py:19
 msgid "Graph guide"
 msgstr ""
 
-#: source/core/handling_msg.py:85
+#: source/core/handling_msg.py:81
 msgid "Graph examples"
 msgstr ""
 
-#: source/core/handling_msg.py:86 source/math/help_functions.py:28
+#: source/core/handling_msg.py:82 source/math/help_functions.py:32
 msgid "Analysis guide"
 msgstr ""
 
-#: source/core/handling_msg.py:87
+#: source/core/handling_msg.py:83
 msgid "Analysis examples"
 msgstr ""
 
-#: source/core/handling_msg.py:141 source/core/handling_msg.py:190
+#: source/core/handling_msg.py:137 source/core/handling_msg.py:190
 msgid "I didn't understand what you want"
 msgstr ""
 
-#: source/core/handling_msg.py:170
+#: source/core/handling_msg.py:144
+msgid "Choose analysis example"
+msgstr ""
+
+#: source/core/handling_msg.py:167
 msgid "Enter a function to explore or go back"
+msgstr ""
+
+#: source/core/handling_msg.py:172
+msgid "Choose graph example"
 msgstr ""
 
 #: source/core/handling_msg.py:184
@@ -232,37 +244,37 @@ msgstr ""
 msgid "Settings saved"
 msgstr ""
 
-#: source/core/handling_msg.py:209
+#: source/core/handling_msg.py:204
 msgid "Choose graph examples"
 msgstr ""
 
-#: source/core/handling_msg.py:220
+#: source/core/handling_msg.py:210
 msgid "Choose analysis examples"
 msgstr ""
 
-#: source/core/handling_msg.py:300
+#: source/core/handling_msg.py:265
 msgid "Here a graph of requested functions"
 msgstr ""
 
-#: source/core/handling_msg.py:349
+#: source/core/handling_msg.py:298
 msgid "Couldn't find a suitable template. Check the input."
 msgstr ""
 
-#: source/core/handling_msg.py:370
+#: source/core/handling_msg.py:319
 msgid "Photo size is too large, therefore I send you a file."
 msgstr ""
 
-#: source/core/handling_msg.py:389
+#: source/core/handling_msg.py:338
 msgid "Incorrect input. Please check your function."
 msgstr ""
 
-#: source/core/handling_msg.py:393
+#: source/core/handling_msg.py:342
 msgid ""
 "Sorry, can't solve the problem or the input is invalid. Please check your"
 " function."
 msgstr ""
 
-#: source/core/handling_msg.py:428
+#: source/core/handling_msg.py:377
 msgid "Sorry, something went wrong. Please try again later."
 msgstr ""
 
@@ -495,7 +507,7 @@ msgstr ""
 msgid "Too many functions requested ({}). The limit is {} functions."
 msgstr ""
 
-#: source/math/help_functions.py:5
+#: source/math/help_functions.py:7
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 09:50+0300\n"
+"POT-Creation-Date: 2022-03-17 12:02+0300\n"
 "PO-Revision-Date: 2022-03-09 01:10+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -20,24 +20,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: source/core/database.py:89 source/core/handling_msg.py:129
+#: source/core/database.py:89 source/core/handling_msg.py:125
 msgid "Draw graph"
 msgstr "Нарисовать график"
 
-#: source/core/database.py:90 source/core/handling_msg.py:131
+#: source/core/database.py:90 source/core/handling_msg.py:127
 msgid "Analyse function"
 msgstr "Проанализировать функцию"
 
-#: source/core/database.py:91 source/core/handling_msg.py:138
+#: source/core/database.py:91 source/core/handling_msg.py:134
 msgid "Settings"
 msgstr "Настройки"
 
-#: source/core/database.py:92 source/core/database.py:130
-#: source/core/handling_msg.py:133 source/core/handling_msg.py:147
+#: source/core/database.py:92 source/core/handling_msg.py:129
 msgid "Get help"
 msgstr "Справка"
 
-#: source/core/database.py:94 source/core/handling_msg.py:135
+#: source/core/database.py:94 source/core/handling_msg.py:131
 msgid "Meme"
 msgstr "Мем"
 
@@ -79,11 +78,11 @@ msgstr "Деактивировать"
 msgid "On"
 msgstr "Активировать"
 
-#: source/core/database.py:113 source/core/database.py:121
-#: source/core/database.py:131 source/core/database.py:147
-#: source/core/database.py:156 source/core/handling_msg.py:143
-#: source/core/handling_msg.py:154 source/core/handling_msg.py:165
-#: source/core/handling_msg.py:172 source/core/handling_msg.py:181
+#: source/core/database.py:113 source/core/database.py:122
+#: source/core/database.py:133 source/core/database.py:148
+#: source/core/database.py:158 source/core/handling_msg.py:139
+#: source/core/handling_msg.py:151 source/core/handling_msg.py:162
+#: source/core/handling_msg.py:169 source/core/handling_msg.py:181
 msgid "Main menu"
 msgstr "Главное меню"
 
@@ -91,133 +90,146 @@ msgstr "Главное меню"
 msgid "Select the setting you want to apply."
 msgstr "Выберите настройку, которую вы хотите применить"
 
-#: source/core/database.py:122 source/core/handling_msg.py:177
+#: source/core/database.py:123 source/core/database.py:132
+#: source/core/handling_msg.py:143 source/core/handling_msg.py:171
+msgid "Examples"
+msgstr "Примеры"
+
+#: source/core/database.py:124 source/core/handling_msg.py:177
 msgid "Enter a function you want to draw or go to the main menu"
 msgstr ""
 "Введите функцию, которую вы хотите нарисовать, или вернитесь в главное "
 "меню"
 
-#: source/core/database.py:129 source/core/handling_msg.py:145
+#: source/core/database.py:131 source/core/handling_msg.py:141
 msgid "Options"
 msgstr "Опции"
 
-#: source/core/database.py:132
+#: source/core/database.py:134
 msgid "Choose an option or enter your request or go to the main menu"
 msgstr "Выберите опцию, введите ваш запрос или вернитесь в главное меню"
 
-#: source/core/database.py:139 source/math/calculus_parser.py:160
+#: source/core/database.py:142 source/math/calculus_parser.py:160
 #: source/math/calculus_parser.py:164
 msgid "Derivative"
 msgstr "Производная"
 
-#: source/core/database.py:139 source/math/calculus_parser.py:169
+#: source/core/database.py:142 source/math/calculus_parser.py:169
 msgid "Domain"
 msgstr "Область определения"
 
-#: source/core/database.py:139 source/math/calculus_parser.py:174
+#: source/core/database.py:142 source/math/calculus_parser.py:174
 msgid "Range"
 msgstr "Область значений"
 
-#: source/core/database.py:140
+#: source/core/database.py:143
 msgid "Stationary points"
 msgstr "Стационарные точки"
 
-#: source/core/database.py:140 source/math/calculus_parser.py:196
+#: source/core/database.py:143 source/math/calculus_parser.py:196
 msgid "Periodicity"
 msgstr "Периодичность"
 
-#: source/core/database.py:141 source/math/calculus_parser.py:255
+#: source/core/database.py:143 source/math/calculus_parser.py:255
 msgid "Monotonicity"
 msgstr "Монотонность"
 
-#: source/core/database.py:141
+#: source/core/database.py:144
 msgid "Convexity"
 msgstr "Выпуклость"
 
-#: source/core/database.py:141
+#: source/core/database.py:144
 msgid "Concavity"
 msgstr "Вогнутость"
-
-#: source/core/database.py:142
-msgid "Horizontal asymptotes"
-msgstr "Гориз. асимптоты"
-
-#: source/core/database.py:143
-msgid "Vertical asymptotes"
-msgstr "Вертикальные асимптоты"
 
 #: source/core/database.py:144
 msgid "Asymptotes"
 msgstr "Асимптоты"
 
-#: source/core/database.py:144
-msgid "Evenness"
-msgstr "Чётность"
-
-#: source/core/database.py:144
-msgid "Oddness"
-msgstr "Нечётность"
-
 #: source/core/database.py:145
-msgid "Axes intersection"
-msgstr "Пересечения с осями"
+msgid "Vertical asymptotes"
+msgstr "Вертикальные асимптоты"
 
 #: source/core/database.py:145
 msgid "Slant asymptotes"
 msgstr "Наклонные асимптоты"
 
+#: source/core/database.py:145
+msgid "Horizontal asymptotes"
+msgstr "Гориз. асимптоты"
+
 #: source/core/database.py:146
+msgid "Oddness"
+msgstr "Нечётность"
+
+#: source/core/database.py:146
+msgid "Axes intersection"
+msgstr "Пересечения с осями"
+
+#: source/core/database.py:146
+msgid "Evenness"
+msgstr "Чётность"
+
+#: source/core/database.py:147
 msgid "Maximum"
 msgstr "Максимум"
 
-#: source/core/database.py:146
+#: source/core/database.py:147
 msgid "Minimum"
 msgstr "Минимум"
 
-#: source/core/database.py:146 source/math/calculus_parser.py:179
+#: source/core/database.py:147 source/math/calculus_parser.py:179
 msgid "Zeros"
 msgstr "Нули"
 
-#: source/core/database.py:147 source/core/database.py:155
-#: source/core/handling_msg.py:152 source/core/handling_msg.py:163
+#: source/core/database.py:148 source/core/database.py:157
+#: source/core/handling_msg.py:149 source/core/handling_msg.py:160
 msgid "Back"
 msgstr "Назад"
 
-#: source/core/database.py:148
+#: source/core/database.py:150
 msgid "Choose option to analyse or go back"
 msgstr "Выберите опцию или вернитесь в меню"
 
-#: source/core/database.py:157
+#: source/core/database.py:159
 msgid "Enter a function to analyse or go back"
 msgstr "Введите функцию, которую хотите проанализировать, или вернитесь в меню"
 
-#: source/core/handling_msg.py:76
+#: source/core/handling_msg.py:72
 msgid "Hello, {} {}!"
 msgstr "Здравствуйте, {} {}!"
 
-#: source/core/handling_msg.py:84 source/math/help_functions.py:16
+#: source/core/handling_msg.py:80 source/math/help_functions.py:19
 msgid "Graph guide"
 msgstr "Гайд по графикам"
 
-#: source/core/handling_msg.py:85
+#: source/core/handling_msg.py:81
 msgid "Graph examples"
 msgstr "Примеры графиков"
 
-#: source/core/handling_msg.py:86 source/math/help_functions.py:28
+#: source/core/handling_msg.py:82 source/math/help_functions.py:32
 msgid "Analysis guide"
 msgstr "Гайд по анализу"
 
-#: source/core/handling_msg.py:87
+#: source/core/handling_msg.py:83
 msgid "Analysis examples"
 msgstr "Примеры анализа"
 
-#: source/core/handling_msg.py:141 source/core/handling_msg.py:190
+#: source/core/handling_msg.py:137 source/core/handling_msg.py:190
 msgid "I didn't understand what you want"
 msgstr "Не понял, что вы хотите"
 
-#: source/core/handling_msg.py:170
+#: source/core/handling_msg.py:144
+msgid "Choose analysis example"
+msgstr "Выберите пример анализа"
+
+#: source/core/handling_msg.py:167
 msgid "Enter a function to explore or go back"
 msgstr "Введите функцию, которую хотите проанализировать, или вернитесь в меню"
+
+#: source/core/handling_msg.py:172
+msgid "Choose graph example"
+msgstr "Выберите пример графика"
 
 #: source/core/handling_msg.py:184
 msgid "On meme button"
@@ -239,31 +251,31 @@ msgstr "Установить ru язык"
 msgid "Settings saved"
 msgstr "Настройки сохранены"
 
-#: source/core/handling_msg.py:209
+#: source/core/handling_msg.py:204
 msgid "Choose graph examples"
 msgstr "Выберите пример графика"
 
-#: source/core/handling_msg.py:220
+#: source/core/handling_msg.py:210
 msgid "Choose analysis examples"
 msgstr "Выберите пример анализа"
 
-#: source/core/handling_msg.py:300
+#: source/core/handling_msg.py:265
 msgid "Here a graph of requested functions"
 msgstr "Вот ваш график"
 
-#: source/core/handling_msg.py:349
+#: source/core/handling_msg.py:298
 msgid "Couldn't find a suitable template. Check the input."
 msgstr "Не удалось найти подходящий шаблон. Проверьте входные данные."
 
-#: source/core/handling_msg.py:370
+#: source/core/handling_msg.py:319
 msgid "Photo size is too large, therefore I send you a file."
 msgstr "Размер фотографии слишком большой, поэтому я отправлю ответ в виде файла."
 
-#: source/core/handling_msg.py:389
+#: source/core/handling_msg.py:338
 msgid "Incorrect input. Please check your function."
 msgstr "Некорректный ввод. Пожалуйста, проверьте вашу функцию."
 
-#: source/core/handling_msg.py:393
+#: source/core/handling_msg.py:342
 msgid ""
 "Sorry, can't solve the problem or the input is invalid. Please check your"
 " function."
@@ -271,7 +283,7 @@ msgstr ""
 "Извините, не могу решить задачу, либо ввод некорректный. Пожалуйста, "
 "проверьте вашу функцию."
 
-#: source/core/handling_msg.py:428
+#: source/core/handling_msg.py:377
 msgid "Sorry, something went wrong. Please try again later."
 msgstr "Извините, что-то пошло не так. Пожалуйста, повторите попытку позже."
 
@@ -542,7 +554,7 @@ msgstr "Не удалось разобрать выражение: {}"
 msgid "Too many functions requested ({}). The limit is {} functions."
 msgstr "Запрошено слишком много функций ({}). Ограничение - {} функций."
 
-#: source/math/help_functions.py:5
+#: source/math/help_functions.py:7
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"

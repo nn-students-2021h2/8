@@ -118,7 +118,9 @@ class MongoDatabase:
         """Change status of user and send draw graph menu to user."""
         if await self.change_user_status(message, Status.GRAPH):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Main menu"))
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+        reply_markup.add(_("Main menu"))
+        reply_markup.add(_("Examples"))
         await self.bot.send_message(message.chat.id, _("Enter a function you want to draw or go to the main menu"),
                                     reply_markup=reply_markup)
 
@@ -127,7 +129,7 @@ class MongoDatabase:
         if await self.change_user_status(message, Status.ANALYSE):
             return
         reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_("Options"))
-        reply_markup.add(_("Get help"))
+        reply_markup.add(_("Examples"))
         reply_markup.add(_("Main menu"))
         await self.bot.send_message(message.chat.id, _("Choose an option or enter your request or go to the main menu"),
                                     reply_markup=reply_markup)

@@ -20,7 +20,7 @@ from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
-from source.extras.utilities import run_TeX, resize_image
+from source.extras.utilities import run_TeX, resize_image, reply_markup_analysis, reply_markup_graph
 import source.math.help_functions as hlp
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
@@ -140,8 +140,9 @@ class Handler:
                     await Handler.mongo.go_main(message)
                 elif text == _('Options'):
                     await Handler.mongo.go_analyse_menu(message)
-                elif text == _('Get help'):
-                    await Handler.bot.send_message(message.chat.id, 'No')  # TODO help
+                elif text == _('Examples'):
+                    await Handler.bot.send_message(message.chat.id, _("Choose analysis example"),
+                                                   reply_markup=(await reply_markup_analysis(True)))
                 else:
                     await Handler.send_analyse(message)
             elif chat_status == Status.ANALYSE_MENU:
@@ -167,6 +168,9 @@ class Handler:
             elif chat_status == Status.GRAPH:
                 if text == _('Main menu'):
                     await Handler.mongo.go_main(message)
+                elif text == _('Examples'):
+                    await Handler.bot.send_message(message.chat.id, _("Choose graph example"),
+                                                   reply_markup=(await reply_markup_graph(True)))
                 else:
                     await Handler.send_graph(message)
                     await Handler.bot.send_message(message.chat.id,
@@ -197,24 +201,14 @@ class Handler:
 
         @dispatcher.callback_query_handler(lambda c: c.data == 'graph_examples')
         async def graph_examples(callback_query: types.CallbackQuery):
-            reply_markup = InlineKeyboardMarkup()
-            ex = hlp.graph_examples()
-            for i in range(10):
-                reply_markup.add(InlineKeyboardButton(ex[i], callback_data=f'example_graph_{i}'))
-
             await Handler.bot.send_message(callback_query.from_user.id, _("Choose graph examples"),
-                                           reply_markup=reply_markup)
+                                           reply_markup=(await reply_markup_graph(False)))
             await Handler.bot.answer_callback_query(callback_query.id)
 
         @dispatcher.callback_query_handler(lambda c: c.data == 'analysis_examples')
         async def analysis_examples(callback_query: types.CallbackQuery):
-            reply_markup = InlineKeyboardMarkup()
-            ex = hlp.analysis_examples()
-            for i in range(10):
-                reply_markup.add(InlineKeyboardButton(ex[i], callback_data=f'example_analysis_{i}'))
-
             await Handler.bot.send_message(callback_query.from_user.id, _("Choose analysis examples"),
-                                           reply_markup=reply_markup)
+                                           reply_markup=(await reply_markup_analysis(False)))
             await Handler.bot.answer_callback_query(callback_query.id)
 
         @dispatcher.callback_query_handler(lambda c: c.data == 'graph_guide')
@@ -241,7 +235,9 @@ class Handler:
     async def send_graph(message: types.Message):
         """User requested to draw a plot"""
         if isinstance(message, types.callback_query.CallbackQuery):
-            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text[len('/graph')+1:]
+            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text
+            if expr[0] == '/':
+                expr = expr[len('/graph')+1:]
             message = message.message
         else:
             if message.get_command():
@@ -282,7 +278,9 @@ class Handler:
     async def send_analyse(message: types.Message):
         """User requested some function analysis"""
         if isinstance(message, types.callback_query.CallbackQuery):
-            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text[len('/analyse')+1:]
+            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text
+            if expr[0] == '/':
+                expr = expr[len('/analyse') + 1:]
             message = message.message
         else:
             if message.get_command():
