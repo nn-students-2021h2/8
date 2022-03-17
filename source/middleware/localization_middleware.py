@@ -36,5 +36,11 @@ class LanguageMiddleware(I18nMiddleware):
         :param args: event args
         :return: language code
         """
-        message = types.Message.get_current()
+        message = None
+        try:
+            message = types.CallbackQuery.get_current().message
+        except AttributeError:
+            message = types.Message.get_current()
+        if message is None:
+            return 'en'
         return await get_language(message, self.mongo)

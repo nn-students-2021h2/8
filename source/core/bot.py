@@ -4,7 +4,6 @@ Main core module with bot and logger functionality
 import asyncio
 import logging
 from pathlib import Path
-from asyncio import get_event_loop
 
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -61,6 +60,8 @@ if __name__ == '__main__':
 
     Graph.setup_plot_style()
 
-    dispatcher = Dispatcher(bot, storage=MemoryStorage(), loop=get_event_loop())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    dispatcher = Dispatcher(bot, storage=MemoryStorage(), loop=loop)
     dispatcher.loop.create_task(init_bot(dispatcher, logger, bot))
     executor.start_polling(dispatcher, skip_updates=True, on_startup=log_start, on_shutdown=log_stop)

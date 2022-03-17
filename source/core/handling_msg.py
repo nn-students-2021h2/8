@@ -5,10 +5,10 @@ import logging
 from io import BytesIO
 
 import aiohttp
-import sympy as sy
 import telegram
-from PIL import Image, ImageOps
+
 from aiogram import types, Bot
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.exceptions import BadRequest, TelegramAPIError
 from pymongo import errors
 
@@ -16,11 +16,12 @@ from source.conf import Config
 from source.core.database import MongoDatabase, no_db_message
 from source.extras.status import Status
 from source.extras.translation import _
-from source.extras.utilities import run_asynchronously
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
 from source.math.graph_parser import GraphParser, ParseError
 from source.math.math_function import MathError
+from source.extras.utilities import run_TeX, resize_image
+import source.math.help_functions as hlp
 from source.middleware.anti_flood_middleware import rate_limit
 from source.middleware.localization_middleware import get_language
 
@@ -33,9 +34,6 @@ class Handler:
     status_dict: dict = None
     # We get "USE_LATEX" parameter from settings
     SETTINGS: Config = None
-
-    # A number of dots per inch for TeX pictures
-    DPI = '500'
 
     def __init__(self, bot_, mongo_, logger_, dispatcher):
         Handler.bot = bot_
@@ -78,9 +76,12 @@ class Handler:
         @rate_limit(limit=1)
         async def chat_help(message: types.Message):
             """Send a message when the command /help is issued."""
-            await Handler.bot.send_message(message.chat.id,
-                                           _('Enter:\n/start to restart bot.\n/graph to draw a graph.\n/analyse to '
-                                             'go on to investigate the function.'))
+            reply_markup = InlineKeyboardMarkup()
+            reply_markup.add(InlineKeyboardButton(_("Graph guide"), callback_data='graph_guide'))
+            reply_markup.add(InlineKeyboardButton(_("Graph examples"), callback_data='graph_examples'))
+            reply_markup.add(InlineKeyboardButton(_("Analysis guide"), callback_data='analysis_guide'))
+            reply_markup.add(InlineKeyboardButton(_("Analysis examples"), callback_data='analysis_examples'))
+            await Handler.bot.send_message(message.chat.id, _(hlp.main_help()), reply_markup=reply_markup)
 
         @dispatcher.message_handler(commands=["graph"])
         @rate_limit(limit=2)
@@ -194,40 +195,61 @@ class Handler:
             """Log Errors caused by Updates."""
             Handler.logger.error('Update %s\nCaused error %s', update, exception)
 
-    @staticmethod
-    @run_asynchronously
-    def resize_image(image_to_resize: BytesIO, output_buffer: BytesIO):
-        """
-        Resize image to fit in the Telegram window and add a frame
-        :param image_to_resize: a BytesIO object containing the image you want to resize
-        :param output_buffer: result image buffer
-        """
-        image_to_resize.seek(0)
-        output_buffer.seek(0)
+        @dispatcher.callback_query_handler(lambda c: c.data == 'graph_examples')
+        async def graph_examples(callback_query: types.CallbackQuery):
+            reply_markup = InlineKeyboardMarkup()
+            ex = hlp.graph_examples()
+            for i in range(10):
+                reply_markup.add(InlineKeyboardButton(ex[i], callback_data=f'example_graph_{i}'))
 
-        image = Image.open(BytesIO(image_to_resize.read()))
-        height, width = image.size
-        max_size = 10000
+            await Handler.bot.send_message(callback_query.from_user.id, _("Choose graph examples"),
+                                           reply_markup=reply_markup)
+            await Handler.bot.answer_callback_query(callback_query.id)
 
-        # Resize to max size
-        if height > max_size or width > max_size:
-            ratio = min(max_size / height, max_size / width)
-            image.thumbnail((int(height * ratio), int(width * ratio)))
+        @dispatcher.callback_query_handler(lambda c: c.data == 'analysis_examples')
+        async def analysis_examples(callback_query: types.CallbackQuery):
+            reply_markup = InlineKeyboardMarkup()
+            ex = hlp.analysis_examples()
+            for i in range(10):
+                reply_markup.add(InlineKeyboardButton(ex[i], callback_data=f'example_analysis_{i}'))
 
-        # Set borders
-        # noinspection PyTypeChecker
-        ImageOps.expand(image, border=100, fill="white").save(output_buffer, format="PNG")
-        output_buffer.seek(0)
+            await Handler.bot.send_message(callback_query.from_user.id, _("Choose analysis examples"),
+                                           reply_markup=reply_markup)
+            await Handler.bot.answer_callback_query(callback_query.id)
+
+        @dispatcher.callback_query_handler(lambda c: c.data == 'graph_guide')
+        async def graph_guide(callback_query: types.CallbackQuery):
+            await Handler.bot.answer_callback_query(callback_query.id)
+            await Handler.bot.send_message(callback_query.from_user.id, _(hlp.graph_guide()))
+
+        @dispatcher.callback_query_handler(lambda c: c.data == 'analysis_guide')
+        async def analysis_guide(callback_query: types.CallbackQuery):
+            await Handler.bot.answer_callback_query(callback_query.id)
+            await Handler.bot.send_message(callback_query.from_user.id, _(hlp.analysis_guide()))
+
+        @dispatcher.callback_query_handler(lambda c: c.data and c.data.startswith('example_graph_'))
+        async def example_graph(callback_query: types.CallbackQuery):
+            await Handler.send_graph(callback_query)
+            await Handler.bot.answer_callback_query(callback_query.id)
+
+        @dispatcher.callback_query_handler(lambda c: c.data and c.data.startswith('example_analysis_'))
+        async def example_analysis(callback_query: types.CallbackQuery):
+            await Handler.send_analyse(callback_query)
+            await Handler.bot.answer_callback_query(callback_query.id)
 
     @staticmethod
     async def send_graph(message: types.Message):
         """User requested to draw a plot"""
+        if isinstance(message, types.callback_query.CallbackQuery):
+            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text[len('/graph')+1:]
+            message = message.message
+        else:
+            if message.get_command():
+                expr = message.get_args().lower()
+            else:
+                expr = message.text.lower()
         chat_id = message.chat.id
         user_language = await get_language(message, Handler.mongo)
-        if message.get_command():
-            expr = message.get_args().lower()
-        else:
-            expr = message.text.lower()
 
         Handler.logger.info("User [chat_id=%s] requested to draw a graph. User's input: `%s`", chat_id, expr)
 
@@ -257,28 +279,18 @@ class Handler:
         parser.clear_warnings()
 
     @staticmethod
-    @run_asynchronously
-    def run_TeX(latex: str, result_picture: BytesIO):
-        """
-        Asynchronously render a picture using TeX distribution
-        :param latex: latex text to compile
-        :param result_picture: rendered picture
-        """
-        preamble = r"""\documentclass[varwidth,12pt]{standalone}
-        \usepackage{euler} \usepackage{amsmath} \usepackage{amsfonts} \usepackage[russian]{babel}
-        \begin{document}"""
-        sy.preview(fr'${latex}$', output='png', preamble=preamble,
-                   viewer='BytesIO', outputbuffer=result_picture, dvioptions=['-D', Handler.DPI])
-
-    @staticmethod
     async def send_analyse(message: types.Message):
         """User requested some function analysis"""
+        if isinstance(message, types.callback_query.CallbackQuery):
+            expr = message.message.reply_markup.inline_keyboard[int(message.data[-1])][0].text[len('/analyse')+1:]
+            message = message.message
+        else:
+            if message.get_command():
+                expr = message.get_args().lower()
+            else:
+                expr = message.text.lower()
         chat_id = message.chat.id
         user_language = await get_language(message, Handler.mongo)
-        if message.get_command():
-            expr = message.get_args().lower()
-        else:
-            expr = message.text.lower()
 
         Handler.logger.info("User [chat_id=%s] requested an analysis. User's input: `%s`", chat_id, expr)
 
@@ -299,8 +311,8 @@ class Handler:
             if Handler.SETTINGS.properties["APP"]["USE_LATEX"]:
                 latex = parser.make_latex(result)
                 with BytesIO() as latex_picture, BytesIO() as resized_image:
-                    await Handler.run_TeX(latex, latex_picture)
-                    await Handler.resize_image(latex_picture, resized_image)
+                    await run_TeX(latex, latex_picture)
+                    await resize_image(latex_picture, resized_image)
 
                     # If we can't send photo due to Telegram limitations, then send image as file instead
                     try:

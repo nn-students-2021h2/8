@@ -136,15 +136,15 @@ class MongoDatabase:
         """Change status of user to 'analyze menu' and send options to analyze menu'"""
         if await self.change_user_status(message, Status.ANALYSE_MENU):
             return
-        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(_('Derivative'), _('Domain'), _('Range'),
-                                                                     _('Stationary points'), _('Periodicity'),
-                                                                     _('Monotonicity'), _('Convexity'), _('Concavity'),
-                                                                     _('Horizontal asymptotes'),
-                                                                     _('Vertical asymptotes'),
-                                                                     _('Asymptotes'), _('Evenness'), _('Oddness'),
-                                                                     _('Axes intersection'), _('Slant asymptotes'),
-                                                                     _('Maximum'), _('Minimum'), _('Zeros'),
-                                                                     _('Main menu'), _('Back'))
+        reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+        reply_markup.add(_('Derivative'),           _('Domain'),            _('Range'))
+        reply_markup.add(_('Stationary points'),    _('Periodicity'),       _('Monotonicity'))
+        reply_markup.add(_('Convexity'),            _('Concavity'),         _('Asymptotes'))
+        reply_markup.add(_('Vertical asymptotes'),  _('Slant asymptotes'),  _('Horizontal asymptotes'))
+        reply_markup.add(_('Oddness'),              _('Axes intersection'), _('Evenness'))
+        reply_markup.add(_('Maximum'),              _('Minimum'),           _('Zeros'))
+        reply_markup.add(_('Main menu'), _('Back'))
+
         await self.bot.send_message(message.chat.id, _("Choose option to analyse or go back"),
                                     reply_markup=reply_markup)
 
@@ -161,6 +161,8 @@ class MongoDatabase:
         """Return language of user"""
         try:
             return (await self.chat_status_table.find_one({"chat_id": message.chat.id}))['lang']
+        except AttributeError:
+            return "en"
         except TypeError:  # if user not in database
             return message.from_user.language_code
         except Exception as exc:
