@@ -15,7 +15,7 @@ def main_help() -> str:
 
 
 def graph_examples() -> list:
-    """Return 10 examples for graphs"""
+    """Return 5 examples for graphs"""
     shuffle(examples['graph'])
     res = examples['graph'][0:5]
     return res
