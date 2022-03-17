@@ -134,14 +134,14 @@ class MongoDatabase:
         await self.bot.send_message(message.chat.id, _("Enter a function to analyse or go back"),
                                     reply_markup=(await go_analyse_option()))
 
-    async def user_language(self, message: types.Message) -> str:
+    async def user_language(self, user: types.User) -> str:
         """Return language of user"""
         try:
-            return (await self.chat_status_table.find_one({"chat_id": message.chat.id}))['lang']
+            return (await self.chat_status_table.find_one({"chat_id": user.id}))['lang']
         except AttributeError:
             return "en"
         except TypeError:  # if user not in database
-            return message.from_user.language_code
+            return user.language_code
         except Exception as exc:
-            await self.bot.send_message(message.chat.id, _(no_db_message))
+            await self.bot.send_message(user.id, _(no_db_message))
             self.logger.warning(exc)
