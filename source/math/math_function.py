@@ -4,6 +4,7 @@ Math Function class module
 
 import sympy as sy
 import sympy.calculus.util as calculus
+from sympy.utilities.iterables import iterable
 
 from source.extras.translation import _
 
@@ -66,6 +67,53 @@ class MathFunction:
     def __str__(self):
         return self.expression
 
+    @staticmethod
+    def _checkStationaryPoints(function: sy.Expr, symbol: sy.Symbol, domain: sy.Interval) -> bool:
+        """
+        Fix bug fix infinite loop when Sympy calculates stationary points of aperiodic function.
+        Return false if function has more than CRIT_POINTS_LIMIT stationary points, true otherwise
+        """
+        period = sy.periodicity(function, symbol)
+        if period == sy.S.Zero:
+            # the expression is constant wrt symbol
+            return True
+
+        if period is not None:
+            if isinstance(domain, sy.Interval):
+                if (domain.inf - domain.sup).is_infinite:
+                    domain = sy.Interval(0, period)
+            elif isinstance(domain, sy.Union):
+                for sub_dom in domain.args:
+                    if isinstance(sub_dom, sy.Interval) and (sub_dom.inf - sub_dom.sup).is_infinite:
+                        domain = sy.Interval(0, period)
+
+        intervals = calculus.continuous_domain(function, symbol, domain)
+        if isinstance(intervals, (sy.Interval, sy.FiniteSet)):
+            interval_iter = (intervals,)
+        elif isinstance(intervals, sy.Union):
+            interval_iter = intervals.args
+        else:
+            return False
+
+        for interval in interval_iter:
+            if isinstance(interval, sy.Interval):
+                critical_points = sy.S.EmptySet
+                solution = sy.solveset(function.diff(symbol), symbol, interval)
+
+                if not iterable(solution):
+                    return False
+                if isinstance(solution, sy.ImageSet):
+                    return False
+
+                critical_points += solution
+
+                count = 0
+                for _ in critical_points:
+                    count += 1
+                    if count > 100:
+                        return False
+        return True
+
     def derivative(self, *symbols: sy.S) -> sy.Function:
         """
         Calculates the derivative by given variables
@@ -101,6 +149,8 @@ class MathFunction:
         :param symbol: the symbol to find the area (it is 'y' by default)
         :return: a value range (interval) of the function
         """
+        if not self._checkStationaryPoints(self.simplified_expr, symbol, sy.S.Reals):
+            raise ValueError
         return calculus.function_range(self.simplified_expr, symbol, sy.S.Reals)
 
     def zeros(self) -> sy.Set:
@@ -318,6 +368,8 @@ class MathFunction:
         :param symbol: see 'maximum' function args
         :return: a maximum value or empty set
         """
+        if not self._checkStationaryPoints(self.simplified_expr, symbol, sy.S.Reals):
+            raise ValueError
         maximum = calculus.maximum(self.simplified_expr, symbol)
         if not maximum.is_infinite and not maximum.is_number:
             return sy.EmptySet
@@ -329,6 +381,8 @@ class MathFunction:
         :param symbol: see 'minimum' function args
         :return: a minimum value or empty set
         """
+        if not self._checkStationaryPoints(self.simplified_expr, symbol, sy.S.Reals):
+            raise ValueError
         minimum = calculus.minimum(self.simplified_expr, symbol)
         if not minimum.is_infinite and not minimum.is_number:
             return sy.EmptySet

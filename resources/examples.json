@@ -25,7 +25,8 @@
     "tanh(x^2), for x = [-2, 2]",
     "(3x^4 + 1) / x^3, x=[-4, 4], y=[-20, 20]",
     "1 / (x^2 + 4)",
-    "x cos x, for x in (-100, 100)"
+    "x cos x, for x in (-100, 100)",
+    "sin(3*(x^3)), x from -4 to 4, y from -1.1 to 1.1"
   ],
   "analysis": [
     "diff 2xy by x",
@@ -33,6 +34,7 @@
     "derivative of abcdef by a, b, c, d, e",
     "diff of 1 / sin x",
     "diff sqrt(1/ sin x)",
+    "diff log(x, 3^x * sin x^2) * cos(tan(x)) / 2 / exp(x * cos(2x) / (log(x / 2) * 10x^1.5)) + 4 * 5 *5.5 x^(x/3)",
     "derivative of (x - 1)(2x + 3) / ((sqrt x + 2)(4x - 5))",
     "deferintiate 2xy by y",
     "derivative of function x^4 sin x",
