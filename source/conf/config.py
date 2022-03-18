@@ -175,7 +175,7 @@ class Config:
         except IOError as err:
             raise ConfigException(f"Cannot open file '{self._file_path}'") from err
         except ValidationError as err:
-            raise ConfigException(f"File default_config.json does not match default_json_schema") from err
+            raise ConfigException("File default_config.json does not match default_json_schema") from err
 
     @property
     def properties(self) -> dict:
