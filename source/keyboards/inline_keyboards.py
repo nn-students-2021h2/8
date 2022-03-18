@@ -8,10 +8,12 @@ import source.math.help_functions as hlp
 async def chat_help_markup() -> InlineKeyboardMarkup:
     """Chat help keyboard"""
     reply_markup = InlineKeyboardMarkup()
-    reply_markup.add(InlineKeyboardButton(_("Graph guide"), callback_data='graph_guide'))
-    reply_markup.add(InlineKeyboardButton(_("Graph examples"), callback_data='graph_examples'))
-    reply_markup.add(InlineKeyboardButton(_("Analysis guide"), callback_data='analysis_guide'))
-    reply_markup.add(InlineKeyboardButton(_("Analysis examples"), callback_data='analysis_examples'))
+    reply_markup.add(InlineKeyboardButton(_("Graph guide"), callback_data='graph_guide'),
+                     InlineKeyboardButton(_("Analysis guide"), callback_data='analysis_guide'))
+    reply_markup.add(InlineKeyboardButton(_("Graph examples"), callback_data='graph_examples'),
+                     InlineKeyboardButton(_("Analysis examples"), callback_data='analysis_examples'))
+    reply_markup.add(InlineKeyboardButton("Github",
+                                          url='https://github.com/nn-students-2021h2/Function_explorer_bot_8'))
     return reply_markup
 
 

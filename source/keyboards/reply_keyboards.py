@@ -28,8 +28,8 @@ async def go_settings_markup(user_settings) -> ReplyKeyboardMarkup:
 async def go_graph_markup() -> ReplyKeyboardMarkup:
     """Go graph keyboard"""
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    reply_markup.add(_("Main menu"))
     reply_markup.add(_("Examples"))
+    reply_markup.add(_("Main menu"))
     return reply_markup
 
 

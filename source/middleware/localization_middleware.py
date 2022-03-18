@@ -15,7 +15,7 @@ async def get_language(user: types.User, mongo):
     :return: language code (e.g. "en", "ru")
     """
     try:
-        return await mongo.user_language(user)
+        return await mongo.user_language(user.id) or user.language_code
     except Exception as exc:
         mongo.logger.warning(exc)
         return "en"
