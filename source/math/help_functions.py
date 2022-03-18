@@ -4,7 +4,6 @@ from pathlib import Path
 from random import shuffle
 
 from source.extras.translation import _
-import json
 from jsonschema import validate, ValidationError
 
 examples_schema = {
