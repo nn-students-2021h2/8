@@ -1,6 +1,7 @@
 """Module with functions for help"""
-from random import shuffle
+import json
 from pathlib import Path
+from random import shuffle
 
 from source.extras.translation import _
 import json
@@ -46,18 +47,8 @@ def graph_examples() -> list:
     return res
 
 
-def graph_guide() -> str:
-    """Return graph guide"""
-    return _("Graph guide")
-
-
 def analysis_examples() -> list:
     """Return 5 examples for analysis"""
     shuffle(examples['analysis'])
     res = examples['analysis'][0:5]
     return res
-
-
-def analysis_guide() -> str:
-    """Return analysis guide"""
-    return _("Analysis guide")
