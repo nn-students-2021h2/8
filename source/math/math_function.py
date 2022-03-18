@@ -73,6 +73,8 @@ class MathFunction:
         Fix bug fix infinite loop when Sympy calculates stationary points of aperiodic function.
         Return false if function has more than CRIT_POINTS_LIMIT stationary points, true otherwise
         """
+        CRIT_POINTS_LIMIT = 100
+
         period = sy.periodicity(function, symbol)
         if period == sy.S.Zero:
             # the expression is constant wrt symbol
@@ -110,7 +112,7 @@ class MathFunction:
                 count = 0
                 for _ in critical_points:
                     count += 1
-                    if count > 100:
+                    if count > CRIT_POINTS_LIMIT:
                         return False
         return True
 
