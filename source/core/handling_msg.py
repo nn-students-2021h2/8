@@ -243,7 +243,7 @@ class Handler:
         else:
             expr = message.text.lower()
         chat_id = message.chat.id
-        user_language = await get_language(message, Handler.mongo)
+        user_language = await get_language(message.from_user, Handler.mongo)
 
         Handler.logger.info("User [chat_id=%s] requested to draw a graph. User's input: `%s`", chat_id, expr)
 
@@ -280,7 +280,7 @@ class Handler:
         else:
             expr = message.text.lower()
         chat_id = message.chat.id
-        user_language = await get_language(message, Handler.mongo)
+        user_language = await get_language(message.from_user, Handler.mongo)
 
         Handler.logger.info("User [chat_id=%s] requested an analysis. User's input: `%s`", chat_id, expr)
 
