@@ -97,7 +97,6 @@ class Handler:
             else:
                 await Handler.send_analyse(message)
 
-        @dispatcher.message_handler(commands=["meme"])
         @rate_limit(limit=2)
         async def meme(message: types.Message):
             """Call meme-api and send random meme from Reddit to user"""
