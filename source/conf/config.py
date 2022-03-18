@@ -6,6 +6,101 @@ import json
 import pathlib
 import sys
 from pathlib import Path
+from jsonschema import validate, ValidationError
+
+default_config_schema = {
+    "type": "object",
+    "properties": {
+        "APP": {
+            "type": "object",
+            "properties": {
+                "TOKEN": {
+                    "type": "string"
+                },
+                "USE_LATEX": {
+                    "type": "boolean"
+                }
+            },
+            "required": ["TOKEN", "USE_LATEX"]
+        },
+        "PLOT_APPEARANCE": {
+            "type": "object",
+            "properties": {
+                "STYLE": {
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "type": "string"
+                        },
+                        "implicit_function_points": {
+                            "type": "number"
+                        }
+                    },
+                    "required": ["style", "implicit_function_points"]
+                },
+                "RC_PARAMS": {
+                    "type": "object",
+                    "properties": {
+                        "font.family": {
+                            "type": "string"
+                        },
+                        "legend.loc": {
+                            "type": "string"
+                        },
+                        "legend.frameon": {
+                            "type": "boolean"
+                        },
+                        "legend.framealpha": {
+                            "type": "number"
+                        },
+                        "xaxis.labellocation": {
+                            "type": "string"
+                        },
+                        "yaxis.labellocation": {
+                            "type": "string"
+                        },
+                        "axes.edgecolor": {
+                            "type": "string"
+                        },
+                        "axes.titleweight": {
+                            "type": "string"
+                        },
+                        "axes.titlepad": {
+                            "type": "number"
+                        },
+                        "axes.labelweight": {
+                            "type": "string"
+                        },
+                        "axes.labelpad": {
+                            "type": "number"
+                        },
+                        "figure.constrained_layout.use": {
+                            "type": "boolean"
+                        }
+                    },
+                    "minProperties": 12
+                },
+            }
+        },
+        "DB_PARAMS": {
+            "type": "object",
+            "properties": {
+                "database_name": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string",
+                    "format": "ipv4"
+                },
+                "port": {
+                    "type": "number"
+                }
+            },
+            "required": ["database_name", "ip", "port"]
+        }
+    },
+    "required": ["APP", "PLOT_APPEARANCE", "DB_PARAMS"]
+}
 
 if sys.hexversion < 0x30A0000:
     raise Exception("Python version must be 3.10 or later")
@@ -74,9 +169,13 @@ class Config:
     def _load_from_json(self) -> dict:
         try:
             with open(self._file_path, encoding="utf-8") as cfg_file:
-                return json.load(cfg_file)
+                js = json.load(cfg_file)
+                validate(js, default_config_schema)
+                return js
         except IOError as err:
             raise ConfigException(f"Cannot open file '{self._file_path}'") from err
+        except ValidationError as err:
+            raise ConfigException(f"File default_config.json does not match default_json_schema") from err
 
     @property
     def properties(self) -> dict:
