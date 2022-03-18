@@ -13,7 +13,7 @@
 
 [![python](https://img.shields.io/badge/python-3.10%2B-green)]()
 [![pylint](https://img.shields.io/badge/linter-pylint-blueviolet)]()
-[![Telegram](https://img.shields.io/badge/Telegram-@Function__explorer__bot-red)]()
+[![Telegram](https://img.shields.io/badge/Telegram-@FunctionExplorerBot-red)]()
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-yellow)]()
 [![Docker](https://img.shields.io/badge/Docker-exist-blue)]()
 
@@ -45,9 +45,9 @@ graphs.
 
 ### If you are a normal user...
 
-Find our bot named "_function explorer_" in Telegram:
+Find our bot named "_Function Explorer_" in Telegram:
 
-![none](https://i.ibb.co/yqPb8Xn/function-explorer.png)
+![none](https://i.ibb.co/C0SqP7B/function-explorer.png)
 
 Then start a conversation with the bot to check if it is activated (`/start` command).
 
@@ -98,9 +98,8 @@ If you want to deploy the bot:
 
 _The commands below are an alternative way to the handy buttons, so you have not to use or know them_
 
-- `/start` to tell the bot about yourself and update information in database (use if the bot cannot reply to your
-  requests)
-- `/help` to... get a help?
+- `/start` to back to the main menu
+- `/help` to... get a help? Here you can check examples of plotting and analysing and guides
 - `/graph arg1, arg2, ..., option1, option2, ...` draws a graph of given functions with specified options
   (range / domain / aspect ratio). Options are... optional. See `/resources/graph_patterns.md` to see all (or almost)
   patterns. Functions should be in math format, e.g. _"x = 1",
@@ -131,6 +130,7 @@ _The commands below are an alternative way to the handy buttons, so you have not
     - Maximum value
     - Minimum value
     - Stationary points
+    - Monotonicity
 
 <a id="what-is-planned-to-be-implemented"></a>
 
