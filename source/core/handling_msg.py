@@ -103,7 +103,7 @@ class Handler:
             await Handler.send_meme(message)
 
         @dispatcher.message_handler(content_types=["text"])
-        @rate_limit(limit=0.5)
+        @rate_limit(limit=2)
         async def default_handler(message: types.Message):
             """Checks user status and direct his message to suitable function."""
             try:
@@ -168,7 +168,8 @@ class Handler:
                 else:
                     await Handler.send_graph(message)
                     await Handler.bot.send_message(message.chat.id,
-                                                   _("Enter a function you want to draw or go to the main menu"))
+                                                   _("Enter a function you want to draw or go to the main menu"),
+                                                   disable_notification=True)
             elif chat_status == Status.SETTINGS:
                 Handler.logger.debug(message.text)
                 try:
@@ -257,11 +258,13 @@ class Handler:
             image = await graph.draw(parser.tokens, user_language)
         except ParseError as err:
             await message.reply(str(err))
-            Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
+            Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`\nException message",
+                                chat_id, expr, err)
             return
         except DrawError as err:
             await message.reply(str(err))
-            Handler.logger.info("DrawError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
+            Handler.logger.info("DrawError exception raised on user's [chat_id=%s] input: `%s`\nException message",
+                                chat_id, expr, err)
             return
 
         output_message = _("Here a graph of requested functions")
@@ -328,18 +331,22 @@ class Handler:
             parser.clear_warnings()
         except ParseError as err:
             await message.reply(_(str(err)))
-            Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
+            Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`\nException message: %s",
+                                chat_id, expr, err)
         except MathError as err:
             await message.reply(_(str(err)))
-            Handler.logger.info("MathError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
-        except RecursionError:
+            Handler.logger.info("MathError exception raised on user's [chat_id=%s] input: `%s`\nException message: %s",
+                                chat_id, expr, err)
+        except RecursionError as err:
             await message.reply(_("Incorrect input. Please check your function."))
-            Handler.logger.warning("RecursionError exception raised on user's [chat_id=%s] input: `%s`", chat_id, expr)
-        except (ValueError, TypeError, NotImplementedError, AttributeError):
+            Handler.logger.warning(
+                "RecursionError exception raised on user's [chat_id=%s] input: `%s`\nException message: %s", chat_id,
+                expr, err)
+        except (ValueError, TypeError, NotImplementedError, AttributeError) as err:
             await message.reply(
                 _("Sorry, can't solve the problem or the input is invalid. Please check your function."))
             Handler.logger.warning("ValueError or NotImplementedError exception raised on "
-                                   "user's [chat_id=%s] input: `%s`", chat_id, expr)
+                                   "user's [chat_id=%s] input: `%s`\nException message: %s", chat_id, expr, err)
 
     @staticmethod
     async def send_meme(message: types.Message):
