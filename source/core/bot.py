@@ -30,7 +30,7 @@ async def init_bot(dispatcher_, logger_, bot_):
     mongo_ = await init_db(logger, bot)
     await asyncio.sleep(5)
     # Set up translator
-    dispatcher_.middleware.setup(LanguageMiddleware("Bot", path=Path(__file__).parents[2] / "locales", mongo=mongo_))
+    dispatcher_.middleware.setup(LanguageMiddleware("bot", path=Path(__file__).parents[2] / "locales", mongo=mongo_))
 
     # Init handler
     Handler(bot_, mongo_, logger_, dispatcher_)
