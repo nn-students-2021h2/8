@@ -6,7 +6,6 @@ import logging
 from aiogram import types, Bot
 from motor.motor_asyncio import AsyncIOMotorClient
 
-
 from source.conf.config import Config
 from source.extras.status import Status
 from source.extras.translation import _, i18n
@@ -17,8 +16,8 @@ no_db_message = "There were problems, the functionality is limited.\nYou can onl
 
 
 class MongoDatabase:
-
     """Mongo database"""
+
     def __init__(self, logger_, bot_):
         self.conf = Config()
         self.logger: logging.Logger = logger_
