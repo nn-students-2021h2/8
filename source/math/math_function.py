@@ -177,7 +177,7 @@ class MathFunction:
         """
         solutions = set()
         partly_solved = self.simplified_expr.subs(zero_symbol, 0)
-        if target_symbol not in partly_solved.free_symbols:
+        if len(self.simplified_expr.free_symbols) == 1 and target_symbol not in partly_solved.free_symbols:
             solutions.add(partly_solved)
         else:
             solutions = sy.solveset(partly_solved, target_symbol)
