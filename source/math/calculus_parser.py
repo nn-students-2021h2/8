@@ -54,7 +54,7 @@ def _process_function(token: str, lang: str = "en", q: multiprocessing.Queue = N
                            "Please, check your math formula.", locale=lang).format(token.strip())))
         return
 
-    except SyntaxError as err:
+    except SyntaxError:
         q.put(ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
                            "such as placing '*' (multiplication) signs and parentheses.",
                            locale=lang).format(token.strip())))

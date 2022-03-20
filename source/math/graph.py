@@ -1,6 +1,7 @@
 """
 Graph class module
 """
+import multiprocessing
 from io import BytesIO
 
 import numpy as np
@@ -9,7 +10,6 @@ from matplotlib import pyplot as plt, style
 
 from source.conf.config import Config
 from source.extras.translation import _
-from source.extras.utilities import run_asynchronously
 from source.math.graph_parser import GraphParser
 
 
@@ -38,13 +38,13 @@ class Graph:
         for param, value in parameters["RC_PARAMS"].items():
             plt.rcParams[param] = value
 
-    @run_asynchronously
-    def draw(self, parser: GraphParser, lang: str = "en") -> BytesIO:
+    def draw(self, parser: GraphParser, lang: str = "en", q: multiprocessing.Queue = None) -> BytesIO:
         """
         Draw parsed functions and save plot as image
 
         Parameters
         ==========
+        :param q:
         :param lang:
         :param parser: parser that contain tokens;
         tokens: dict of parsed user input (see parse function in graph_parser.py to get more info)
@@ -79,7 +79,6 @@ class Graph:
         # Extract all explicit functions
         for func in tokens['explicit']:
             label = f'${sy.latex(func.simplified_expr)}$'
-            print(len(func))
             if len(func) >= func_len_limit:
                 parser.push_warning(_("NOTE: some of the functions are extremely long! Graph may be incorrect.",
                                       locale=lang))
@@ -96,8 +95,8 @@ class Graph:
         backend = self.plot.backend(self.plot)
         try:
             backend.process_series()
-        except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
+        except (ZeroDivisionError, OverflowError, TypeError):
+            q.put(DrawError(_("Unexpected error, check your expression.", locale=lang)))
 
         # Extract all implicit functions
         for func in tokens['implicit']:
@@ -131,8 +130,8 @@ class Graph:
         backend = self.plot.backend(self.plot)
         try:
             backend.process_series()
-        except (ZeroDivisionError, OverflowError, TypeError) as err:
-            raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
+        except (ZeroDivisionError, OverflowError, TypeError):
+            q.put(DrawError(_("Unexpected error, check your expression.", locale=lang)))
 
         # Check if some functions were shrunk
         if long_func:
@@ -166,4 +165,4 @@ class Graph:
         buf.seek(0)
         plt.close("all")
 
-        return buf
+        q.put(buf)

@@ -246,11 +246,11 @@ class GraphParser(Parser):
 
             # Change variables
             function = self._process_variables(function, lang)
-        except (SympifyError, TypeError, ValueError, AttributeError, TokenError) as err:
+        except (SympifyError, TypeError, ValueError, AttributeError, TokenError):
             q.put(ParseError(_("Mistake in expression.\nYour input: {}\n"
                                "Please, check your math formula.", locale=lang).format(token.strip())))
             return
-        except SyntaxError as err:
+        except SyntaxError:
             q.put(ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
                                "such as placing '*' (multiplication) signs and parentheses.",
                                locale=lang).format(token.strip())))
@@ -282,7 +282,7 @@ class GraphParser(Parser):
             q = multiprocessing.Queue()
             p = multiprocessing.Process(target=self._process_function, args=(token, lang, q))
             p.start()
-            p.join(5)
+            p.join(10)
             if p.is_alive():
                 p.terminate()
                 return None
