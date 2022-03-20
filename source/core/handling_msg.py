@@ -253,7 +253,9 @@ class Handler:
         parser = GraphParser()
 
         try:
-            await parser.parse(expr, user_language)
+            if not await parser.parse(expr, user_language):
+                await Handler.bot.send_message(chat_id, "Timeout!")
+                return
             graph = Graph()
             image = await graph.draw(parser.tokens, user_language)
         except ParseError as err:

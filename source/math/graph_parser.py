@@ -1,6 +1,7 @@
 """
 Parser for graph requests
 """
+import multiprocessing
 import re
 from tokenize import TokenError
 
@@ -185,7 +186,7 @@ class GraphParser(Parser):
 
         return function
 
-    def _process_function(self, token: str, lang: str = "en") -> sy.Function:
+    def _process_function(self, token: str, lang: str = "en", q=None) -> None:
         """
         Converting a string into a sympy function
         :param lang:
@@ -249,8 +250,7 @@ class GraphParser(Parser):
             raise ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
                                "such as placing '*' (multiplication) signs and parentheses.",
                                locale=lang).format(token.strip())) from err
-
-        return function
+        q.put(function)
 
     @run_asynchronously
     def parse(self, query: str, lang: str = "en"):
@@ -275,7 +275,14 @@ class GraphParser(Parser):
 
             # If it is a function
             try:
-                function = self._process_function(token, lang)
+                q = multiprocessing.Queue()
+                p = multiprocessing.Process(target=self._process_function, args=(token, lang, q))
+                p.start()
+                p.join(5)
+                if p.is_alive():
+                    p.terminate()
+                    return None
+                function = q.get()
             except ParseError as err:
                 # If we don't found a pattern, and it is not a function, then try to fix words
                 if self._find_pattern(pattern_dict, token, True, lang):
@@ -306,3 +313,5 @@ class GraphParser(Parser):
         if (functions_count := len(self.tokens["explicit"]) + len(self.tokens["implicit"])) > self.FUNCTIONS_LIMIT:
             raise ParseError(_("Too many functions requested ({}). "
                                "The limit is {} functions.", locale=lang).format(functions_count, self.FUNCTIONS_LIMIT))
+
+        return True
