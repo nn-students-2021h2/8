@@ -282,7 +282,7 @@ class GraphParser(Parser):
             q = multiprocessing.Queue()
             p = multiprocessing.Process(target=self._process_function, args=(token, lang, q))
             p.start()
-            p.join(10)
+            p.join(5)
             if p.is_alive():
                 p.terminate()
                 return None

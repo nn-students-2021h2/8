@@ -2,7 +2,6 @@
 In this module we process events related to bot (such as messages, requests)
 """
 import logging
-import multiprocessing
 from io import BytesIO
 
 import aiohttp
@@ -16,7 +15,7 @@ from source.conf import Config
 from source.core.database import MongoDatabase, no_db_message
 from source.extras.status import Status
 from source.extras.translation import _, graph_guide_texts, analysis_guide_texts
-from source.extras.utilities import run_TeX, resize_image, run_asynchronously
+from source.extras.utilities import run_TeX, resize_image
 from source.keyboards.inline_keyboards import chat_help_markup, reply_markup_graph, reply_markup_analysis
 from source.math.calculus_parser import CalculusParser
 from source.math.graph import Graph, DrawError
@@ -239,20 +238,6 @@ class Handler:
             await Handler.send_analyse(message)
 
     @staticmethod
-    @run_asynchronously
-    def _run_draw_in_process(parser: GraphParser, lang: str = "en"):
-        q = multiprocessing.Queue()
-        graph = Graph()
-        p = multiprocessing.Process(target=graph.draw, args=(parser, lang, q))
-        p.start()
-        p.join(3)
-        if p.is_alive():
-            p.terminate()
-            q.put(ParseError(_("Function execution time limit exceeded! "
-                               "Sorry, it is a very hard problem to solve.", locale=lang)))
-        return q
-
-    @staticmethod
     async def send_graph(message: types.Message):
         """User requested to draw a plot"""
         if message.get_command():
@@ -272,12 +257,8 @@ class Handler:
                                                           "Sorry, it is a very hard problem to solve."))
                 return
 
-            q = await Handler._run_draw_in_process(parser, user_language)
-            if q is None:
-                return
-            image = q.get()
-            if isinstance(image, Exception):
-                raise image
+            graph = Graph()
+            image = await graph.draw(parser, user_language)
 
         except ParseError as err:
             await message.reply(str(err))
