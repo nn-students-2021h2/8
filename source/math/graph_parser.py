@@ -204,10 +204,11 @@ class GraphParser(Parser):
                 # If there is only 'y' variable, then we can't understand what we should draw, because it is impossible
                 # to change axes in plot in our case
                 if function.free_symbols == {sy.Symbol('y')}:
-                    raise ParseError(_("Incorrect expression: {}\n"
+                    q.put(ParseError(_("Incorrect expression: {}\n"
                                        "There is only 'y' variable. It's f(y) or f(x) = 0?\n"
                                        "Please, use 'x' instead of single 'y' variable for f(x) plot.",
-                                       locale=lang).format(token))
+                                       locale=lang).format(token)))
+                    return
             elif parts_count == 2:
                 # If parsed result always true or false (e.g. it is not a function at all)
                 result = sy.Eq(sy.parse_expr(expr_parts[0], transformations=rules),
@@ -216,11 +217,12 @@ class GraphParser(Parser):
                 # Check if number of variables is less than 2
                 if len(result.free_symbols) > 2:
                     variables = ', '.join(str(var) for var in result.free_symbols)
-                    raise ParseError(_("Incorrect expression: {}\nThere are {} variables: {}\n"
+                    q.put(ParseError(_("Incorrect expression: {}\nThere are {} variables: {}\n"
                                        "You can use a maximum of 2 variables.",
                                        locale=lang).format(token,
                                                            len(result.free_symbols),
-                                                           variables))
+                                                           variables)))
+                    return
 
                 # If it is expressions like 1 = 1 or 1 = 0
                 if result is sy.true or result is sy.false:
@@ -237,19 +239,22 @@ class GraphParser(Parser):
                     function = sy.Eq(sy.parse_expr(modified_expr, transformations=rules), 0)
 
             else:
-                raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
+                q.put(ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
                                    "Your input: {}\n"
-                                   "Please, check your math formula", locale=lang).format(token.strip()))
+                                   "Please, check your math formula", locale=lang).format(token.strip())))
+                return
 
             # Change variables
             function = self._process_variables(function, lang)
         except (SympifyError, TypeError, ValueError, AttributeError, TokenError) as err:
-            raise ParseError(_("Mistake in expression.\nYour input: {}\n"
-                               "Please, check your math formula.", locale=lang).format(token.strip())) from err
+            q.put(ParseError(_("Mistake in expression.\nYour input: {}\n"
+                               "Please, check your math formula.", locale=lang).format(token.strip())))
+            return
         except SyntaxError as err:
-            raise ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
+            q.put(ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
                                "such as placing '*' (multiplication) signs and parentheses.",
-                               locale=lang).format(token.strip())) from err
+                               locale=lang).format(token.strip())))
+            return
         q.put(function)
 
     @run_asynchronously
@@ -274,21 +279,20 @@ class GraphParser(Parser):
                 continue
 
             # If it is a function
-            try:
-                q = multiprocessing.Queue()
-                p = multiprocessing.Process(target=self._process_function, args=(token, lang, q))
-                p.start()
-                p.join(5)
-                if p.is_alive():
-                    p.terminate()
-                    return None
-                function = q.get()
-            except ParseError as err:
+            q = multiprocessing.Queue()
+            p = multiprocessing.Process(target=self._process_function, args=(token, lang, q))
+            p.start()
+            p.join(5)
+            if p.is_alive():
+                p.terminate()
+                return None
+            function = q.get()
+            if isinstance(function, Exception):
                 # If we don't found a pattern, and it is not a function, then try to fix words
                 if self._find_pattern(pattern_dict, token, True, lang):
                     continue
 
-                raise err
+                raise function
 
             # Next complex check finds expressions like "x = 1".
             # They should be implicit because of sympy specifics

@@ -1,8 +1,9 @@
 """Store common and general functions to use in any place of code"""
 import asyncio
 import functools
-import sympy as sy
 from io import BytesIO
+
+import sympy as sy
 from PIL import Image, ImageOps
 
 # A number of dots per inch for TeX pictures

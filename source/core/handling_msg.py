@@ -5,10 +5,9 @@ import logging
 from io import BytesIO
 
 import aiohttp
-import telegram
 from aiogram import types, Bot
 from aiogram.types import ParseMode
-from aiogram.utils.exceptions import BadRequest, TelegramAPIError
+from aiogram.utils.exceptions import BadRequest, TelegramAPIError, PhotoDimensions
 from pymongo import errors
 
 import source.math.help_functions as hlp
@@ -254,18 +253,19 @@ class Handler:
 
         try:
             if not await parser.parse(expr, user_language):
-                await Handler.bot.send_message(chat_id, "Timeout!")
+                await Handler.bot.send_message(chat_id, _("Function execution time limit exceeded! "
+                                                          "Sorry, it is a very hard problem to solve."))
                 return
             graph = Graph()
-            image = await graph.draw(parser.tokens, user_language)
+            image = await graph.draw(parser, user_language)
         except ParseError as err:
             await message.reply(str(err))
-            Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`\nException message",
+            Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`\nException message: %s",
                                 chat_id, expr, err)
             return
         except DrawError as err:
             await message.reply(str(err))
-            Handler.logger.info("DrawError exception raised on user's [chat_id=%s] input: `%s`\nException message",
+            Handler.logger.info("DrawError exception raised on user's [chat_id=%s] input: `%s`\nException message: %s",
                                 chat_id, expr, err)
             return
 
@@ -318,7 +318,7 @@ class Handler:
                             photo=resized_image,
                             caption="\n".join(parser.warnings)
                         )
-                    except telegram.error.BadRequest:
+                    except (BadRequest, PhotoDimensions):
                         parser.push_warning(_("Photo size is too large, therefore I send you a file."))
                         await Handler.bot.send_document(
                             chat_id=chat_id,
@@ -331,6 +331,10 @@ class Handler:
                     text=str(result)
                 )
             parser.clear_warnings()
+        except TimeoutError as err:
+            await message.reply(str(err))
+            Handler.logger.info("TimeoutError exception raised on user's [chat_id=%s] input: `%s`\nException message: "
+                                "%s", chat_id, expr, err)
         except ParseError as err:
             await message.reply(_(str(err)))
             Handler.logger.info("ParseError exception raised on user's [chat_id=%s] input: `%s`\nException message: %s",

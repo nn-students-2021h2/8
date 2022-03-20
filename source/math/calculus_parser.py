@@ -1,6 +1,7 @@
 """
 Parser for function analysis requests
 """
+import multiprocessing
 import re
 from tokenize import TokenError
 
@@ -15,7 +16,7 @@ from source.math.math_function import MathFunction, replace_incorrect_functions
 from source.math.parser import Parser, ParseError
 
 
-def _process_function(token: str, lang: str = "en") -> sy.Function:
+def _process_function(token: str, lang: str = "en", q: multiprocessing.Queue = None) -> None:
     """
     Converting a string into a sympy function
     :param lang:
@@ -42,21 +43,24 @@ def _process_function(token: str, lang: str = "en") -> sy.Function:
 
             function = sy.parse_expr(modified_expr, transformations=rules)
         else:
-            raise ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
+            q.put(ParseError(_("Mistake in implicit function: found more than 1 equal sign.\n"
                                "Your input: {}\n"
-                               "Please, check your math formula.", locale=lang).format(token.strip()))
+                               "Please, check your math formula.", locale=lang).format(token.strip())))
+            return
 
 
-    except (SympifyError, TypeError, ValueError, AttributeError, TokenError) as err:
-        raise ParseError(_("Mistake in expression.\nYour input: {}\n"
-                           "Please, check your math formula.", locale=lang).format(token.strip())) from err
+    except (SympifyError, TypeError, ValueError, AttributeError, TokenError):
+        q.put(ParseError(_("Mistake in expression.\nYour input: {}\n"
+                           "Please, check your math formula.", locale=lang).format(token.strip())))
+        return
 
     except SyntaxError as err:
-        raise ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
+        q.put(ParseError(_("Couldn't make out the expression.\nYour input: {}\nTry using a stricter syntax, "
                            "such as placing '*' (multiplication) signs and parentheses.",
-                           locale=lang).format(token.strip())) from err
+                           locale=lang).format(token.strip())))
+        return
 
-    return function
+    q.put(function)
 
 
 class CalculusParser(Parser):
@@ -77,7 +81,7 @@ class CalculusParser(Parser):
         self.function = function
         self.additional_params = additional_params
 
-    def _find_pattern(self, query: str, pattern_dict: dict, try_predict: bool, lang: str = "en") -> bool:
+    def _find_pattern(self, query: str, pattern_dict: dict, try_predict: bool, lang: str = "en") -> (bool | None):
         """
         Tries to find pattern matching the given query
         :param lang:
@@ -105,7 +109,18 @@ class CalculusParser(Parser):
                     expression = match.group(pattern_params[0])
 
                     # Extract the function from query and construct MathFunction
-                    function = _process_function(expression, lang)
+                    q = multiprocessing.Queue()
+                    p = multiprocessing.Process(target=_process_function, args=(expression, lang, q))
+                    p.start()
+                    p.join(5)
+                    if p.is_alive():
+                        p.terminate()
+                        return None
+                    function = q.get()
+                    if isinstance(function, Exception):
+                        raise function
+
+                    # function = _process_function(expression, lang)
                     m_func = MathFunction(expression, function)
                     symbols = sorted(list(m_func.simplified_expr.free_symbols), key=lambda x: str(x))
 
@@ -378,7 +393,12 @@ class CalculusParser(Parser):
 
         # Check if input match any pattern
         try:
-            if self._find_pattern(query, pattern_dict, False, lang):
+            pattern_found = self._find_pattern(query, pattern_dict, False, lang)
+            if pattern_found is None:
+                raise TimeoutError(_("Function execution time limit exceeded! "
+                                     "Sorry, it is a very hard problem to solve.",
+                                     locale=lang))
+            if pattern_found:
                 return True
         except ParseError as err:
             # Maybe we should correct some words here. If nothing was changed, then we throw previous exception

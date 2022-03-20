@@ -39,14 +39,15 @@ class Graph:
             plt.rcParams[param] = value
 
     @run_asynchronously
-    def draw(self, tokens: dict, lang: str = "en") -> BytesIO:
+    def draw(self, parser: GraphParser, lang: str = "en") -> BytesIO:
         """
         Draw parsed functions and save plot as image
 
         Parameters
         ==========
         :param lang:
-        :param tokens: dict of parsed user input (see parse function in graph_parser.py to get more info)
+        :param parser: parser that contain tokens;
+        tokens: dict of parsed user input (see parse function in graph_parser.py to get more info)
             Keys:
             - 'aspect ratio' : the ratio of x to y
             - 'domain' : list of left and right x-limit
@@ -55,6 +56,9 @@ class Graph:
             - 'implicit' : implicit functions (it does not have to be truth function),
                for instance, x^2 + y^2 = 4;
         """
+        legend_len_limit = 60
+        func_len_limit = 300
+        tokens = parser.tokens
 
         # We have to set domain and/or range due to functions are calculating in given intervals and if we don't
         # explicitly specify it, then later functions will be displayed cropped
@@ -69,12 +73,24 @@ class Graph:
 
         x, y = sy.symbols("x y")
 
+        # Variable that mark the graph having long functions
+        long_func = False
+
         # Extract all explicit functions
         for func in tokens['explicit']:
+            label = f'${sy.latex(func.simplified_expr)}$'
+            print(len(func))
+            if len(func) >= func_len_limit:
+                parser.push_warning(_("NOTE: some of the functions are extremely long! Graph may be incorrect.",
+                                      locale=lang))
+            if len(func) > legend_len_limit:
+                label = str(func.simplified_expr)[:legend_len_limit] + "..."
+                long_func = True
+
             self.plot.extend(sy.plot(func.simplified_expr,
                                      (x, domain[0], domain[1]),
                                      show=False,
-                                     label=f'${sy.latex(func.simplified_expr)}$'))
+                                     label=label))
 
         # Update plot parameters and y-limit for implicit functions
         backend = self.plot.backend(self.plot)
@@ -84,8 +100,11 @@ class Graph:
             raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
 
         # Extract all implicit functions
-        for impl_func in tokens['implicit']:
-            self.plot.extend(sy.plot_implicit(impl_func.simplified_expr,
+        for func in tokens['implicit']:
+            if len(func) >= func_len_limit:
+                parser.push_warning(_("NOTE: some of the functions are extremely long! Graph may be incorrect.",
+                                      locale=lang))
+            self.plot.extend(sy.plot_implicit(func.simplified_expr,
                                               (x, domain[0], domain[1]),
                                               (y, rng[0], rng[1]),
                                               adaptive=False,
@@ -94,12 +113,16 @@ class Graph:
                                               line_color=list(np.random.rand(3))))
 
             # Set label 'x = number' if it is expression like 'x = 1'
-            label = impl_func.simplified_expr
-            if GraphParser.is_x_equal_num_expression(impl_func.expression):
-                label = sy.Eq(impl_func.symbols[0], sy.solve(impl_func.simplified_expr)[0])
+            label = func.simplified_expr
+            if GraphParser.is_x_equal_num_expression(func.expression):
+                label = sy.Eq(func.symbols[0], sy.solve(func.simplified_expr)[0])
 
+            label = f'${sy.latex(func.simplified_expr)}$'
+            if len(func) > legend_len_limit:
+                label = str(func.simplified_expr)[:legend_len_limit] + "..."
+                long_func = True
             self.plot.extend(sy.plot(0,
-                                     label=f'${sy.latex(label)}$',
+                                     label=label,
                                      line_color='none',
                                      show=False))
 
@@ -110,6 +133,10 @@ class Graph:
             backend.process_series()
         except (ZeroDivisionError, OverflowError, TypeError) as err:
             raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
+
+        # Check if some functions were shrunk
+        if long_func:
+            parser.push_warning(_("Some functions have been reduced because they are too long.", locale=lang))
 
         # Set function range
         if len(rng := tokens["range"]) != 0:

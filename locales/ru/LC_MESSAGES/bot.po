@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-18 00:04+0300\n"
+"POT-Creation-Date: 2022-03-20 21:31+0300\n"
 "PO-Revision-Date: 2022-03-09 01:10+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -20,11 +20,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: source/core/database.py:89
+#: source/core/database.py:88
 msgid "Choose an action"
 msgstr "Выберите действие"
 
-#: source/core/database.py:103
+#: source/core/database.py:102
 msgid ""
 "Your settings\n"
 "Language: {}\n"
@@ -34,151 +34,159 @@ msgstr ""
 "Язык: {}\n"
 "Кнопка мема: {}"
 
-#: source/core/database.py:104
+#: source/core/database.py:103
 msgid "on"
 msgstr "активирована"
 
-#: source/core/database.py:104
+#: source/core/database.py:103
 msgid "off"
 msgstr "не активирована"
 
-#: source/core/database.py:106
+#: source/core/database.py:105
 msgid "Select the setting you want to apply."
 msgstr "Выберите настройку, которую вы хотите применить"
 
-#: source/core/database.py:113 source/core/handling_msg.py:173
+#: source/core/database.py:112 source/core/handling_msg.py:170
 msgid "Enter a function you want to draw or go to the main menu"
 msgstr ""
 "Введите функцию, которую вы хотите нарисовать, или вернитесь в главное "
 "меню"
 
-#: source/core/database.py:120
+#: source/core/database.py:119
 msgid "Choose an option or enter your request or go to the main menu"
 msgstr "Выберите опцию, введите ваш запрос или вернитесь в главное меню"
 
-#: source/core/database.py:127
+#: source/core/database.py:126
 msgid "Choose option to analyse or go back"
 msgstr "Выберите опцию или вернитесь в меню"
 
-#: source/core/database.py:134
+#: source/core/database.py:133
 msgid "Enter a function to analyse or go back"
 msgstr "Введите функцию, которую хотите проанализировать, или вернитесь в меню"
 
-#: source/core/handling_msg.py:73
+#: source/core/handling_msg.py:71
 msgid "Hello, {} {}!"
 msgstr "Здравствуйте, {} {}!"
 
-#: source/core/handling_msg.py:121 source/keyboards/reply_keyboards.py:10
+#: source/core/handling_msg.py:118 source/keyboards/reply_keyboards.py:10
 msgid "Draw graph"
 msgstr "Нарисовать график"
 
-#: source/core/handling_msg.py:123 source/keyboards/reply_keyboards.py:11
+#: source/core/handling_msg.py:120 source/keyboards/reply_keyboards.py:11
 msgid "Analyse function"
 msgstr "Проанализировать функцию"
 
-#: source/core/handling_msg.py:125 source/keyboards/reply_keyboards.py:13
+#: source/core/handling_msg.py:122 source/keyboards/reply_keyboards.py:13
 msgid "Get help"
 msgstr "Справка"
 
-#: source/core/handling_msg.py:127 source/keyboards/reply_keyboards.py:15
+#: source/core/handling_msg.py:124 source/keyboards/reply_keyboards.py:15
 msgid "Meme"
 msgstr "Мем"
 
-#: source/core/handling_msg.py:130 source/keyboards/reply_keyboards.py:12
+#: source/core/handling_msg.py:127 source/keyboards/reply_keyboards.py:12
 msgid "Settings"
 msgstr "Настройки"
 
-#: source/core/handling_msg.py:133 source/core/handling_msg.py:186
+#: source/core/handling_msg.py:130 source/core/handling_msg.py:184
 msgid "I didn't understand what you want"
 msgstr "Не понял, что вы хотите"
 
-#: source/core/handling_msg.py:135 source/core/handling_msg.py:147
-#: source/core/handling_msg.py:158 source/core/handling_msg.py:165
-#: source/core/handling_msg.py:177 source/keyboards/reply_keyboards.py:24
-#: source/keyboards/reply_keyboards.py:31
+#: source/core/handling_msg.py:132 source/core/handling_msg.py:144
+#: source/core/handling_msg.py:155 source/core/handling_msg.py:162
+#: source/core/handling_msg.py:175 source/keyboards/reply_keyboards.py:24
+#: source/keyboards/reply_keyboards.py:32
 #: source/keyboards/reply_keyboards.py:40
 #: source/keyboards/reply_keyboards.py:53
 #: source/keyboards/reply_keyboards.py:61
 msgid "Main menu"
 msgstr "Главное меню"
 
-#: source/core/handling_msg.py:137 source/keyboards/reply_keyboards.py:38
+#: source/core/handling_msg.py:134 source/keyboards/reply_keyboards.py:38
 msgid "Options"
 msgstr "Опции"
 
-#: source/core/handling_msg.py:139 source/core/handling_msg.py:167
-#: source/keyboards/reply_keyboards.py:32
+#: source/core/handling_msg.py:136 source/core/handling_msg.py:164
+#: source/keyboards/reply_keyboards.py:31
 #: source/keyboards/reply_keyboards.py:39
 msgid "Examples"
 msgstr "Примеры"
 
-#: source/core/handling_msg.py:140
+#: source/core/handling_msg.py:137
 msgid "Choose analysis example"
 msgstr "Выберите пример анализа"
 
-#: source/core/handling_msg.py:145 source/core/handling_msg.py:156
+#: source/core/handling_msg.py:142 source/core/handling_msg.py:153
 #: source/keyboards/reply_keyboards.py:53
 #: source/keyboards/reply_keyboards.py:60
 msgid "Back"
 msgstr "Назад"
 
-#: source/core/handling_msg.py:163
+#: source/core/handling_msg.py:160
 msgid "Enter a function to explore or go back"
 msgstr "Введите функцию, которую хотите проанализировать, или вернитесь в меню"
 
-#: source/core/handling_msg.py:168
+#: source/core/handling_msg.py:165
 msgid "Choose graph example"
 msgstr "Выберите пример графика"
 
-#: source/core/handling_msg.py:180
+#: source/core/handling_msg.py:178
 msgid "On meme button"
 msgstr "Активировать кнопку мема"
 
-#: source/core/handling_msg.py:180
+#: source/core/handling_msg.py:178
 msgid "Off meme button"
 msgstr "Деактивировать кнопку мема"
 
-#: source/core/handling_msg.py:182
+#: source/core/handling_msg.py:180
 msgid "Set en language"
 msgstr "Установить en язык"
 
-#: source/core/handling_msg.py:182
+#: source/core/handling_msg.py:180
 msgid "Set ru language"
 msgstr "Установить ru язык"
 
-#: source/core/handling_msg.py:190
+#: source/core/handling_msg.py:188
 msgid "Settings saved"
 msgstr "Настройки сохранены"
 
-#: source/core/handling_msg.py:200
+#: source/core/handling_msg.py:198
 msgid "Choose graph examples"
 msgstr "Выберите пример графика"
 
-#: source/core/handling_msg.py:206
+#: source/core/handling_msg.py:204
 msgid "Choose analysis examples"
 msgstr "Выберите пример анализа"
 
-#: source/core/handling_msg.py:224 source/core/handling_msg.py:234
+#: source/core/handling_msg.py:222 source/core/handling_msg.py:232
 msgid "Task in work..."
 msgstr "Решаю задачу..."
 
-#: source/core/handling_msg.py:269
+#: source/core/handling_msg.py:256 source/math/calculus_parser.py:395
+msgid ""
+"Function execution time limit exceeded! Sorry, it is a very hard problem "
+"to solve."
+msgstr ""
+"Превышен лимит времени выполнения функции! Извините, это очень трудно "
+"решаемая задача."
+
+#: source/core/handling_msg.py:272
 msgid "Here a graph of requested functions"
 msgstr "Вот ваш график"
 
-#: source/core/handling_msg.py:298
+#: source/core/handling_msg.py:301
 msgid "Couldn't find a suitable template. Check the input."
 msgstr "Не удалось найти подходящий шаблон. Проверьте входные данные."
 
-#: source/core/handling_msg.py:319
+#: source/core/handling_msg.py:322
 msgid "Photo size is too large, therefore I send you a file."
 msgstr "Размер фотографии слишком большой, поэтому я отправлю ответ в виде файла."
 
-#: source/core/handling_msg.py:338
+#: source/core/handling_msg.py:347
 msgid "Incorrect input. Please check your function."
 msgstr "Некорректный ввод. Пожалуйста, проверьте вашу функцию."
 
-#: source/core/handling_msg.py:342
+#: source/core/handling_msg.py:353
 msgid ""
 "Sorry, can't solve the problem or the input is invalid. Please check your"
 " function."
@@ -186,7 +194,7 @@ msgstr ""
 "Извините, не могу решить задачу, либо ввод некорректный. Пожалуйста, "
 "проверьте вашу функцию."
 
-#: source/core/handling_msg.py:377
+#: source/core/handling_msg.py:388
 msgid "Sorry, something went wrong. Please try again later."
 msgstr "Извините, что-то пошло не так. Пожалуйста, повторите попытку позже."
 
@@ -390,12 +398,12 @@ msgid "Graph guide"
 msgstr "Гайд по графикам"
 
 #: source/keyboards/inline_keyboards.py:12
-msgid "Graph examples"
-msgstr "Примеры графиков"
-
-#: source/keyboards/inline_keyboards.py:13 source/math/help_functions.py:32
 msgid "Analysis guide"
 msgstr "Гайд по анализу"
+
+#: source/keyboards/inline_keyboards.py:13
+msgid "Graph examples"
+msgstr "Примеры графиков"
 
 #: source/keyboards/inline_keyboards.py:14
 msgid "Analysis examples"
@@ -417,16 +425,16 @@ msgstr "Деактивировать"
 msgid "On"
 msgstr "Активировать"
 
-#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:160
-#: source/math/calculus_parser.py:164
+#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:172
+#: source/math/calculus_parser.py:176
 msgid "Derivative"
 msgstr "Производная"
 
-#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:169
+#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:181
 msgid "Domain"
 msgstr "Область определения"
 
-#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:174
+#: source/keyboards/reply_keyboards.py:47 source/math/calculus_parser.py:186
 msgid "Range"
 msgstr "Область значений"
 
@@ -434,11 +442,11 @@ msgstr "Область значений"
 msgid "Stationary points"
 msgstr "Стационарные точки"
 
-#: source/keyboards/reply_keyboards.py:48 source/math/calculus_parser.py:196
+#: source/keyboards/reply_keyboards.py:48 source/math/calculus_parser.py:208
 msgid "Periodicity"
 msgstr "Периодичность"
 
-#: source/keyboards/reply_keyboards.py:48 source/math/calculus_parser.py:255
+#: source/keyboards/reply_keyboards.py:48 source/math/calculus_parser.py:267
 msgid "Monotonicity"
 msgstr "Монотонность"
 
@@ -486,11 +494,11 @@ msgstr "Максимум"
 msgid "Minimum"
 msgstr "Минимум"
 
-#: source/keyboards/reply_keyboards.py:52 source/math/calculus_parser.py:179
+#: source/keyboards/reply_keyboards.py:52 source/math/calculus_parser.py:191
 msgid "Zeros"
 msgstr "Нули"
 
-#: source/math/calculus_parser.py:45
+#: source/math/calculus_parser.py:46
 msgid ""
 "Mistake in implicit function: found more than 1 equal sign.\n"
 "Your input: {}\n"
@@ -500,7 +508,7 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Пожалуйста, проверьте введённую функцию."
 
-#: source/math/calculus_parser.py:51 source/math/graph_parser.py:246
+#: source/math/calculus_parser.py:52 source/math/graph_parser.py:250
 msgid ""
 "Mistake in expression.\n"
 "Your input: {}\n"
@@ -510,7 +518,7 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Пожалуйста, проверьте введённую функцию."
 
-#: source/math/calculus_parser.py:55 source/math/graph_parser.py:249
+#: source/math/calculus_parser.py:56 source/math/graph_parser.py:254
 msgid ""
 "Couldn't make out the expression.\n"
 "Your input: {}\n"
@@ -522,7 +530,7 @@ msgstr ""
 "Попробуйте использовать более строгий синтаксис, например, расставлять "
 "знаки '*' (умножение) и круглые скобки."
 
-#: source/math/calculus_parser.py:115
+#: source/math/calculus_parser.py:127
 msgid ""
 "Variables can only contain latin letters\n"
 "Incorrect variable: '{}'"
@@ -530,105 +538,105 @@ msgstr ""
 "Переменные могут содержать только латинские буквы. Некорректная "
 "переменная: '{}'"
 
-#: source/math/calculus_parser.py:160 source/math/calculus_parser.py:164
-#: source/math/calculus_parser.py:169 source/math/calculus_parser.py:174
-#: source/math/calculus_parser.py:179 source/math/calculus_parser.py:196
-#: source/math/calculus_parser.py:211 source/math/calculus_parser.py:216
-#: source/math/calculus_parser.py:221 source/math/calculus_parser.py:226
-#: source/math/calculus_parser.py:228 source/math/calculus_parser.py:230
-#: source/math/calculus_parser.py:245 source/math/calculus_parser.py:250
-#: source/math/calculus_parser.py:255 source/math/calculus_parser.py:260
+#: source/math/calculus_parser.py:172 source/math/calculus_parser.py:176
+#: source/math/calculus_parser.py:181 source/math/calculus_parser.py:186
+#: source/math/calculus_parser.py:191 source/math/calculus_parser.py:208
+#: source/math/calculus_parser.py:223 source/math/calculus_parser.py:228
+#: source/math/calculus_parser.py:233 source/math/calculus_parser.py:238
+#: source/math/calculus_parser.py:240 source/math/calculus_parser.py:242
+#: source/math/calculus_parser.py:257 source/math/calculus_parser.py:262
+#: source/math/calculus_parser.py:267 source/math/calculus_parser.py:272
 msgid "of"
 msgstr "функции"
 
-#: source/math/calculus_parser.py:160
+#: source/math/calculus_parser.py:172
 msgid "by"
 msgstr "по"
 
-#: source/math/calculus_parser.py:184
+#: source/math/calculus_parser.py:196
 msgid "For"
 msgstr "Для"
 
-#: source/math/calculus_parser.py:184
+#: source/math/calculus_parser.py:196
 msgid "function"
 msgstr "функции"
 
-#: source/math/calculus_parser.py:186 source/math/calculus_parser.py:190
+#: source/math/calculus_parser.py:198 source/math/calculus_parser.py:202
 msgid "Intersection"
 msgstr "Пересечение"
 
-#: source/math/calculus_parser.py:186 source/math/calculus_parser.py:190
+#: source/math/calculus_parser.py:198 source/math/calculus_parser.py:202
 msgid "with"
 msgstr "с"
 
-#: source/math/calculus_parser.py:186 source/math/calculus_parser.py:190
+#: source/math/calculus_parser.py:198 source/math/calculus_parser.py:202
 msgid "axis"
 msgstr "осью"
 
-#: source/math/calculus_parser.py:201 source/math/calculus_parser.py:206
-#: source/math/calculus_parser.py:235 source/math/calculus_parser.py:240
+#: source/math/calculus_parser.py:213 source/math/calculus_parser.py:218
+#: source/math/calculus_parser.py:247 source/math/calculus_parser.py:252
 msgid "Is"
 msgstr "Является ли"
 
-#: source/math/calculus_parser.py:201
+#: source/math/calculus_parser.py:213
 msgid "convex"
 msgstr "выпуклой"
 
-#: source/math/calculus_parser.py:206
+#: source/math/calculus_parser.py:218
 msgid "concave"
 msgstr "вогнутой"
 
-#: source/math/calculus_parser.py:211 source/math/calculus_parser.py:226
+#: source/math/calculus_parser.py:223 source/math/calculus_parser.py:238
 msgid "Vertical"
 msgstr "Вертикальные"
 
-#: source/math/calculus_parser.py:211 source/math/calculus_parser.py:216
-#: source/math/calculus_parser.py:221 source/math/calculus_parser.py:226
-#: source/math/calculus_parser.py:228 source/math/calculus_parser.py:230
+#: source/math/calculus_parser.py:223 source/math/calculus_parser.py:228
+#: source/math/calculus_parser.py:233 source/math/calculus_parser.py:238
+#: source/math/calculus_parser.py:240 source/math/calculus_parser.py:242
 msgid "asymptotes"
 msgstr "асимптоты"
 
-#: source/math/calculus_parser.py:216 source/math/calculus_parser.py:228
+#: source/math/calculus_parser.py:228 source/math/calculus_parser.py:240
 msgid "Horizontal"
 msgstr "Горизонтальные"
 
-#: source/math/calculus_parser.py:221 source/math/calculus_parser.py:230
+#: source/math/calculus_parser.py:233 source/math/calculus_parser.py:242
 msgid "Slant"
 msgstr "Наклонные"
 
-#: source/math/calculus_parser.py:235
+#: source/math/calculus_parser.py:247
 msgid "even"
 msgstr "чётной"
 
-#: source/math/calculus_parser.py:240
+#: source/math/calculus_parser.py:252
 msgid "odd"
 msgstr "нечётной"
 
-#: source/math/calculus_parser.py:245
+#: source/math/calculus_parser.py:257
 msgid "Max"
 msgstr "Наибольшее"
 
-#: source/math/calculus_parser.py:245 source/math/calculus_parser.py:250
+#: source/math/calculus_parser.py:257 source/math/calculus_parser.py:262
 msgid "value"
 msgstr "значение"
 
-#: source/math/calculus_parser.py:250
+#: source/math/calculus_parser.py:262
 msgid "Min"
 msgstr "Наименьшее"
 
-#: source/math/calculus_parser.py:260
+#: source/math/calculus_parser.py:272
 msgid "Stationary"
 msgstr "Стационарные"
 
-#: source/math/calculus_parser.py:260
+#: source/math/calculus_parser.py:272
 msgid "points"
 msgstr "точки"
 
-#: source/math/calculus_parser.py:264
+#: source/math/calculus_parser.py:276
 msgid "Unknown pattern set: {}"
 msgstr "Неизвестный шаблон: {}"
 
-#: source/math/calculus_parser.py:293
+#: source/math/calculus_parser.py:305
 msgid ""
 "Variables can only contain letters\n"
 "Incorrect variable: '{}'"
@@ -636,13 +644,13 @@ msgstr ""
 "Переменные могут содержать только латинские буквы\n"
 "Некорректная переменная: '{}'"
 
-#: source/math/calculus_parser.py:325 source/math/calculus_parser.py:329
-#: source/math/calculus_parser.py:347 source/math/calculus_parser.py:351
+#: source/math/calculus_parser.py:337 source/math/calculus_parser.py:341
+#: source/math/calculus_parser.py:359 source/math/calculus_parser.py:363
 msgid "Yes"
 msgstr "Да"
 
-#: source/math/calculus_parser.py:325 source/math/calculus_parser.py:329
-#: source/math/calculus_parser.py:347 source/math/calculus_parser.py:351
+#: source/math/calculus_parser.py:337 source/math/calculus_parser.py:341
+#: source/math/calculus_parser.py:359 source/math/calculus_parser.py:363
 msgid "No"
 msgstr "Нет"
 
@@ -650,15 +658,25 @@ msgstr "Нет"
 msgid "Plot"
 msgstr "График"
 
-#: source/math/graph.py:84 source/math/graph.py:112
+#: source/math/graph.py:84 source/math/graph.py:105
+msgid "NOTE: some of the functions are extremely long! Graph may be incorrect."
+msgstr ""
+"ПРЕДУПРЕЖДЕНИЕ: некоторые функции очень длинные! График может быть "
+"построен неправильно."
+
+#: source/math/graph.py:100 source/math/graph.py:135
 msgid "Unexpected error, check your expression."
 msgstr "Неожиданная ошибка, проверьте введённые данные."
 
-#: source/math/graph_parser.py:45
+#: source/math/graph.py:139
+msgid "Some functions have been reduced because they are too long."
+msgstr "Некоторые функции были сокращены из-за их чрезмерной длины."
+
+#: source/math/graph_parser.py:46
 msgid "Incorrect bracket sequence. Check your expression."
 msgstr "Неправильная скобочная последовательность. Проверьте выражение."
 
-#: source/math/graph_parser.py:86
+#: source/math/graph_parser.py:87
 msgid ""
 "Mistake in function {} parameters.\n"
 "Your input: {}\n"
@@ -668,7 +686,7 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Пожалуйста, проверьте, что все введённые числа корректны."
 
-#: source/math/graph_parser.py:91
+#: source/math/graph_parser.py:92
 msgid ""
 "Mistake in function {} parameters.\n"
 "Your input: {}\n"
@@ -678,7 +696,7 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Левый аргумент не может быть больше или равен правому: {} >= {}."
 
-#: source/math/graph_parser.py:105
+#: source/math/graph_parser.py:106
 msgid ""
 "Mistake in aspect ratio.\n"
 "Your input: {}\n"
@@ -688,7 +706,7 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Пожалуйста, проверьте, что числа корректны."
 
-#: source/math/graph_parser.py:110
+#: source/math/graph_parser.py:111
 msgid ""
 "Mistake in aspect ratio.\n"
 "Your input: {}\n"
@@ -698,15 +716,15 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Соотношение сторон не может быть отрицательным или равным нулю."
 
-#: source/math/graph_parser.py:166
+#: source/math/graph_parser.py:167
 msgid "Variable '{}' is replaced by 'y'"
 msgstr "Переменная '{}' заменена на 'y'"
 
-#: source/math/graph_parser.py:171 source/math/graph_parser.py:183
+#: source/math/graph_parser.py:172 source/math/graph_parser.py:184
 msgid "Variable '{}' is replaced by 'x'"
 msgstr "Переменная '{}' заменена на 'x'"
 
-#: source/math/graph_parser.py:177
+#: source/math/graph_parser.py:178
 msgid ""
 "Variable '{}' is replaced by 'y',\n"
 "variable '{}' is replaced by 'x'"
@@ -714,7 +732,7 @@ msgstr ""
 "Переменная '{}' заменена на 'y',\n"
 "переменная '{}' заменена на 'x'"
 
-#: source/math/graph_parser.py:206
+#: source/math/graph_parser.py:207
 msgid ""
 "Incorrect expression: {}\n"
 "There is only 'y' variable. It's f(y) or f(x) = 0?\n"
@@ -725,7 +743,7 @@ msgstr ""
 "Пожалуйста, используйте 'x' вместо единственной переменной 'y' для "
 "построения графика f(x)."
 
-#: source/math/graph_parser.py:218
+#: source/math/graph_parser.py:220
 msgid ""
 "Incorrect expression: {}\n"
 "There are {} variables: {}\n"
@@ -735,11 +753,11 @@ msgstr ""
 "В формуле {} переменных: {}\n"
 "Допускается использование не более двух переменных."
 
-#: source/math/graph_parser.py:226
+#: source/math/graph_parser.py:229
 msgid "Result of expression '{}' is always {}"
 msgstr "Результат выражения '{}' всегда {}"
 
-#: source/math/graph_parser.py:239
+#: source/math/graph_parser.py:242
 msgid ""
 "Mistake in implicit function: found more than 1 equal sign.\n"
 "Your input: {}\n"
@@ -749,15 +767,15 @@ msgstr ""
 "Ваш ввод: {}\n"
 "Пожалуйста, проверьте введённую функцию."
 
-#: source/math/graph_parser.py:304
+#: source/math/graph_parser.py:315
 msgid "Cannot resolve a statement: {}"
 msgstr "Не удалось разобрать выражение: {}"
 
-#: source/math/graph_parser.py:307
+#: source/math/graph_parser.py:318
 msgid "Too many functions requested ({}). The limit is {} functions."
 msgstr "Запрошено слишком много функций ({}). Ограничение - {} функций."
 
-#: source/math/help_functions.py:14
+#: source/math/help_functions.py:39
 msgid ""
 "Enter:\n"
 "/start to restart bot.\n"
@@ -769,7 +787,7 @@ msgstr ""
 "/graph для построения графиков.\n"
 "/analyse чтобы перейти к исследованию функций."
 
-#: source/math/math_function.py:84
+#: source/math/math_function.py:134
 msgid ""
 "Since there is more than one variable in the expression, the variable(s) "
 "of differentiation must be supplied to differentiate"
@@ -778,31 +796,31 @@ msgstr ""
 "дифференцирования необходимо указать переменную(ые), по которой требуется"
 " произвести дифференцирование"
 
-#: source/math/math_function.py:142
+#: source/math/math_function.py:194
 msgid "Aperiodic function"
 msgstr "Апериодическая функция"
 
-#: source/math/math_function.py:144
+#: source/math/math_function.py:196
 msgid "Function is constant (any period)"
 msgstr "Функция постоянна (любой период)"
 
-#: source/math/math_function.py:178
+#: source/math/math_function.py:230
 msgid "Strictly decreasing"
 msgstr "Строго убывающая"
 
-#: source/math/math_function.py:179
+#: source/math/math_function.py:231
 msgid "Strictly increasing"
 msgstr "Строго возрастающая"
 
-#: source/math/math_function.py:180
+#: source/math/math_function.py:232
 msgid "Increasing"
 msgstr "Возрастающая"
 
-#: source/math/math_function.py:181
+#: source/math/math_function.py:233
 msgid "Decreasing"
 msgstr "Убывающая"
 
-#: source/math/math_function.py:186
+#: source/math/math_function.py:238
 msgid "Non-monotonic"
 msgstr "Немонотонная"
 
@@ -810,7 +828,8 @@ msgstr "Немонотонная"
 msgid "Interpreting '{}' as '{}'"
 msgstr "'{}' исправлено на '{}'"
 
-#: source/middleware/anti_flood_middleware.py:91
+#: source/middleware/anti_flood_middleware.py:95
+#: source/middleware/anti_flood_middleware.py:98
 msgid "Flood is not allowed! You should wait {} seconds to repeat this action."
 msgstr ""
 "Флуд запрещен! Вы должны подождать {} секунд, чтобы повторить это "

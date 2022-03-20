@@ -64,8 +64,8 @@ class MathFunction:
         self.func_type = func_type
         self.symbols = symbols
 
-    def __str__(self):
-        return self.expression
+    def __len__(self):
+        return len(str(self.simplified_expr))
 
     @staticmethod
     def _checkStationaryPoints(function: sy.Expr, symbol: sy.Symbol, domain: sy.Interval) -> bool:
