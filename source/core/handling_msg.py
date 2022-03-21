@@ -33,6 +33,7 @@ class Handler:
     status_dict: dict = None
     # We get "USE_LATEX" parameter from settings
     SETTINGS: Config = None
+    REQUEST_LENGTH_LIMIT: int = 1000
 
     def __init__(self, bot_, mongo_, logger_, dispatcher):
         Handler.bot = bot_
@@ -245,6 +246,14 @@ class Handler:
         else:
             expr = message.text.lower()
         chat_id = message.chat.id
+
+        # Check if expression is not enormous
+        if len(expr) > Handler.REQUEST_LENGTH_LIMIT:
+            await Handler.bot.send_message(chat_id, _("The request is too long. "
+                                                      "Sorry, you are limited to {} characters")
+                                           .format(Handler.REQUEST_LENGTH_LIMIT))
+            return
+
         user_language = await get_language(message.from_user, Handler.mongo)
 
         Handler.logger.info("User [chat_id=%s] requested to draw a graph. User's input: `%s`", chat_id, expr)
