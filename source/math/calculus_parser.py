@@ -60,6 +60,12 @@ def _process_function(token: str, lang: str = "en", q: multiprocessing.Queue = N
                            locale=lang).format(token.strip())))
         return
 
+    # Check function length
+    if len(str(function)) > Parser.FUNCTION_LENGTH_LIMIT:
+        q.put(ParseError(_("One of the functions is too long.\nYour input: {}",
+                           locale=lang).format(str(token))))
+        return
+
     q.put(function)
 
 

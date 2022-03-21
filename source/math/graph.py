@@ -95,8 +95,8 @@ class Graph:
         backend = self.plot.backend(self.plot)
         try:
             backend.process_series()
-        except (ZeroDivisionError, OverflowError, TypeError):
-            raise DrawError(_("Unexpected error, check your expression.", locale=lang))
+        except (ZeroDivisionError, OverflowError, TypeError) as err:
+            raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
 
         # Extract all implicit functions
         for func in tokens['implicit']:
@@ -130,8 +130,8 @@ class Graph:
         backend = self.plot.backend(self.plot)
         try:
             backend.process_series()
-        except (ZeroDivisionError, OverflowError, TypeError):
-            raise DrawError(_("Unexpected error, check your expression.", locale=lang))
+        except (ZeroDivisionError, OverflowError, TypeError) as err:
+            raise DrawError(_("Unexpected error, check your expression.", locale=lang)) from err
 
         # Check if some functions were shrunk
         if long_func:

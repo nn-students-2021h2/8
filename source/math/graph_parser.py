@@ -255,6 +255,13 @@ class GraphParser(Parser):
                                "such as placing '*' (multiplication) signs and parentheses.",
                                locale=lang).format(token.strip())))
             return
+
+        # Check function length
+        if len(str(function)) > Parser.FUNCTION_LENGTH_LIMIT:
+            q.put(ParseError(_("One of the functions is too long.\nYour input: {}\nSorry for this limitation.",
+                               locale=lang).format(str(token))))
+            return
+
         q.put(function)
 
     @run_asynchronously
