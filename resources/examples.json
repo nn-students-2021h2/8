@@ -26,7 +26,14 @@
     "(3x^4 + 1) / x^3, x=[-4, 4], y=[-20, 20]",
     "1 / (x^2 + 4)",
     "x cos x, for x in (-100, 100)",
-    "sin(3*(x^3)), x from -4 to 4, y from -1.1 to 1.1"
+    "sin(3*(x^3)), x from -4 to 4, y from -1.1 to 1.1",
+    "sin x, cos x",
+    "exp(x) + 2, sin x ^ 2, y = (-5, 5)",
+    "1, y = 2, x = 3",
+    "y = x - 3, y = 10x^2, y = root(x, 3), y from -5 to 10",
+    "3x = y, 2 / x = y, x^2 + y^2 = 9",
+    "x^2 + y^2 = 9, x^2 + y^2 = 1, x^2 + y^2 = 16, ratio = 1, x from -5 to 5, y = [-5;5]",
+    "x, y = x + 1"
   ],
   "analysis": [
     "diff 2xy by x",

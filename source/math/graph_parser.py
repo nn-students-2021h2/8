@@ -263,6 +263,7 @@ class GraphParser(Parser):
             return
 
         q.put(function)
+        q.put(self.warnings)
 
     @run_asynchronously
     def parse(self, query: str, lang: str = "en"):
@@ -293,7 +294,9 @@ class GraphParser(Parser):
             if p.is_alive():
                 p.terminate()
                 return None
+
             function = q.get()
+            self.warnings = q.get()
             if isinstance(function, Exception):
                 # If we don't found a pattern, and it is not a function, then try to fix words
                 if self._find_pattern(pattern_dict, token, True, lang):

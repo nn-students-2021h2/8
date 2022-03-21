@@ -60,6 +60,10 @@ class Parser(ABC):
         """
         return self._warnings
 
+    @warnings.setter
+    def warnings(self, value):
+        self._warnings = value
+
     def clear_warnings(self):
         """
         Remove all strings from _warnings list
