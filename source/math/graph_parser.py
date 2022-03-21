@@ -296,7 +296,8 @@ class GraphParser(Parser):
                 return None
 
             function = q.get()
-            self.warnings = q.get()
+            if not q.empty():
+                self.warnings = q.get()
             if isinstance(function, Exception):
                 # If we don't found a pattern, and it is not a function, then try to fix words
                 if self._find_pattern(pattern_dict, token, True, lang):
