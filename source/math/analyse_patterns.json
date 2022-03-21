@@ -122,19 +122,6 @@
       "concavity"
     ]
   },
-  "continuity": {
-    "patterns": {
-      "^continu(ity|ous)[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
-        "6"
-      ]
-    },
-    "keywords": [
-      "the",
-      "function",
-      "continuity",
-      "continuous"
-    ]
-  },
   "vertical asymptotes": {
     "patterns": {
       "^(vertical|v)[ ]+asymptote(s)?[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [

@@ -15,8 +15,6 @@ from source.math.parser import ParseError
                                           ('rang x**2+4', True),
                                           ('stationary points x+3-ln(x)', True),
                                           ('periodycity x**5-5=y', True),
-                                          ('continuity x+4-8', True),
-                                          ('convexity 10-x+2*x', True),
                                           ('concavty sin(x)+2', True),
                                           ('horizontal asymptotes 3*1/x', True),
                                           ('vertical asymptotes of tan(x)', True),
