@@ -226,6 +226,7 @@ class Handler:
             if expr[0] == '/':
                 expr = expr[len('/graph') + 1:]
             message.text = expr
+            message.from_user.id = callback_query.from_user.id
             await Handler.send_graph(message)
 
         @dispatcher.callback_query_handler(lambda c: c.data and c.data.startswith('example_analysis_'))
@@ -236,6 +237,7 @@ class Handler:
             if expr[0] == '/':
                 expr = expr[len('/analyse') + 1:]
             message.text = expr
+            message.from_user.id = callback_query.from_user.id
             await Handler.send_analyse(message)
 
     @staticmethod
