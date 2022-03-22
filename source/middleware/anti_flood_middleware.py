@@ -66,6 +66,12 @@ class ThrottlingMiddleware(BaseMiddleware):
             limit = self.rate_limit
             key = f"{self.prefix}_message"
 
+        buttons = [_('Draw graph'), _('Analyse function'), _('Get help'), _('Settings'), _('Main menu'), _('Options'),
+                   _('Examples'), _('Back'), _('On meme button'), _('Off meme button'), _('Set ru language'),
+                   _('Set en language')]
+        if message.text in buttons:
+            limit = 1
+
         try:
             await dispatcher.throttle(key, rate=limit)
         except Throttled as t:
