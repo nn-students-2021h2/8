@@ -21,6 +21,9 @@
     "patterns": {
       "^(domain|definition[ ]+(area|range))[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
         "7"
+      ],
+      "^area([ ]+of)?[ ]+definition[ ]+(of[ ]+)?((a|the)[ ]+)?(function[ ]+)?(.+)$": [
+        "6"
       ]
     },
     "keywords": [
