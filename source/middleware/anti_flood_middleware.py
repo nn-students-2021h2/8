@@ -70,7 +70,7 @@ class ThrottlingMiddleware(BaseMiddleware):
                    _('Examples'), _('Back'), _('On meme button'), _('Off meme button'), _('Set ru language'),
                    _('Set en language')]
         if message.text in buttons:
-            limit = 1
+            limit = 0.5
 
         try:
             await dispatcher.throttle(key, rate=limit)
